@@ -4,54 +4,50 @@
   import { dndzone } from "svelte-dnd-action";
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
+  import { Kanban } from "../stores/Kanban.js";
 
-  export let listInfo = {
-    id: 0,
-    items: [],
-  };
+  export let board;
+  export let id;
   export let styles;
-  export let user;
 
-  let editField;
-  let items = listInfo.items;
+  let items;
 
-  //const flipDurationMs = 300;
   const disbatch = createEventDispatcher();
 
   onMount(() => {
-    items = listInfo.items;
+    items = $Kanban.boards[board].lists[id].items;
   });
 
   beforeUpdate(() => {
-    items = listInfo.items;
+    items = $Kanban.boards[board].lists[id].items;
   });
 
   async function addItem() {
     disbatch("addItem", {
-      list: listInfo.id,
+      list: $Kanban.boards[board].lists[id].id,
     });
   }
 
   async function deleteList() {
     disbatch("deleteList", {
-      list: listInfo.id,
+      list: $Kanban.boards[board].lists[id].id,
     });
   }
 
   function deleteItem(e) {
     disbatch("deleteItem", {
       item: e.detail.item,
-      list: listInfo.id,
+      list: $Kanban.boards[board].lists[id].id,
     });
   }
 
   function nameChanged(e) {
-    listInfo.name = e.detail.name;
+    $Kanban.boards[board].lists[id].name = e.detail.name;
   }
 
   function newItemMsg(e) {
     disbatch("newItemMsg", {
-      list: listInfo.id,
+      list: $Kanban.boards[board].lists[id].id,
       item: e.detail.item,
       msg: e.detail.msg,
     });
@@ -59,7 +55,7 @@
 
   function newItemApp(e) {
     disbatch("newItemApp", {
-      list: listInfo.id,
+      list: $Kanban.boards[board].lists[id].id,
       item: e.detail.item,
       app: e.detail.app,
     });
@@ -67,17 +63,17 @@
 
   function appUpdate(e) {
     disbatch("appUpdate", {
-      list: listInfo.id,
+      list: $Kanban.boards[board].lists[id].id,
       item: e.detail.item,
       app: e.detail.app,
     });
   }
 
   function handleSort(e) {
-    listInfo.items = e.detail.items;
-    listInfo = listInfo;
+    $Kanban.boards[board].lists[id].items = e.detail.items;
+    $Kanban.boards[board].lists[id] = $Kanban.boards[board].lists[id];
     disbatch("listUpdate", {
-      list: listInfo,
+      list: $Kanban.boards[board].lists[id],
     });
   }
 </script>
@@ -87,7 +83,11 @@
   style="background-color: {styles.listbgcolor}; color: {styles.listtextcolor};"
 >
   <div class="listheader">
-    <EditH2Field name={listInfo.name} {styles} on:nameChanged={nameChanged} />
+    <EditH2Field
+      name={$Kanban.boards[board].lists[id].name}
+      {styles}
+      on:nameChanged={nameChanged}
+    />
     <span
       class="remove"
       on:click={() => {
@@ -111,7 +111,6 @@
       <Item
         itemInfo={item}
         {styles}
-        {user}
         on:deleteItem={deleteItem}
         on:newItemMsg={newItemMsg}
         on:newItemApp={newItemApp}

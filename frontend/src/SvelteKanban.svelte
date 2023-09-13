@@ -1,18 +1,9 @@
 <script>
   import { onMount } from "svelte";
   import Board from "./components/Board.svelte";
-  import Login from "./components/Login.svelte";
-  import UserList from "./components/UserList.svelte";
+  import { Kanban } from "./stores/Kanban.js";
+  import * as App from "../wailsjs/go/main/App.js";
 
-  let Kanban = {
-    user: {},
-    boards: [
-      {
-        name: "New Board",
-        lists: [],
-      },
-    ],
-  };
   let defaultStyles = {
     backgroundcolor: "blue",
     textcolor: "white",
@@ -32,218 +23,86 @@
     kanbanInfo: "black",
   };
   let styles = defaultStyles;
-  let login = true;
-  let currentUserData = {
-    ID: 0,
-    name: "Richard Guay",
-    login: "raguay@customct.com",
-    passwd: "ragjesus",
-    status: "admin",
-  };
-  let showUserList = false;
-  let updateCount = 0;
 
-  onMount(() => {
+  onMount(async () => {
     //
-    // This should be loaded from the server when a user is logged in.
+    // Load the board information from the harddrive.
     //
-    Kanban = {
-      boards: [
-        {
-          id: 0,
-          name: "Job One",
-          lists: [
-            {
-              id: 1000,
-              name: "Inbox",
-              items: [
-                {
-                  id: 1001,
-                  name: "Test",
-                  description: "This is a test item.",
-                  color: ["blue"],
-                  notes: [
-                    {
-                      date: "01/01/2020",
-                      owner: "Richard Guay",
-                      type: "text",
-                      info: "This is a test message.",
-                    },
-                  ],
-                  apps: [],
-                },
-              ],
-            },
-            {
-              id: 2000,
-              name: "Working",
-              items: [
-                {
-                  id: 2001,
-                  name: "Test",
-                  description: "This is a test item.",
-                  color: ["blue"],
-                  notes: [],
-                  apps: [],
-                },
-              ],
-            },
-            {
-              id: 3000,
-              name: "Done",
-              items: [
-                {
-                  id: 3001,
-                  name: "Test",
-                  description: "This is a test item.",
-                  color: ["blue"],
-                  notes: [],
-                  apps: [],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: 1,
-          name: "Job Two",
-          lists: [
-            {
-              id: 1000,
-              name: "Inbox",
-              items: [
-                {
-                  id: 1001,
-                  name: "Test",
-                  description: "This is a test item.",
-                  color: ["blue"],
-                  notes: [],
-                  apps: [],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      user: {
-        ID: 0,
-        name: "Richard Guay",
-        login: "raguay@customct.com",
-        passwd: "ragjesus",
-        status: "admin",
-      },
-    };
-
-    styles = {
-      backgroundcolor: "blue",
-      textcolor: "white",
-      unselectTabColor: "lightgray",
-      unselectTabTextColor: "black",
-      selectTabColor: "lightblue",
-      selectTabTextColor: "black",
-      mainboardcolor: "lightblue",
-      listcontainercolor: "lightblue",
-      listbgcolor: "#9AC2FA",
-      listtextcolor: "white",
-      itembgcolor: "white",
-      itemtextcolor: "black",
-      font: '"Fira Code"',
-      dialogBGColor: "lightblue",
-      dialogTextColor: "black",
-      kanbanInfo: "black",
-    };
+    let kanbanStr = await App.ReadKanbanString();
+    $Kanban = JSON.parse(kanbanStr);
+    if ($Kanban.boards === null) $Kanban.boards = [];
+    let styleStr = await App.ReadThemeString();
+    styles = JSON.parse(styleStr);
+    window.Kanban = $Kanban;
   });
 
-  function acceptLogin(data) {
-    currentUserData = data.detail.userdata;
-    styles = data.detail.styles;
-    login = true;
-  }
-
-  function addBoard() {
+  async function addBoard() {
     var newID = 0;
-    Kanban.boards.forEach((item) => {
-      if (item.id > newID) newID = item.id;
-    });
-    Kanban.boards.push({
-      id: newID + 1,
+    if ($Kanban.boards.length > 0) {
+      $Kanban.boards.forEach((item) => {
+        if (item.id > newID) newID = item.id;
+      });
+      newID = newID + 1;
+    }
+    $Kanban.boards.push({
+      id: newID,
       name: "New Board",
       lists: [],
     });
-    Kanban = Kanban;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function addList(e) {
+  async function addList(e) {
     var newID = 0;
-    Kanban.boards.map((board) => {
-      if (e.detail.board === board.id) {
-        board.lists.forEach((item) => {
-          if (item.id > newID) newID = item.id;
-        });
-      }
+    if ($Kanban.boards[e.detail.board].lists.length > 0) {
+      $Kanban.boards[e.detail.board].lists.map((list) => {
+        if (list.id > newID) newID = list.id;
+      });
+      newID = newID + 1;
+    }
+    $Kanban.boards[e.detail.board].lists.push({
+      id: newID,
+      name: "New List",
+      items: [],
     });
-    newID = (newID / 1000 + 1) * 1000;
-    Kanban.boards = Kanban.boards.map((board) => {
-      if (e.detail.board === board.id) {
-        board.lists.push({
-          id: newID,
-          name: "New List",
-          items: [],
-        });
-      }
-      return board;
-    });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    console.log($Kanban);
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function addItem(e) {
+  async function addItem(e) {
     var newID = 0;
-    Kanban.boards.map((board) => {
-      if (e.detail.board === board.id) {
-        board.lists.map((list) => {
-          if (e.detail.list === list.id) {
-            list.items.forEach((item) => {
-              if (item.id > newID) newID = item.id;
-            });
-          }
-        });
-      }
+    if ($Kanban.boards[e.detail.board].lists[e.detail.list].items.length > 0) {
+      $Kanban.boards[e.detail.board].lists[e.detail.list].items.map((item) => {
+        if (item.id > newID) newID = item.id;
+      });
+      newID = newID + 1;
+    }
+    $Kanban.boards[e.detail.board].lists[e.detail.list].items.push({
+      id: newID + 1,
+      name: "New Item",
+      description: "",
+      color: [],
+      notes: [],
+      apps: [],
     });
-    Kanban.boards = Kanban.boards.map((board) => {
-      if (e.detail.board === board.id) {
-        board.lists = board.lists.map((list) => {
-          if (e.detail.list == list.id) {
-            list.items.push({
-              id: newID + 1,
-              name: "New Item",
-              description: "",
-              color: [],
-              notes: [],
-              apps: [],
-            });
-          }
-          return list;
-        });
-      }
-      return board;
-    });
-    window.Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function deleteList(e) {
-    Kanban.boards.map((board) => {
+  async function deleteList(e) {
+    $Kanban.boards.map((board) => {
       if (e.detail.board === board.id) {
         board.lists = board.lists.filter((list) => e.detail.list !== list.id);
       }
     });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function deleteItem(e) {
-    Kanban.boards.map((board) => {
+  async function deleteItem(e) {
+    $Kanban.boards.map((board) => {
       if (e.detail.board === board.id) {
         board.lists.map((list) => {
           if (e.detail.list === list.id) {
@@ -252,12 +111,12 @@
         });
       }
     });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function newItemMsg(e) {
-    Kanban.boards.map((board) => {
+  async function newItemMsg(e) {
+    $Kanban.boards.map((board) => {
       if (e.detail.board === board.id) {
         board.lists.map((list) => {
           if (e.detail.list === list.id) {
@@ -273,12 +132,12 @@
         });
       }
     });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function newItemApp(e) {
-    Kanban.boards.map((board) => {
+  async function newItemApp(e) {
+    $Kanban.boards.map((board) => {
       if (e.detail.board === board.id) {
         board.lists.map((list) => {
           if (e.detail.list === list.id) {
@@ -291,12 +150,12 @@
         });
       }
     });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function appUpdate(e) {
-    Kanban.boards.map((board) => {
+  async function appUpdate(e) {
+    $Kanban.boards.map((board) => {
       if (e.detail.board === board.id) {
         board.lists.map((list) => {
           if (e.detail.list === list.id) {
@@ -313,12 +172,12 @@
         });
       }
     });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
   }
 
-  function listUpdate(e) {
-    Kanban.boards.map((board) => {
+  async function listUpdate(e) {
+    $Kanban.boards.map((board) => {
       if (e.detail.board === board.id) {
         board.lists.map((list) => {
           if (e.detail.list.id == list.id) {
@@ -327,8 +186,12 @@
         });
       }
     });
-    Kanban = Kanban;
-    updateCount = updateCount + 1;
+    await SaveKanbanBoards($Kanban);
+    $Kanban = $Kanban;
+  }
+
+  async function SaveKanbanBoards(boards) {
+    await App.SaveKanbanBoards(JSON.stringify(boards));
   }
 </script>
 
@@ -338,42 +201,26 @@
                       color: {styles.textcolor};
                       font-family: {styles.font};"
 >
-  {#if login}
-    <div id="Header">
-      <h1>ScriptPad Kanban Board</h1>
-      <h2>{currentUserData.name}, welcome back!</h2>
-    </div>
-    {#if showUserList}
-      <UserList styles={defaultStyles} />
-    {:else}
-      <Board
-        boardInfo={Kanban.boards}
-        {styles}
-        update={updateCount}
-        user={currentUserData}
-        on:addboard={() => {
-          addBoard();
-        }}
-        on:addlist={(e) => {
-          addList(e);
-        }}
-        on:additem={(e) => {
-          addItem(e);
-        }}
-        on:deleteList={(e) => {
-          deleteList(e);
-        }}
-        on:deleteItem={deleteItem}
-        on:newItemMsg={newItemMsg}
-        on:newItemApp={newItemApp}
-        on:appUpdate={appUpdate}
-        on:listUpdate={listUpdate}
-      />
-    {/if}
-  {:else}
-    <h1>Person Kanban Board from ScriptPad</h1>
-    <Login styles={defaultStyles} on:loginAccepted={acceptLogin} />
-  {/if}
+  <Board
+    {styles}
+    on:addboard={() => {
+      addBoard();
+    }}
+    on:addlist={(e) => {
+      addList(e);
+    }}
+    on:additem={(e) => {
+      addItem(e);
+    }}
+    on:deleteList={(e) => {
+      deleteList(e);
+    }}
+    on:deleteItem={deleteItem}
+    on:newItemMsg={newItemMsg}
+    on:newItemApp={newItemApp}
+    on:appUpdate={appUpdate}
+    on:listUpdate={listUpdate}
+  />
 </div>
 
 <style>
