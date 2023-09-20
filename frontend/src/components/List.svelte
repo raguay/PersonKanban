@@ -43,6 +43,9 @@
 
   function nameChanged(e) {
     $Kanban.boards[board].lists[id].name = e.detail.name;
+    disbatch("listUpdate", {
+      list: $Kanban.boards[board].lists[id],
+    });
   }
 
   function newItemMsg(e) {
@@ -72,6 +75,13 @@
   function handleSort(e) {
     $Kanban.boards[board].lists[id].items = e.detail.items;
     $Kanban.boards[board].lists[id] = $Kanban.boards[board].lists[id];
+    disbatch("listUpdate", {
+      list: $Kanban.boards[board].lists[id],
+    });
+  }
+
+  function saveItem(e) {
+    $Kanban.boards[board].lists[id].items[e.detail.item.id] = e.detail.item;
     disbatch("listUpdate", {
       list: $Kanban.boards[board].lists[id],
     });
@@ -115,6 +125,7 @@
         on:newItemMsg={newItemMsg}
         on:newItemApp={newItemApp}
         on:appUpdate={appUpdate}
+        on:saveItem={saveItem}
       />
     {/each}
   </div>

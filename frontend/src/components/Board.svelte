@@ -25,6 +25,12 @@
     editField.focus();
   }
 
+  function saveBoard() {
+    dispatch("saveBoard", {
+      board: currentBoard,
+    });
+  }
+
   function addList(e) {
     dispatch("addlist", {
       board: currentBoard,
@@ -110,8 +116,10 @@
                   type="text"
                   bind:value={board.name}
                   bind:this={editField}
-                  on:keydown={(e) => {
-                    if (e.code === "Enter") editNameFlag = false;
+                  on:keydown={async (e) => {
+                    if (e.code === "Enter") {
+                      editNameFlag = false;
+                    }
                   }}
                   on:blur={() => {
                     editNameFlag = false;
