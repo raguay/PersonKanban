@@ -56,13 +56,19 @@
 
   async function addList(e) {
     var newID = 0;
-    if ($Kanban.boards[e.detail.board].lists.length > 0) {
-      $Kanban.boards[e.detail.board].lists.map((list) => {
-        if (list.id > newID) newID = list.id;
-      });
-      newID = newID + 1;
-    }
-    $Kanban.boards[e.detail.board].lists.push({
+    var ind = 0;
+    $Kanban.boards.map((board, index) => {
+      if (board.id === e.detail.board) {
+        board.lists.map((list) => {
+          if (list.id > newID) {
+            newID = list.id;
+          }
+        });
+        ind = index;
+        newID = newID + 1;
+      }
+    });
+    $Kanban.boards[ind].lists.push({
       id: newID,
       name: "New List",
       items: [],
@@ -72,13 +78,26 @@
 
   async function addItem(e) {
     var newID = 0;
-    if ($Kanban.boards[e.detail.board].lists[e.detail.list].items.length > 0) {
-      $Kanban.boards[e.detail.board].lists[e.detail.list].items.map((item) => {
-        if (item.id > newID) newID = item.id;
-      });
-      newID = newID + 1;
-    }
-    $Kanban.boards[e.detail.board].lists[e.detail.list].items.push({
+    var Boardind = 0;
+    var Listind = 0;
+    $Kanban.boards.map((board, bindex) => {
+      if (board.id === e.detail.board) {
+        Boardind = bindex;
+        board.lists.map((list, lindex) => {
+          if (list.id === e.detail.list) {
+            Listind = lindex;
+            list.items.map((item) => {
+              if (item.id > newID) {
+                newID = item.id;
+              }
+            });
+          }
+        });
+        newID = newID + 1;
+      }
+    });
+
+    $Kanban.boards[Boardind].lists[Listind].items.push({
       id: newID + 1,
       name: "New Item",
       description: "This should describe the card's function.",
@@ -90,50 +109,122 @@
   }
 
   async function deleteList(e) {
-    $Kanban.boards[e.detail.board].lists = $Kanban.boards[
-      e.detail.board
-    ].lists.filter((list) => e.detail.list !== list.id);
+    $Kanban.boards.map((board) => {
+      if (board.id === e.detail.board) {
+        board.lists.filter((list) => e.detail.list !== list.id);
+      }
+    });
     await SaveKanbanBoards($Kanban);
   }
 
   async function deleteItem(e) {
-    $Kanban.boards[e.detail.board].lists[e.detail.list].items = $Kanban.boards[
-      e.detail.board
-    ].lists[e.detail.list].items.filter((item) => e.detail.item !== item.id);
+    $Kanban.boards.map((board) => {
+      if (board.id === e.detail.board) {
+        board.lists.map((list) => {
+          if (list.id === e.detail.list) {
+            list.items = list.items.filter((item) => e.detail.item !== item.id);
+          }
+        });
+      }
+    });
     await SaveKanbanBoards($Kanban);
   }
 
   async function newItemMsg(e) {
-    $Kanban.boards[e.detail.board].lists[e.detail.list].items[
-      e.detail.item
-    ].push(e.detail.msg);
+    let Bdindex = 0;
+    let Ltindex = 0;
+    let Itindex = 0;
+    $Kanban.boards.map((board, bindex) => {
+      if (board.id === e.detail.board) {
+        Bdindex = bindex;
+        board.lists.map((list, lindex) => {
+          if (list.id === e.detail.list) {
+            Ltindex = lindex;
+            list.items.map((item, iindex) => {
+              if (item.id === e.detail.item) {
+                Itindex = iindex;
+              }
+            });
+          }
+        });
+      }
+    });
+
+    $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].push(e.detail.msg);
     await SaveKanbanBoards($Kanban);
   }
 
   async function newItemApp(e) {
-    $Kanban.boards.boards[e.detail.board].lists[e.detail.list].items[
-      e.detail.item
-    ].apps.push(e.detail.app);
+    let Bdindex = 0;
+    let Ltindex = 0;
+    let Itindex = 0;
+    $Kanban.boards.map((board, bindex) => {
+      if (board.id === e.detail.board) {
+        Bdindex = bindex;
+        board.lists.map((list, lindex) => {
+          if (list.id === e.detail.list) {
+            Ltindex = lindex;
+            list.items.map((item, iindex) => {
+              if (item.id === e.detail.item) {
+                Itindex = iindex;
+              }
+            });
+          }
+        });
+      }
+    });
+
+    $Kanban.boards.boards[Bdindex].lists[Ltindex].items[itindex].apps.push(
+      e.detail.app
+    );
     await SaveKanbanBoards($Kanban);
   }
 
   async function appUpdate(e) {
-    $Kanban.boards.boards[e.detail.board].lists[e.detail.list].items[
-      e.detail.item
-    ].apps.map((app) => {
-      if (app.id === e.detail.app.id) {
-        app = e.detail.app;
+    let Bdindex = 0;
+    let Ltindex = 0;
+    let Itindex = 0;
+    let Apindex = 0;
+    $Kanban.boards.map((board, bindex) => {
+      if (board.id === e.detail.board) {
+        Bdindex = bindex;
+        board.lists.map((list, lindex) => {
+          if (list.id === e.detail.list) {
+            Ltindex = lindex;
+            list.items.map((item, iindex) => {
+              if (item.id === e.detail.item) {
+                Itindex = iindex;
+                item.apps.map((app, aindex) => {
+                  if (app.id === e.detail.app.id) {
+                    Apindex = aindex;
+                  }
+                });
+              }
+            });
+          }
+        });
       }
     });
+
+    $Kanban.boards.boards[bdindex].lists[Ltindex].items[Itindex].apps[Apindex] =
+      e.detail.app;
     await SaveKanbanBoards($Kanban);
   }
 
   async function listUpdate(e) {
-    $Kanban.boards[e.detail.board].lists.map((list) => {
-      if (e.detail.list.id == list.id) {
-        list = e.detail.list;
+    let Bdindex = 0;
+    let Ltindex = 0;
+    $Kanban.boards.map((board, bindex) => {
+      if (board.id === e.detail.board) {
+        Bdindex = bindex;
+        board.lists.map((list, lindex) => {
+          if (list.id === e.detail.list.id) {
+            Ltindex = lindex;
+          }
+        });
       }
     });
+    $Kanban.boards[Bdindex].lists[Ltindex] = e.detail.list;
     await SaveKanbanBoards($Kanban);
   }
 

@@ -142,6 +142,7 @@
     border: 5px solid transparent;
     border-radius: 5px;
     max-height: -webkit-fill-available;
+    height: 96%;
   }
 
   .listheader {

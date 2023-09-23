@@ -190,7 +190,7 @@
     flex-direction: column;
     margin: 0px;
     padding: 10px;
-    height: 90%;
+    height: 97%;
   }
 
   #tabs {
