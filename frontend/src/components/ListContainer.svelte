@@ -47,7 +47,9 @@
   <div
     id="addList"
     on:click={() => {
-      dispatch("addlist", {});
+      dispatch("addlist", {
+        board: board,
+      });
     }}
   >
     <p>+ New List</p>

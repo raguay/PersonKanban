@@ -42,9 +42,8 @@
     var newID = 0;
     if ($Kanban.boards.length > 0) {
       $Kanban.boards.forEach((item) => {
-        if (item.id > newID) newID = item.id;
+        if (item.id >= newID) newID = item.id++;
       });
-      newID = newID + 1;
     }
     $Kanban.boards.push({
       id: newID,
@@ -60,12 +59,11 @@
     $Kanban.boards.map((board, index) => {
       if (board.id === e.detail.board) {
         board.lists.map((list) => {
-          if (list.id > newID) {
-            newID = list.id;
+          if (list.id >= newID) {
+            newID = list.id++;
           }
         });
         ind = index;
-        newID = newID + 1;
       }
     });
     $Kanban.boards[ind].lists.push({
@@ -87,18 +85,17 @@
           if (list.id === e.detail.list) {
             Listind = lindex;
             list.items.map((item) => {
-              if (item.id > newID) {
-                newID = item.id;
+              if (item.id >= newID) {
+                newID = item.id++;
               }
             });
           }
         });
-        newID = newID + 1;
       }
     });
 
     $Kanban.boards[Boardind].lists[Listind].items.push({
-      id: newID + 1,
+      id: newID,
       name: "New Item",
       description: "This should describe the card's function.",
       color: [],
@@ -111,7 +108,7 @@
   async function deleteList(e) {
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
-        board.lists.filter((list) => e.detail.list !== list.id);
+        board.lists = board.lists.filter((list) => e.detail.list !== list.id);
       }
     });
     await SaveKanbanBoards($Kanban);
@@ -134,6 +131,7 @@
     let Bdindex = 0;
     let Ltindex = 0;
     let Itindex = 0;
+    let newid = 0;
     $Kanban.boards.map((board, bindex) => {
       if (board.id === e.detail.board) {
         Bdindex = bindex;
@@ -143,6 +141,11 @@
             list.items.map((item, iindex) => {
               if (item.id === e.detail.item) {
                 Itindex = iindex;
+                if (item.notes.length > 0) {
+                  item.notes.map((note) => {
+                    if (note.id >= newid) newid = note.id++;
+                  });
+                }
               }
             });
           }
@@ -174,7 +177,7 @@
       }
     });
 
-    $Kanban.boards.boards[Bdindex].lists[Ltindex].items[itindex].apps.push(
+    $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].apps.push(
       e.detail.app
     );
     await SaveKanbanBoards($Kanban);
@@ -206,7 +209,7 @@
       }
     });
 
-    $Kanban.boards.boards[bdindex].lists[Ltindex].items[Itindex].apps[Apindex] =
+    $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].apps[Apindex] =
       e.detail.app;
     await SaveKanbanBoards($Kanban);
   }

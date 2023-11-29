@@ -61,10 +61,14 @@
       (td.getSeconds().toString().length === 1
         ? "0" + td.getSeconds()
         : td.getSeconds());
+    let msgID = 0;
+    itemInfo.notes.map((note) => {
+      if (note.id >= msgID) msgID = note.id + 1;
+    });
     disbatch("newItemMsg", {
       item: itemInfo.id,
       msg: {
-        id: 100,
+        id: msgID,
         date: tdate,
         type: "text",
         info: typeof newMsg !== "undefined" ? newMsg : "",
@@ -76,12 +80,12 @@
   function createToDoList() {
     var newID = 0;
     itemInfo.apps.map((app) => {
-      if (app.id > newID) newID = newID + 1;
+      if (app.id >= newID) newID = app.id + 1;
     });
     disbatch("newItemApp", {
       item: itemInfo.id,
       app: {
-        id: newID + 1,
+        id: newID,
         name: itemInfo.name + ": " + "ToDoListApp",
         code: ToDoListApp,
         styles: [],
@@ -216,10 +220,6 @@
     border-radius: 10px;
   }
 
-  .itemDescription {
-    padding: 5px;
-  }
-
   .note {
     margin: 5px;
     padding: 10px;
@@ -239,10 +239,8 @@
     flex: 1;
   }
 
-  .noteWriter {
-  }
-
   .noteText {
+    flex: 1;
   }
 
   .buttonRow {

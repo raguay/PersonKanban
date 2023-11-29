@@ -15,29 +15,36 @@
   const disbatch = createEventDispatcher();
 
   onMount(() => {
-    items = $Kanban.boards[board].lists[id].items;
+    SetItems();
   });
 
   beforeUpdate(() => {
-    items = $Kanban.boards[board].lists[id].items;
+    SetItems();
   });
+
+  function SetItems() {
+    if (id === null) id = 0;
+    items = $Kanban.boards
+      .filter((item) => item.id === board)[0]
+      .lists.filter((item) => item.id === id)[0].items;
+  }
 
   async function addItem() {
     disbatch("addItem", {
-      list: $Kanban.boards[board].lists[id].id,
+      list: id,
     });
   }
 
   async function deleteList() {
     disbatch("deleteList", {
-      list: $Kanban.boards[board].lists[id].id,
+      list: id,
     });
   }
 
   function deleteItem(e) {
     disbatch("deleteItem", {
       item: e.detail.item,
-      list: $Kanban.boards[board].lists[id].id,
+      list: id,
     });
   }
 
@@ -50,7 +57,7 @@
 
   function newItemMsg(e) {
     disbatch("newItemMsg", {
-      list: $Kanban.boards[board].lists[id].id,
+      list: id,
       item: e.detail.item,
       msg: e.detail.msg,
     });
@@ -58,7 +65,7 @@
 
   function newItemApp(e) {
     disbatch("newItemApp", {
-      list: $Kanban.boards[board].lists[id].id,
+      list: id,
       item: e.detail.item,
       app: e.detail.app,
     });
@@ -66,22 +73,33 @@
 
   function appUpdate(e) {
     disbatch("appUpdate", {
-      list: $Kanban.boards[board].lists[id].id,
+      list: id,
       item: e.detail.item,
       app: e.detail.app,
     });
   }
 
   function handleSort(e) {
-    $Kanban.boards[board].lists[id].items = e.detail.items;
-    $Kanban.boards[board].lists[id] = $Kanban.boards[board].lists[id];
+    //
+    // TODO: Need to fix id and remove the drag and drop field.
+    //
+    $Kanban.boards[board].lists[id].items = e.detail.items.map((item, key) => {
+      item.id = key;
+    });
     disbatch("listUpdate", {
       list: $Kanban.boards[board].lists[id],
     });
   }
 
   function saveItem(e) {
-    $Kanban.boards[board].lists[id].items[e.detail.item.id] = e.detail.item;
+    $Kanban.boards[board].lists[id].items = $Kanban.boards[board].lists[
+      id
+    ].items.map((item) => {
+      if (item.id === e.detail.id) {
+        item = e.detail;
+      }
+      return item;
+    });
     disbatch("listUpdate", {
       list: $Kanban.boards[board].lists[id],
     });
@@ -117,17 +135,21 @@
     on:consider={handleSort}
     on:finalize={handleSort}
   >
-    {#each items as item (item.id)}
-      <Item
-        itemInfo={item}
-        {styles}
-        on:deleteItem={deleteItem}
-        on:newItemMsg={newItemMsg}
-        on:newItemApp={newItemApp}
-        on:appUpdate={appUpdate}
-        on:saveItem={saveItem}
-      />
-    {/each}
+    {#if items.length !== 0}
+      {#each items as item}
+        {#if item !== null}
+          <Item
+            itemInfo={item}
+            {styles}
+            on:deleteItem={deleteItem}
+            on:newItemMsg={newItemMsg}
+            on:newItemApp={newItemApp}
+            on:appUpdate={appUpdate}
+            on:saveItem={saveItem}
+          />
+        {/if}
+      {/each}
+    {/if}
   </div>
 </div>
 
@@ -149,6 +171,7 @@
     display: flex;
     flex-direction: row;
     margin: 5px;
+    align-content: center;
   }
 
   .listheader .remove {
@@ -157,6 +180,8 @@
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 6px;
     cursor: pointer;
+    height: 20px;
+    align-self: center;
   }
 
   .listheader .add {
@@ -165,6 +190,8 @@
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 6px;
     cursor: pointer;
+    height: 20px;
+    align-self: center;
   }
 
   .itemcontainer {
