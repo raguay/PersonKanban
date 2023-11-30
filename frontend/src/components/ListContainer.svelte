@@ -1,21 +1,26 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, beforeUpdate } from "svelte";
   import List from "./List.svelte";
   import { Kanban } from "../stores/Kanban.js";
 
   export let board;
   export let styles;
 
+  let boardData;
   const dispatch = createEventDispatcher();
 
   onMount(() => {
-    console.log("ListsContainer:  ", board);
+    boardData = $Kanban.boards.filter((item) => item.id === board)[0];
+  });
+
+  beforeUpdate(() => {
+    boardData = $Kanban.boards.filter((item) => item.id === board)[0];
   });
 </script>
 
 <div id="ListsContainer" style="background-color: {styles.listcontainercolor};">
-  {#if $Kanban.boards[board].lists.length > 0}
-    {#each $Kanban.boards[board].lists as item}
+  {#if boardData.lists.length > 0}
+    {#each boardData.lists as item}
       <List
         {styles}
         {board}

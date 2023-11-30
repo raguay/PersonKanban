@@ -3,6 +3,7 @@
   import Board from "./components/Board.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import * as App from "../wailsjs/go/main/App.js";
+  import ListContainer from "./components/ListContainer.svelte";
 
   let styles = {
     backgroundcolor: "blue",
@@ -42,7 +43,7 @@
     var newID = 0;
     if ($Kanban.boards.length > 0) {
       $Kanban.boards.forEach((item) => {
-        if (item.id >= newID) newID = item.id++;
+        if (item.id >= newID) newID = item.id + 1;
       });
     }
     $Kanban.boards.push({
@@ -60,7 +61,7 @@
       if (board.id === e.detail.board) {
         board.lists.map((list) => {
           if (list.id >= newID) {
-            newID = list.id++;
+            newID = list.id + 1;
           }
         });
         ind = index;
@@ -86,7 +87,7 @@
             Listind = lindex;
             list.items.map((item) => {
               if (item.id >= newID) {
-                newID = item.id++;
+                newID = item.id + 1;
               }
             });
           }
@@ -98,7 +99,7 @@
       id: newID,
       name: "New Item",
       description: "This should describe the card's function.",
-      color: [],
+      color: "",
       notes: [],
       apps: [],
     });
@@ -143,7 +144,7 @@
                 Itindex = iindex;
                 if (item.notes.length > 0) {
                   item.notes.map((note) => {
-                    if (note.id >= newid) newid = note.id++;
+                    if (note.id >= newid) newid = note.id + 1;
                   });
                 }
               }
@@ -153,7 +154,11 @@
       }
     });
 
-    $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].push(e.detail.msg);
+    let notes = $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].notes;
+    $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].notes = [
+      e.detail.msg,
+      ...notes,
+    ];
     await SaveKanbanBoards($Kanban);
   }
 

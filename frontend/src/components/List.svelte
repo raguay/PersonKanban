@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher, tick, onMount, beforeUpdate } from "svelte";
-  //  import { flip } from "svelte/animate";
   import { dndzone } from "svelte-dnd-action";
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
@@ -10,7 +9,8 @@
   export let id;
   export let styles;
 
-  let items;
+  let items = null;
+  let listData = null;
 
   const disbatch = createEventDispatcher();
 
@@ -23,25 +23,46 @@
   });
 
   function SetItems() {
+    //
+    // Make sure the id is valid. Set to zero if not.
+    //
     if (id === null) id = 0;
-    items = $Kanban.boards
+
+    //
+    // Get the updated list information.
+    //
+    listData = $Kanban.boards
       .filter((item) => item.id === board)[0]
-      .lists.filter((item) => item.id === id)[0].items;
+      .lists.filter((item) => item.id === id)[0];
+
+    //
+    // Set the items list.
+    //
+    items = listData.items;
   }
 
   async function addItem() {
+    //
+    // Get the upper routines set a new list item.
+    //
     disbatch("addItem", {
       list: id,
     });
   }
 
   async function deleteList() {
+    //
+    // Tell the powers above to remove this list.
+    //
     disbatch("deleteList", {
       list: id,
     });
   }
 
   function deleteItem(e) {
+    //
+    // Tell the powers above to remove a list item.
+    //
     disbatch("deleteItem", {
       item: e.detail.item,
       list: id,
@@ -49,13 +70,30 @@
   }
 
   function nameChanged(e) {
-    $Kanban.boards[board].lists[id].name = e.detail.name;
+    //
+    // Update the list data.
+    //
+    listData = $Kanban.boards
+      .filter((item) => item.id === board)[0]
+      .lists.filter((item) => item.id === id)[0];
+
+    //
+    // Set the new name.
+    //
+    listData.name = e.detail.name;
+
+    //
+    // Tell the powers above.
+    //
     disbatch("listUpdate", {
-      list: $Kanban.boards[board].lists[id],
+      list: listData,
     });
   }
 
   function newItemMsg(e) {
+    //
+    // Ask the powers above to create a new item.
+    //
     disbatch("newItemMsg", {
       list: id,
       item: e.detail.item,
@@ -64,6 +102,9 @@
   }
 
   function newItemApp(e) {
+    //
+    // Tell the powers above to create a new item app.
+    //
     disbatch("newItemApp", {
       list: id,
       item: e.detail.item,
@@ -72,6 +113,9 @@
   }
 
   function appUpdate(e) {
+    //
+    // Update the application item.
+    //
     disbatch("appUpdate", {
       list: id,
       item: e.detail.item,
@@ -83,25 +127,40 @@
     //
     // TODO: Need to fix id and remove the drag and drop field.
     //
-    $Kanban.boards[board].lists[id].items = e.detail.items.map((item, key) => {
+    listData = $Kanban.boards
+      .filter((item) => item.id === board)[0]
+      .lists.filter((item) => item.id === id)[0];
+    listData.items = e.detail.items.map((item, key) => {
       item.id = key;
     });
     disbatch("listUpdate", {
-      list: $Kanban.boards[board].lists[id],
+      list: listData,
     });
   }
 
   function saveItem(e) {
-    $Kanban.boards[board].lists[id].items = $Kanban.boards[board].lists[
-      id
-    ].items.map((item) => {
+    //
+    // Get the current list data.
+    //
+    listData = $Kanban.boards
+      .filter((item) => item.id === board)[0]
+      .lists.filter((item) => item.id === id)[0];
+
+    //
+    // Update the particular item data.
+    //
+    listData.items = listData.items.map((item) => {
       if (item.id === e.detail.id) {
         item = e.detail;
       }
       return item;
     });
+
+    //
+    // Send it upstream.
+    //
     disbatch("listUpdate", {
-      list: $Kanban.boards[board].lists[id],
+      list: listData,
     });
   }
 </script>
@@ -110,47 +169,45 @@
   class="list"
   style="background-color: {styles.listbgcolor}; color: {styles.listtextcolor};"
 >
-  <div class="listheader">
-    <EditH2Field
-      name={$Kanban.boards[board].lists[id].name}
-      {styles}
-      on:nameChanged={nameChanged}
-    />
-    <span
-      class="remove"
-      on:click={() => {
-        deleteList();
-      }}>-</span
+  {#if listData !== null}
+    <div class="listheader">
+      <EditH2Field name={listData.name} {styles} on:nameChanged={nameChanged} />
+      <span
+        class="remove"
+        on:click={() => {
+          deleteList();
+        }}>-</span
+      >
+      <span
+        class="add"
+        on:click={() => {
+          addItem();
+        }}>+</span
+      >
+    </div>
+    <div
+      class="itemcontainer"
+      use:dndzone={{ items }}
+      on:consider={handleSort}
+      on:finalize={handleSort}
     >
-    <span
-      class="add"
-      on:click={() => {
-        addItem();
-      }}>+</span
-    >
-  </div>
-  <div
-    class="itemcontainer"
-    use:dndzone={{ items }}
-    on:consider={handleSort}
-    on:finalize={handleSort}
-  >
-    {#if items.length !== 0}
-      {#each items as item}
-        {#if item !== null}
-          <Item
-            itemInfo={item}
-            {styles}
-            on:deleteItem={deleteItem}
-            on:newItemMsg={newItemMsg}
-            on:newItemApp={newItemApp}
-            on:appUpdate={appUpdate}
-            on:saveItem={saveItem}
-          />
-        {/if}
-      {/each}
-    {/if}
-  </div>
+      {#if items.length !== 0}
+        {#each items as item}
+          {#if item !== null}
+            <Item
+              itemInfo={item}
+              {styles}
+              on:deleteItem={deleteItem}
+              on:newItemMsg={newItemMsg}
+              on:newItemApp={newItemApp}
+              on:appUpdate={appUpdate}
+              on:saveItem={saveItem}
+            />
+          {/if}
+        {/each}
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>

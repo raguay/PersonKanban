@@ -237,6 +237,7 @@
 
   .noteDate {
     flex: 1;
+    font-size: 10px;
   }
 
   .noteText {
