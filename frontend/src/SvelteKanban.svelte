@@ -3,7 +3,6 @@
   import Board from "./components/Board.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import * as App from "../wailsjs/go/main/App.js";
-  import ListContainer from "./components/ListContainer.svelte";
 
   let styles = {
     backgroundcolor: "blue",
@@ -19,6 +18,7 @@
     itembgcolor: "white",
     itemtextcolor: "black",
     font: '"Fira Code"',
+    fontsize: 16,
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
     kanbanInfo: "black",
@@ -33,6 +33,7 @@
     if ($Kanban.boards === null) $Kanban.boards = [];
     let styleStr = await App.ReadThemeString();
     styles = JSON.parse(styleStr);
+
     //
     // For debug purposes. NOTE: Remove when done testing.
     //
@@ -245,8 +246,9 @@
 <div
   id="main"
   style="background-color: {styles.backgroundcolor}; 
-                      color: {styles.textcolor};
-                      font-family: {styles.font};"
+         color: {styles.textcolor};
+         font-family: {styles.font};
+         font-size: {styles.fontsize}px;"
 >
   <Board
     {styles}
@@ -291,23 +293,8 @@
     max-height: 100%;
   }
 
-  #Header {
-    display: flex;
-    flex-direction: row;
-    text-align: left;
-    flex: 1fr;
-  }
-
-  #Header h1 {
-    margin: 10px;
-  }
-
-  #Header h2 {
-    margin: 20px 10px 10px auto;
-  }
-
   :global(h1) {
-    font-size: 24px !important;
+    font-size: 18px !important;
     text-align: center;
   }
 </style>

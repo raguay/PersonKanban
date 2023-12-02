@@ -157,6 +157,7 @@ export namespace main {
 	    itembgcolor: string;
 	    itemtextcolor: string;
 	    font: string;
+	    fontsize: number;
 	    dialogBGColor: string;
 	    dialogTextColor: string;
 	    kanbanInfo: string;
@@ -180,6 +181,7 @@ export namespace main {
 	        this.itembgcolor = source["itembgcolor"];
 	        this.itemtextcolor = source["itemtextcolor"];
 	        this.font = source["font"];
+	        this.fontsize = source["fontsize"];
 	        this.dialogBGColor = source["dialogBGColor"];
 	        this.dialogTextColor = source["dialogTextColor"];
 	        this.kanbanInfo = source["kanbanInfo"];

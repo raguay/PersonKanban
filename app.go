@@ -52,6 +52,7 @@ type ThemeData struct {
 	Itembgcolor          string `json:"itembgcolor" binding:"required"`
 	Itemtextcolor        string `json:"itemtextcolor" binding:"required"`
 	Font                 string `json:"font" binding:"required"`
+	FontSize             int    `json:"fontsize" binding:"required"`
 	DialogBGColor        string `json:"dialogBGColor" binding:"required"`
 	DialogTextColor      string `json:"dialogTextColor" binding:"required"`
 	KanbanInfo           string `json:"kanbanInfo" binding:"required"`
