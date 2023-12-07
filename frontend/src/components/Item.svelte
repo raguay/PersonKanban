@@ -3,9 +3,11 @@
   import EditH2Field from "./EditH2Field.svelte";
   import EditPField from "./EditPField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
+  import { itemCursor } from "../stores/itemCursor.js";
 
   export let styles;
   export let itemInfo;
+  export let index;
 
   let edit = false;
   let newMsg;
@@ -101,7 +103,12 @@
 
 <div
   class="item"
-  style="background-color: {styles.itembgcolor}; color: {styles.itemtextcolor};"
+  style="background-color: {styles.itembgcolor}; color: {styles.itemtextcolor}; border-width: {$itemCursor ===
+  index
+    ? styles.cursorWidth
+    : '5px'}; border-color: {$itemCursor === index
+    ? styles.cursorColor
+    : styles.itembgcolor};"
   on:dblclick={editItem}
 >
   <h2>{itemInfo.name}</h2>

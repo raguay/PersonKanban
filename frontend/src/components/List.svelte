@@ -1,13 +1,15 @@
 <script>
-  import { createEventDispatcher, tick, onMount, beforeUpdate } from "svelte";
-  import { dndzone } from "svelte-dnd-action";
+  import { createEventDispatcher, onMount, beforeUpdate } from "svelte";
+  //  import { dndzone } from "svelte-dnd-action";  TODO: figure this out!
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
+  import { listCursor } from "../stores/listCursor.js";
 
   export let board;
   export let id;
   export let styles;
+  export let index;
 
   let items = null;
   let listData = null;
@@ -123,21 +125,6 @@
     });
   }
 
-  function handleSort(e) {
-    //
-    // TODO: Need to fix id and remove the drag and drop field.
-    //
-    listData = $Kanban.boards
-      .filter((item) => item.id === board)[0]
-      .lists.filter((item) => item.id === id)[0];
-    listData.items = e.detail.items.map((item, key) => {
-      item.id = key;
-    });
-    disbatch("listUpdate", {
-      list: listData,
-    });
-  }
-
   function saveItem(e) {
     //
     // Get the current list data.
@@ -167,7 +154,12 @@
 
 <div
   class="list"
-  style="background-color: {styles.listbgcolor}; color: {styles.listtextcolor};"
+  style="background-color: {styles.listbgcolor}; color: {styles.listtextcolor}; border-width: {$listCursor ===
+  index
+    ? styles.cursorWidth
+    : '5px'}; border-color: {$listCursor === index
+    ? styles.cursorColor
+    : styles.listbgcolor};"
 >
   {#if listData !== null}
     <div class="listheader">
@@ -185,18 +177,14 @@
         }}>+</span
       >
     </div>
-    <div
-      class="itemcontainer"
-      use:dndzone={{ items }}
-      on:consider={handleSort}
-      on:finalize={handleSort}
-    >
+    <div class="itemcontainer">
       {#if items.length !== 0}
-        {#each items as item}
+        {#each items as item, itemindex}
           {#if item !== null}
             <Item
               itemInfo={item}
               {styles}
+              index={$listCursor === index ? itemindex : -1}
               on:deleteItem={deleteItem}
               on:newItemMsg={newItemMsg}
               on:newItemApp={newItemApp}

@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import Board from "./components/Board.svelte";
   import { Kanban } from "./stores/Kanban.js";
+  import { keyHandler } from "./stores/keyHandler.js";
   import * as App from "../wailsjs/go/main/App.js";
 
   let styles = {
@@ -22,6 +23,8 @@
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
     kanbanInfo: "black",
+    cursorColor: "blue",
+    cursorWidth: "10px",
   };
 
   onMount(async () => {
@@ -242,6 +245,8 @@
     $Kanban = boards;
   }
 </script>
+
+<svelte:window on:keydown={(e) => $keyHandler(e)} />
 
 <div
   id="main"

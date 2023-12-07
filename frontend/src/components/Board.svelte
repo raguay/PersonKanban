@@ -2,7 +2,6 @@
   import { createEventDispatcher, tick } from "svelte";
   import ListContainer from "./ListContainer.svelte";
   import { Kanban } from "../stores/Kanban.js";
-
   export let styles;
 
   let currentBoard = 0;
