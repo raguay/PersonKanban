@@ -246,7 +246,11 @@
   }
 </script>
 
-<svelte:window on:keydown={(e) => $keyHandler(e)} />
+<svelte:window
+  on:keydown={(e) => {
+    if ($keyHandler !== null) $keyHandler(e);
+  }}
+/>
 
 <div
   id="main"

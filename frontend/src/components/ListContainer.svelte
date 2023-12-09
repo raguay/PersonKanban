@@ -28,20 +28,18 @@
   });
 
   function listKeyHandler(e) {
-    console.log("keyhandler: ", e);
     $ctrlKey = e.ctrlKey;
     $shiftKey = e.shiftKey;
     $metaKey = e.metaKey;
     $altKey = e.altKey;
     $key = e.key;
     if (!$skipKey) {
-      e.preventDefault();
-      processKey();
+      processKey(e);
     }
     $skipKey = false;
   }
 
-  function processKey() {
+  function processKey(e) {
     //
     // This is just normal key processing. Run the command for that key.
     //
@@ -50,6 +48,7 @@
         //
         // Move to the list to the left if any.
         //
+        e.preventDefault();
         $listCursor = $listCursor - 1;
         if ($listCursor < 0) $listCursor = 0;
         $itemCursor = 0;
@@ -59,6 +58,7 @@
         //
         // Move to the list item down one if any.
         //
+        e.preventDefault();
         $itemCursor = $itemCursor - 1;
         if ($itemCursor < 0) $itemCursor = 0;
         break;
@@ -67,6 +67,7 @@
         //
         // Move to the list item up one if any.
         //
+        e.preventDefault();
         let items = $Kanban.boards[board].lists[$listCursor].items;
         if (items.length !== 0) {
           $itemCursor = $itemCursor + 1;
@@ -78,6 +79,7 @@
         //
         // Move to the list to the right if any.
         //
+        e.preventDefault();
         $listCursor = $listCursor + 1;
         if ($listCursor >= $Kanban.boards[board].lists.length)
           $listCursor = $Kanban.boards[board].lists.length - 1;

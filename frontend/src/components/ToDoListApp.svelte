@@ -53,11 +53,7 @@
 </script>
 
 <div class="ToDoList">
-  <EditH2Field
-    name={app.name}
-    styles={app.styles}
-    on:nameChanged={nameChanged}
-  />
+  <EditH2Field name={app.name} on:nameChanged={nameChanged} />
   <input
     class="todoInput"
     type="text"
@@ -75,7 +71,7 @@
             setDone(todo);
           }}
         >
-          ⃞ {todo.description}
+          🔲 {todo.description}
         </p>
       {/if}
     {/each}
@@ -87,7 +83,7 @@
             setNotDone(todo);
           }}
         >
-          ☑ {todo.description}
+          ✅ {todo.description}
         </p>
       {/if}
     {/each}
@@ -107,9 +103,10 @@
 
   .todoInput {
     margin: 5px 0px 10px 0px;
-    width: 100%;
+    width: 364px;
     background-color: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     color: inherit;
+    padding: 5px;
   }
 </style>
