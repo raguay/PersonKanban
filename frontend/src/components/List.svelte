@@ -163,7 +163,7 @@
 >
   {#if listData !== null}
     <div class="listheader">
-      <EditH2Field name={listData.name} {styles} on:nameChanged={nameChanged} />
+      <EditH2Field name={listData.name} on:nameChanged={nameChanged} />
       <span
         class="remove"
         on:click={() => {
@@ -184,7 +184,7 @@
             <Item
               itemInfo={item}
               {styles}
-              index={$listCursor === index ? itemindex : -1}
+              index={$listCursor === index ? itemindex : -2}
               on:deleteItem={deleteItem}
               on:newItemMsg={newItemMsg}
               on:newItemApp={newItemApp}

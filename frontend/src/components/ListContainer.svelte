@@ -17,13 +17,29 @@
 
   let boardData;
   const dispatch = createEventDispatcher();
+  let acc = "";
+  let state = 0;
+  let command = null;
+  let direction = "";
 
   onMount(() => {
+    //
+    // Get the data for the right board.
+    //
     boardData = $Kanban.boards.filter((item) => item.id === board)[0];
+
+    //
+    // Setup the keyboard handler.
+    //
     $keyHandler = listKeyHandler;
+    $listCursor = 0;
+    $itemCursor = -1;
   });
 
   beforeUpdate(() => {
+    //
+    // Make sure we have the latest data.
+    //
     boardData = $Kanban.boards.filter((item) => item.id === board)[0];
   });
 
@@ -33,58 +49,261 @@
     $metaKey = e.metaKey;
     $altKey = e.altKey;
     $key = e.key;
+
+    //
+    // If skpkey is true, don't process the key.
+    //
     if (!$skipKey) {
       processKey(e);
     }
     $skipKey = false;
   }
 
+  function clearState() {
+    //
+    // Clear out the variables used in processing the keyboard commands.
+    //
+    $listCursor = $listCursor;
+    $Kanban = $Kanban;
+    state = 0;
+    command = null;
+    direction = "";
+    acc = "";
+  }
+
   function processKey(e) {
     //
     // This is just normal key processing. Run the command for that key.
     //
-    switch ($key) {
-      case "h":
+    switch (state) {
+      case 0:
         //
-        // Move to the list to the left if any.
+        // State 0 is the main entry state. Get the command and accumulator values.
         //
-        e.preventDefault();
-        $listCursor = $listCursor - 1;
-        if ($listCursor < 0) $listCursor = 0;
-        $itemCursor = 0;
-        break;
+        switch ($key) {
+          case "h":
+            e.preventDefault();
+            command = moveListCursorLeft;
+            break;
 
-      case "k":
-        //
-        // Move to the list item down one if any.
-        //
-        e.preventDefault();
-        $itemCursor = $itemCursor - 1;
-        if ($itemCursor < 0) $itemCursor = 0;
-        break;
+          case "k":
+            e.preventDefault();
+            command = moveItemCursorUp;
+            break;
 
-      case "j":
-        //
-        // Move to the list item up one if any.
-        //
-        e.preventDefault();
-        let items = $Kanban.boards[board].lists[$listCursor].items;
-        if (items.length !== 0) {
-          $itemCursor = $itemCursor + 1;
-          if ($itemCursor >= items.length) $itemCursor = items.length - 1;
+          case "j":
+            e.preventDefault();
+            command = moveItemCursorDown;
+            break;
+
+          case "l":
+            e.preventDefault();
+            command = moveListCursorRight;
+            break;
+
+          case "m":
+            e.preventDefault();
+            if ($itemCursor === -1) {
+              command = moveList;
+            } else {
+              command = moveItem;
+            }
+            //
+            // Goto the one state to capture the direction.
+            //
+            state = 1;
+            break;
+
+          case "Escape":
+            e.preventDefault();
+            $itemCursor = -1;
+            clearState();
+            break;
+
+          case "0":
+          case "1":
+          case "2":
+          case "3":
+          case "4":
+          case "5":
+          case "6":
+          case "7":
+          case "8":
+          case "9":
+            e.preventDefault();
+            acc = acc + $key;
+            break;
+
+          default:
+            acc = "";
+            state = 0;
+            command = null;
+            break;
         }
         break;
+      case 1:
+        //
+        // This case is for getting the direction for a command.
+        //
+        switch ($key) {
+          case "h":
+            e.preventDefault();
+            state = 0;
+            direction = "l";
+            break;
 
-      case "l":
-        //
-        // Move to the list to the right if any.
-        //
-        e.preventDefault();
-        $listCursor = $listCursor + 1;
-        if ($listCursor >= $Kanban.boards[board].lists.length)
-          $listCursor = $Kanban.boards[board].lists.length - 1;
-        $itemCursor = 0;
+          case "k":
+            e.preventDefault();
+            state = 0;
+            direction = "u";
+            break;
+
+          case "j":
+            e.preventDefault();
+            direction = "d";
+            state = 0;
+            break;
+
+          case "l":
+            e.preventDefault();
+            direction = "r";
+            state = 0;
+            break;
+
+          default:
+            //
+            // A valid direction wasn't given. Abort the command.
+            //
+            clearState();
+            break;
+        }
         break;
+    }
+    if (state === 0) {
+      //
+      // Do the command as many times as the acc says.
+      //
+      if (command !== null) {
+        //
+        // Get the acc amount. If blank, at least run the command once.
+        //
+        let times = 0;
+        if (acc === "") {
+          times = 1;
+        } else {
+          times = parseInt(acc);
+        }
+
+        //
+        // Execute the command the correct number of times.
+        //
+        for (var i = 0; i < times; i++) {
+          command();
+        }
+
+        //
+        // After executing the command, we need to set the states back to the beginning.
+        //
+        clearState();
+      }
+    }
+  }
+
+  //
+  // Commands for working with the lists and items.
+  //
+
+  function moveItem() {
+    let newitemindex = $itemCursor;
+    switch (direction) {
+      case "u":
+        newitemindex--;
+        break;
+
+      case "d":
+        newitemindex++;
+        break;
+    }
+    if (newitemindex < 0) newitemindex = 0;
+    if (boardData.lists[$listCursor].items.length - 1 < newitemindex)
+      newitemindex = boardData.lists[$listCursor].items.length - 1;
+    if (newitemindex !== $itemCursor) {
+      //
+      // We have a valid move.
+      //
+      let orig = structuredClone(
+        boardData.lists[$listCursor].items[$itemCursor]
+      );
+      boardData.lists[$listCursor].items[$itemCursor] = structuredClone(
+        boardData.lists[$listCursor].items[newitemindex]
+      );
+      boardData.lists[$listCursor].items[newitemindex] = structuredClone(orig);
+      $Kanban = $Kanban;
+      $itemCursor = newitemindex;
+    }
+  }
+
+  function moveList() {
+    let newlistindex = $listCursor;
+    switch (direction) {
+      case "l":
+        newlistindex--;
+        break;
+
+      case "r":
+        newlistindex++;
+        break;
+    }
+    if (newlistindex < 0) newlistindex = 0;
+    if (boardData.lists.length - 1 < newlistindex)
+      newlistindex = boardData.lists.length - 1;
+    if (newlistindex !== $listCursor) {
+      //
+      // We have a valid move.
+      //
+      let orig = structuredClone(boardData.lists[$listCursor]);
+      boardData.lists[$listCursor] = structuredClone(
+        boardData.lists[newlistindex]
+      );
+      boardData.lists[newlistindex] = structuredClone(orig);
+      $Kanban = $Kanban;
+      $listCursor = newlistindex;
+    }
+  }
+
+  function moveListCursorLeft() {
+    //
+    // Move to the list to the left if any.
+    //
+    $listCursor = $listCursor - 1;
+    if ($listCursor < 0) $listCursor = 0;
+  }
+
+  function moveListCursorRight() {
+    //
+    // Move to the list to the right if any.
+    //
+    $listCursor = $listCursor + 1;
+    if ($listCursor >= $Kanban.boards[board].lists.length)
+      $listCursor = $Kanban.boards[board].lists.length - 1;
+  }
+
+  function moveItemCursorUp() {
+    //
+    // Move to the list item down one if any.
+    //
+    $itemCursor = $itemCursor - 1;
+    if ($itemCursor < 0) $itemCursor = 0;
+  }
+
+  function moveItemCursorDown() {
+    //
+    // Move to the list item up one if any.
+    //
+    let items = $Kanban.boards[board].lists[$listCursor].items;
+    if (items.length !== 0) {
+      $itemCursor = $itemCursor + 1;
+      if ($itemCursor >= items.length) $itemCursor = items.length - 1;
     }
   }
 </script>
