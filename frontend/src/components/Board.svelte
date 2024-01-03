@@ -178,6 +178,7 @@
       on:newItemApp={newItemApp}
       on:appUpdate={appUpdate}
       on:listUpdate={listUpdate}
+      on:UpdateBoard={saveBoard}
     />
   {/if}
 </div>

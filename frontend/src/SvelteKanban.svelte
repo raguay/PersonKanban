@@ -261,7 +261,7 @@
 >
   <Board
     {styles}
-    on:saveBoad={async () => {
+    on:saveBoard={async () => {
       await SaveKanbanBoards($Kanban);
     }}
     on:addboard={() => {

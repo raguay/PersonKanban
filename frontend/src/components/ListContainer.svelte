@@ -43,6 +43,18 @@
     boardData = $Kanban.boards.filter((item) => item.id === board)[0];
   });
 
+  function saveBoardData() {
+    $Kanban.boards = $Kanban.boards.map((item) => {
+      console.log(item);
+      if (item.id === board) {
+        return boardData;
+      } else {
+        return item;
+      }
+    });
+    dispatch("UpdateBoard", board);
+  }
+
   function listKeyHandler(e) {
     $ctrlKey = e.ctrlKey;
     $shiftKey = e.shiftKey;
@@ -238,9 +250,41 @@
         boardData.lists[$listCursor].items[newitemindex]
       );
       boardData.lists[$listCursor].items[newitemindex] = structuredClone(orig);
-      $Kanban = $Kanban;
       $itemCursor = newitemindex;
+    } else {
+      //
+      // It was a move to a different list.
+      //
+      let newlistindex = $listCursor;
+      switch (direction) {
+        case "l":
+          newlistindex--;
+          break;
+
+        case "r":
+          newlistindex++;
+          break;
+      }
+      if (newlistindex < 0) newlistindex = 0;
+      if (boardData.lists.length - 1 < newlistindex)
+        newlistindex = boardData.lists.length - 1;
+      if (newlistindex !== $listCursor) {
+        //
+        // Move to the new list index.
+        //
+        let item = structuredClone(
+          boardData.lists[$listCursor].items[$itemCursor]
+        );
+        boardData.lists[$listCursor].items.splice($itemCursor, 1);
+        boardData.lists[newlistindex].items = [
+          item,
+          ...boardData.lists[newlistindex].items,
+        ];
+        $listCursor = newlistindex;
+        $itemCursor = 0;
+      }
     }
+    saveBoardData();
   }
 
   function moveList() {
@@ -266,9 +310,9 @@
         boardData.lists[newlistindex]
       );
       boardData.lists[newlistindex] = structuredClone(orig);
-      $Kanban = $Kanban;
       $listCursor = newlistindex;
     }
+    saveBoardData();
   }
 
   function moveListCursorLeft() {
