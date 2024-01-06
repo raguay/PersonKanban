@@ -2,16 +2,16 @@
   import { createEventDispatcher, tick } from "svelte";
   import ListContainer from "./ListContainer.svelte";
   import { Kanban } from "../stores/Kanban.js";
+  import { boardCursor } from "../stores/boardCursor.js";
   export let styles;
 
-  let currentBoard = 0;
   let editNameFlag = false;
   let editField;
 
   const dispatch = createEventDispatcher();
 
   function setBoard(ind) {
-    currentBoard = ind;
+    $boardCursor = ind;
   }
 
   function addBoard() {
@@ -26,19 +26,19 @@
 
   function saveBoard() {
     dispatch("saveBoard", {
-      board: currentBoard,
+      board: $boardCursor,
     });
   }
 
   function addList(e) {
     dispatch("addlist", {
-      board: currentBoard,
+      board: $boardCursor,
     });
   }
 
   function deleteList(e) {
     dispatch("deleteList", {
-      board: currentBoard,
+      board: $boardCursor,
       list: e.detail.list,
     });
   }
@@ -46,7 +46,7 @@
   function addItem(e) {
     dispatch("additem", {
       list: e.detail.list,
-      board: currentBoard,
+      board: $boardCursor,
     });
   }
 
@@ -54,7 +54,7 @@
     dispatch("deleteItem", {
       item: e.detail.item,
       list: e.detail.list,
-      board: currentBoard,
+      board: $boardCursor,
     });
   }
 
@@ -62,7 +62,7 @@
     dispatch("newItemMsg", {
       item: e.detail.item,
       list: e.detail.list,
-      board: currentBoard,
+      board: $boardCursor,
       msg: e.detail.msg,
     });
   }
@@ -71,7 +71,7 @@
     dispatch("newItemApp", {
       item: e.detail.item,
       list: e.detail.list,
-      board: currentBoard,
+      board: $boardCursor,
       app: e.detail.app,
     });
   }
@@ -80,7 +80,7 @@
     dispatch("appUpdate", {
       item: e.detail.item,
       list: e.detail.list,
-      board: currentBoard,
+      board: $boardCursor,
       app: e.detail.app,
     });
   }
@@ -88,7 +88,7 @@
   function listUpdate(e) {
     dispatch("listUpdate", {
       list: e.detail.list,
-      board: currentBoard,
+      board: $boardCursor,
     });
   }
 </script>
@@ -97,7 +97,7 @@
   <div id="tabs">
     {#if $Kanban.boards.length > 0}
       {#each $Kanban.boards as board, index}
-        {#if currentBoard === board.id}
+        {#if $boardCursor === index}
           <div
             class="tab"
             style="background-color: {styles.selectTabColor}; color: {styles.selectTabTextColor}"
@@ -168,7 +168,7 @@
   </div>
   {#if $Kanban.boards.length > 0}
     <ListContainer
-      board={currentBoard}
+      board={$Kanban.boards[$boardCursor].id}
       {styles}
       on:addlist={addList}
       on:deleteList={deleteList}

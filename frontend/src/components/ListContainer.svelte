@@ -11,6 +11,7 @@
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
   import { keyHandler } from "../stores/keyHandler.js";
+  import { boardCursor } from "../stores/boardCursor.js";
 
   export let board;
   export let styles;
@@ -44,14 +45,20 @@
   });
 
   function saveBoardData() {
+    //
+    // Get the right board and save the boardData to it.
+    //
     $Kanban.boards = $Kanban.boards.map((item) => {
-      console.log(item);
       if (item.id === board) {
         return boardData;
       } else {
         return item;
       }
     });
+
+    //
+    // Tell the main program to save the data.
+    //
     dispatch("UpdateBoard", board);
   }
 
@@ -95,7 +102,11 @@
         switch ($key) {
           case "h":
             e.preventDefault();
-            command = moveListCursorLeft;
+            if ($listCursor === -1) {
+              command = moveBoardCursorLeft;
+            } else {
+              command = moveListCursorLeft;
+            }
             break;
 
           case "k":
@@ -110,12 +121,23 @@
 
           case "l":
             e.preventDefault();
-            command = moveListCursorRight;
+            if ($listCursor === -1) {
+              command = moveBoardCursorRight;
+            } else {
+              command = moveListCursorRight;
+            }
+            break;
+
+          case "b":
+            e.preventDefault();
+            command = gotoBoard;
             break;
 
           case "m":
             e.preventDefault();
-            if ($itemCursor === -1) {
+            if ($listCursor === -1) {
+              command = moveBoard;
+            } else if ($itemCursor === -1) {
               command = moveList;
             } else {
               command = moveItem;
@@ -129,6 +151,7 @@
           case "Escape":
             e.preventDefault();
             $itemCursor = -1;
+            $listCursor = -1;
             clearState();
             break;
 
@@ -193,18 +216,13 @@
     }
     if (state === 0) {
       //
-      // Do the command as many times as the acc says.
+      // If a command is set, do the command as many times as the acc says.
       //
       if (command !== null) {
         //
         // Get the acc amount. If blank, at least run the command once.
         //
-        let times = 0;
-        if (acc === "") {
-          times = 1;
-        } else {
-          times = parseInt(acc);
-        }
+        let times = getAcc();
 
         //
         // Execute the command the correct number of times.
@@ -222,12 +240,85 @@
   }
 
   //
-  // Commands for working with the lists and items.
+  // Commands for working with the boards, lists, and items.
   //
 
+  function getAcc() {
+    let times = 0;
+    if (acc === "") {
+      times = 1;
+    } else {
+      times = parseInt(acc);
+    }
+    return times;
+  }
+
+  function moveBoardCursorLeft() {
+    let newcursor = $boardCursor - 1;
+    if (newcursor < 0) newcursor = 0;
+    if (newcursor != $boardCursor) {
+      $boardCursor = newcursor;
+    }
+  }
+
+  function moveBoardCursorRight() {
+    let newcursor = $boardCursor + 1;
+    if (newcursor >= $Kanban.boards.length)
+      newcursor = $Kanban.boards.length - 1;
+    if (newcursor != $boardCursor) {
+      $boardCursor = newcursor;
+    }
+  }
+
+  function gotoBoardCommand(brd) {
+    if (brd < 0) brd = 0;
+    if (brd >= $Kanban.boards.length) brd = $Kanban.boards.length - 1;
+    $boardCursor = brd;
+  }
+
+  function gotoBoard() {
+    gotoBoardCommand(getAcc() - 1);
+  }
+
+  function moveBoard() {
+    moveBoardCommand(direction);
+  }
+
+  function moveBoardCommand(dir) {
+    let newboardindex = $boardCursor;
+    switch (dir) {
+      case "l":
+        newboardindex--;
+        break;
+
+      case "r":
+        newboardindex++;
+        break;
+    }
+    if (newboardindex < 0) newboardindex = 0;
+    if (newboardindex >= $Kanban.boards.length)
+      newboardindex = $Kanban.boards.length - 1;
+    if (newboardindex !== $boardCursor) {
+      //
+      // It's a valid move. Move it.
+      //
+      let orig = structuredClone($Kanban.boards[$boardCursor]);
+      $Kanban.boards[$boardCursor] = structuredClone(
+        $Kanban.boards[newboardindex]
+      );
+      $Kanban.boards[newboardindex] = structuredClone(orig);
+      $boardCursor = newboardindex;
+      saveBoardData();
+    }
+  }
+
   function moveItem() {
+    moveItemCommand(direction);
+  }
+
+  function moveItemCommand(dir) {
     let newitemindex = $itemCursor;
-    switch (direction) {
+    switch (dir) {
       case "u":
         newitemindex--;
         break;
@@ -256,7 +347,7 @@
       // It was a move to a different list.
       //
       let newlistindex = $listCursor;
-      switch (direction) {
+      switch (dir) {
         case "l":
           newlistindex--;
           break;
@@ -288,8 +379,12 @@
   }
 
   function moveList() {
+    moveListCommand(direction);
+  }
+
+  function moveListCommand(dir) {
     let newlistindex = $listCursor;
-    switch (direction) {
+    switch (dir) {
       case "l":
         newlistindex--;
         break;
@@ -328,14 +423,15 @@
     // Move to the list to the right if any.
     //
     $listCursor = $listCursor + 1;
-    if ($listCursor >= $Kanban.boards[board].lists.length)
-      $listCursor = $Kanban.boards[board].lists.length - 1;
+    if ($listCursor >= boardData.lists.length)
+      $listCursor = boardData.lists.length - 1;
   }
 
   function moveItemCursorUp() {
     //
     // Move to the list item down one if any.
     //
+    if ($listCursor === -1) $listCursor = 0;
     $itemCursor = $itemCursor - 1;
     if ($itemCursor < 0) $itemCursor = 0;
   }
@@ -344,7 +440,8 @@
     //
     // Move to the list item up one if any.
     //
-    let items = $Kanban.boards[board].lists[$listCursor].items;
+    if ($listCursor === -1) $listCursor = 0;
+    let items = boardData.lists[$listCursor].items;
     if (items.length !== 0) {
       $itemCursor = $itemCursor + 1;
       if ($itemCursor >= items.length) $itemCursor = items.length - 1;
