@@ -26,6 +26,7 @@
 
     return () => {
       $keyHandler = oldKeyHandler;
+      disbatch("editOff", {});
     };
   });
 

@@ -5,11 +5,13 @@
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { listCursor } from "../stores/listCursor.js";
+  import { itemCursor } from "../stores/itemCursor.js";
 
   export let board;
   export let id;
   export let styles;
   export let index;
+  export let edit;
 
   let items = null;
   let listData = null;
@@ -184,12 +186,18 @@
             <Item
               itemInfo={item}
               {styles}
+              editItem={$listCursor === index && $itemCursor === itemindex
+                ? edit
+                : false}
               index={$listCursor === index ? itemindex : -2}
               on:deleteItem={deleteItem}
               on:newItemMsg={newItemMsg}
               on:newItemApp={newItemApp}
               on:appUpdate={appUpdate}
               on:saveItem={saveItem}
+              on:editOff={() => {
+                disbatch("editOff", {});
+              }}
             />
           {/if}
         {/each}

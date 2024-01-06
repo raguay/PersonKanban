@@ -6,13 +6,12 @@
   export let styles;
   export let itemInfo;
   export let index;
-
-  let edit = false;
+  export let editItem = false;
 
   const disbatch = createEventDispatcher();
 
-  function editItem() {
-    edit = true;
+  function editItemCommand() {
+    editItem = true;
   }
 
   function deleteItem() {
@@ -23,7 +22,7 @@
 
   function saveItem(e) {
     if (e.detail.exit) {
-      edit = false;
+      editItem = false;
     }
     disbatch("saveItem", {
       item: itemInfo,
@@ -51,11 +50,11 @@
     : '5px'}; border-color: {$itemCursor === index
     ? styles.cursorColor
     : styles.itembgcolor};"
-  on:dblclick={editItem}
+  on:dblclick={editItemCommand}
 >
   <h2>{itemInfo.name}</h2>
   <p>{itemInfo.description}</p>
-  {#if edit}
+  {#if editItem}
     <ItemEdit
       {itemInfo}
       {styles}
@@ -64,6 +63,9 @@
       on:newItemApp={newItemApp}
       on:appUpdate={appUpdate}
       on:saveItem={saveItem}
+      on:editOff={() => {
+        disbatch("editOff", {});
+      }}
     />
   {/if}
 </div>

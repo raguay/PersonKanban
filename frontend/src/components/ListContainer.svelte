@@ -22,6 +22,7 @@
   let state = 0;
   let command = null;
   let direction = "";
+  let editItem = false;
 
   onMount(() => {
     //
@@ -94,6 +95,7 @@
     //
     // This is just normal key processing. Run the command for that key.
     //
+    e.preventDefault();
     switch (state) {
       case 0:
         //
@@ -101,7 +103,6 @@
         //
         switch ($key) {
           case "h":
-            e.preventDefault();
             if ($listCursor === -1) {
               command = moveBoardCursorLeft;
             } else {
@@ -110,17 +111,14 @@
             break;
 
           case "k":
-            e.preventDefault();
             command = moveItemCursorUp;
             break;
 
           case "j":
-            e.preventDefault();
             command = moveItemCursorDown;
             break;
 
           case "l":
-            e.preventDefault();
             if ($listCursor === -1) {
               command = moveBoardCursorRight;
             } else {
@@ -129,12 +127,10 @@
             break;
 
           case "b":
-            e.preventDefault();
             command = gotoBoard;
             break;
 
           case "m":
-            e.preventDefault();
             if ($listCursor === -1) {
               command = moveBoard;
             } else if ($itemCursor === -1) {
@@ -148,8 +144,13 @@
             state = 1;
             break;
 
+          case "Enter":
+            if ($listCursor !== -1 && $itemCursor !== -1) {
+              command = openItem;
+            }
+            break;
+
           case "Escape":
-            e.preventDefault();
             $itemCursor = -1;
             $listCursor = -1;
             clearState();
@@ -165,7 +166,6 @@
           case "7":
           case "8":
           case "9":
-            e.preventDefault();
             acc = acc + $key;
             break;
 
@@ -182,25 +182,21 @@
         //
         switch ($key) {
           case "h":
-            e.preventDefault();
             state = 0;
             direction = "l";
             break;
 
           case "k":
-            e.preventDefault();
             state = 0;
             direction = "u";
             break;
 
           case "j":
-            e.preventDefault();
             direction = "d";
             state = 0;
             break;
 
           case "l":
-            e.preventDefault();
             direction = "r";
             state = 0;
             break;
@@ -251,6 +247,10 @@
       times = parseInt(acc);
     }
     return times;
+  }
+
+  function openItem() {
+    editItem = true;
   }
 
   function moveBoardCursorLeft() {
@@ -456,6 +456,7 @@
         {styles}
         {board}
         {index}
+        edit={$listCursor === index ? editItem : false}
         id={item.id}
         on:deleteList={(e) => {
           dispatch("deleteList", e.detail);
@@ -477,6 +478,9 @@
         }}
         on:listUpdate={(e) => {
           dispatch("listUpdate", e.detail);
+        }}
+        on:editOff={() => {
+          editItem = false;
         }}
       />
     {/each}
