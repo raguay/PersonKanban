@@ -102,6 +102,34 @@
         // State 0 is the main entry state. Get the command and accumulator values.
         //
         switch ($key) {
+          case "a":
+            let thisboard = $Kanban.boards[$boardCursor];
+            if ($listCursor === -1) {
+              if (
+                typeof thisboard.lists !== "undefined" ||
+                thisboard.lists.length !== 0
+              ) {
+                command = addNewBoard;
+              } else {
+                command = addNewList;
+              }
+            } else if ($itemCursor === -1) {
+              command = addNewList;
+            } else {
+              command = addNewItem;
+            }
+            break;
+
+          case "x":
+            if ($listCursor === -1) {
+              command = deleteCurrentBoard;
+            } else if ($itemCursor === -1) {
+              command = deleteCurrentList;
+            } else {
+              command = deleteCurrentItem;
+            }
+            break;
+
           case "h":
             if ($listCursor === -1) {
               command = moveBoardCursorLeft;
@@ -238,6 +266,45 @@
   //
   // Commands for working with the boards, lists, and items.
   //
+
+  function deleteCurrentBoard() {
+    console.log("Delete Current Board");
+    dispatch("deleteboard", {
+      board: $Kanban.boards[$boardCursor].id,
+    });
+  }
+
+  function deleteCurrentList() {
+    dispatch("deleteList", {
+      board: $Kanban.boards[$boardCursor].id,
+      list: $Kanban.boards[$boardCursor].lists[$listCursor].id,
+    });
+  }
+
+  function deleteCurrentItem() {
+    dispatch("deleteItem", {
+      board: $Kanban.boards[$boardCursor].id,
+      list: $Kanban.boards[$boardCursor].lists[$listCursor].id,
+      item: $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
+    });
+  }
+
+  function addNewBoard() {
+    dispatch("addboard", {});
+  }
+
+  function addNewList() {
+    dispatch("addlist", {
+      board: board,
+    });
+  }
+
+  function addNewItem() {
+    let id = $Kanban.boards[$boardCursor].lists[$listCursor].id;
+    dispatch("additem", {
+      list: id,
+    });
+  }
 
   function getAcc() {
     let times = 0;
@@ -429,7 +496,7 @@
 
   function moveItemCursorUp() {
     //
-    // Move to the list item down one if any.
+    // Move to the list item up one if any.
     //
     if ($listCursor === -1) $listCursor = 0;
     $itemCursor = $itemCursor - 1;
@@ -438,13 +505,19 @@
 
   function moveItemCursorDown() {
     //
-    // Move to the list item up one if any.
+    // Move to the list item down one if any.
     //
-    if ($listCursor === -1) $listCursor = 0;
-    let items = boardData.lists[$listCursor].items;
-    if (items.length !== 0) {
-      $itemCursor = $itemCursor + 1;
-      if ($itemCursor >= items.length) $itemCursor = items.length - 1;
+    if ($listCursor === -1) {
+      $listCursor = 0;
+    } else {
+      let list = boardData.lists[$listCursor];
+      if (typeof list.items === "undefined" || list.items.length === 0) {
+        $itemCursor = 0;
+      } else {
+        $itemCursor = $itemCursor + 1;
+        if ($itemCursor >= list.items.length)
+          $itemCursor = list.items.length - 1;
+      }
     }
   }
 </script>

@@ -3,6 +3,7 @@
   import ListContainer from "./ListContainer.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { boardCursor } from "../stores/boardCursor.js";
+
   export let styles;
 
   let editNameFlag = false;
@@ -26,19 +27,19 @@
 
   function saveBoard() {
     dispatch("saveBoard", {
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
     });
   }
 
   function addList(e) {
     dispatch("addlist", {
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
     });
   }
 
   function deleteList(e) {
     dispatch("deleteList", {
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
       list: e.detail.list,
     });
   }
@@ -46,7 +47,7 @@
   function addItem(e) {
     dispatch("additem", {
       list: e.detail.list,
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
     });
   }
 
@@ -54,7 +55,7 @@
     dispatch("deleteItem", {
       item: e.detail.item,
       list: e.detail.list,
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
     });
   }
 
@@ -62,7 +63,7 @@
     dispatch("newItemMsg", {
       item: e.detail.item,
       list: e.detail.list,
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
       msg: e.detail.msg,
     });
   }
@@ -71,7 +72,7 @@
     dispatch("newItemApp", {
       item: e.detail.item,
       list: e.detail.list,
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
       app: e.detail.app,
     });
   }
@@ -80,7 +81,7 @@
     dispatch("appUpdate", {
       item: e.detail.item,
       list: e.detail.list,
-      board: $boardCursor,
+      board: $Kanban.boards[$boardCursor].id,
       app: e.detail.app,
     });
   }
@@ -89,6 +90,13 @@
     dispatch("listUpdate", {
       list: e.detail.list,
       board: $boardCursor,
+    });
+  }
+
+  function deleteBoard(e) {
+    console.log("deleteBoard - Board");
+    dispatch("deleteboard", {
+      board: $Kanban.boards[$boardCursor].id,
     });
   }
 </script>
@@ -179,6 +187,8 @@
       on:appUpdate={appUpdate}
       on:listUpdate={listUpdate}
       on:UpdateBoard={saveBoard}
+      on:addboard={addBoard}
+      on:deleteboard={deleteBoard}
     />
   {/if}
 </div>

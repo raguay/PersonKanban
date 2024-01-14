@@ -113,9 +113,6 @@
   <div
     class="editDialog"
     style="background-color: {styles.dialogBGColor}; color: {styles.dialogTextColor};"
-    on:save={() => {
-      saveItem(false);
-    }}
   >
     <EditH2Field name={itemInfo.name} on:nameChanged={nameChanged} />
     <EditPField

@@ -1,8 +1,11 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import Board from "./components/Board.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { keyHandler } from "./stores/keyHandler.js";
+  import { boardCursor } from "./stores/boardCursor.js";
+  //import { listCursor } from "./stores/listCursor.js";
+  //import { itemCursor } from "./stores/itemCursor.js";
   import * as App from "../wailsjs/go/main/App.js";
 
   let styles = {
@@ -110,6 +113,23 @@
     await SaveKanbanBoards($Kanban);
   }
 
+  async function deleteBoard(e) {
+    await tick();
+    console.log(
+      "Board ",
+      e.detail,
+      " Cursor ",
+      $Kanban.boards[$boardCursor].id
+    );
+    $boardCursor = $boardCursor - 1;
+    if ($boardCursor < 0) $boardCursor = 0;
+    $Kanban.boards = $Kanban.boards.filter(
+      (board) => board.id !== e.detail.board
+    );
+    console.log($Kanban.boards, $boardCursor);
+    await SaveKanbanBoards($Kanban);
+  }
+
   async function deleteList(e) {
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
@@ -120,11 +140,14 @@
   }
 
   async function deleteItem(e) {
+    console.log("DeleteItem: ", e.detail);
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
         board.lists.map((list) => {
           if (list.id === e.detail.list) {
-            list.items = list.items.filter((item) => e.detail.item !== item.id);
+            list.items = list.items.filter(
+              (item) => e.detail.item.id !== item.id
+            );
           }
         });
       }
@@ -281,6 +304,7 @@
     on:newItemApp={newItemApp}
     on:appUpdate={appUpdate}
     on:listUpdate={listUpdate}
+    on:deleteboard={deleteBoard}
   />
 </div>
 
