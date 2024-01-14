@@ -268,7 +268,6 @@
   //
 
   function deleteCurrentBoard() {
-    console.log("Delete Current Board");
     dispatch("deleteboard", {
       board: $Kanban.boards[$boardCursor].id,
     });

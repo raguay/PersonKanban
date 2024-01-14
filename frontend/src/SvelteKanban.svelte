@@ -115,18 +115,11 @@
 
   async function deleteBoard(e) {
     await tick();
-    console.log(
-      "Board ",
-      e.detail,
-      " Cursor ",
-      $Kanban.boards[$boardCursor].id
-    );
     $boardCursor = $boardCursor - 1;
     if ($boardCursor < 0) $boardCursor = 0;
     $Kanban.boards = $Kanban.boards.filter(
       (board) => board.id !== e.detail.board
     );
-    console.log($Kanban.boards, $boardCursor);
     await SaveKanbanBoards($Kanban);
   }
 
@@ -140,7 +133,6 @@
   }
 
   async function deleteItem(e) {
-    console.log("DeleteItem: ", e.detail);
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
         board.lists.map((list) => {
