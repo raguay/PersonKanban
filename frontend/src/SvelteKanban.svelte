@@ -114,6 +114,9 @@
   }
 
   async function deleteBoard(e) {
+    //
+    // Wait for settling of the user interface.
+    //
     await tick();
     $boardCursor = $boardCursor - 1;
     if ($boardCursor < 0) $boardCursor = 0;
@@ -124,6 +127,10 @@
   }
 
   async function deleteList(e) {
+    //
+    // Wait for settling of the user interface.
+    //
+    await tick();
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
         board.lists = board.lists.filter((list) => e.detail.list !== list.id);
@@ -133,6 +140,10 @@
   }
 
   async function deleteItem(e) {
+    //
+    // Wait for settling of the user interface.
+    //
+    await tick();
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
         board.lists.map((list) => {

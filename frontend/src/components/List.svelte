@@ -1,5 +1,10 @@
 <script>
-  import { createEventDispatcher, onMount, beforeUpdate } from "svelte";
+  import {
+    createEventDispatcher,
+    onMount,
+    beforeUpdate,
+    afterUpdate,
+  } from "svelte";
   //  import { dndzone } from "svelte-dnd-action";  TODO: figure this out!
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
@@ -15,6 +20,7 @@
 
   let items = null;
   let listData = null;
+  let listDiv = null;
 
   const disbatch = createEventDispatcher();
 
@@ -24,6 +30,43 @@
 
   beforeUpdate(() => {
     SetItems();
+  });
+
+  afterUpdate(() => {
+    //
+    // Make sure the cursor is fully visible by scrolling.
+    //
+    if (
+      $listCursor === index &&
+      typeof listDiv !== "undefined" &&
+      listDiv !== null
+    ) {
+      //
+      // There is a list selected. Make sure it's in view.
+      //
+      const elRight = listDiv.offsetLeft + listDiv.offsetWidth;
+      const elLeft = listDiv.offsetLeft;
+
+      const elParentRight =
+        listDiv.parentNode.offsetLeft + listDiv.parentNode.offsetWidth;
+      const elParentLeft = listDiv.parentNode.offsetLeft;
+
+      // check if right side of the element is not in view
+      if (elRight > elParentRight + listDiv.parentNode.scrollLeft) {
+        listDiv.parentNode.scrollLeft = elRight - elParentRight;
+        if (listDiv.nextElementSibling !== null) {
+          //
+          // This is the last list. Make sure the new list button is shown.
+          //
+          listDiv.parentNode.scrollLeft = elRight - elParentRight + 205;
+        }
+      }
+
+      // check if left side of the element is not in view
+      else if (elLeft < elParentLeft + listDiv.parentNode.scrollLeft) {
+        listDiv.parentNode.scrollLeft = elLeft - elParentLeft;
+      }
+    }
   });
 
   function SetItems() {
@@ -162,6 +205,7 @@
     : '5px'}; border-color: {$listCursor === index
     ? styles.cursorColor
     : styles.listbgcolor};"
+  bind:this={listDiv}
 >
   {#if listData !== null}
     <div class="listheader">
