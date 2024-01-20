@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { afterUpdate, createEventDispatcher } from "svelte";
   import ItemEdit from "./ItemEdit.svelte";
   import { itemCursor } from "../stores/itemCursor.js";
 
@@ -9,6 +9,27 @@
   export let editItem = false;
 
   const disbatch = createEventDispatcher();
+  let itemDiv = null;
+
+  afterUpdate(() => {
+    //
+    // Make sure the cursor is fully visible by scrolling.
+    //
+    if (
+      $itemCursor === index &&
+      typeof itemDiv !== "undefined" &&
+      itemDiv !== null
+    ) {
+      //
+      // There is a selected. Make sure it's in view.
+      //
+      itemDiv.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+    }
+  });
 
   function editItemCommand() {
     editItem = true;
@@ -51,6 +72,7 @@
     ? styles.cursorColor
     : styles.itembgcolor};"
   on:dblclick={editItemCommand}
+  bind:this={itemDiv}
 >
   <h2>{itemInfo.name}</h2>
   <p>{itemInfo.description}</p>
