@@ -4,19 +4,32 @@
   import EditPField from "./EditPField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
+  import { ctrlKey } from "../stores/ctrlKey.js";
+  import { shiftKey } from "../stores/shiftKey.js";
+  import { metaKey } from "../stores/metaKey.js";
+  import { altKey } from "../stores/altKey.js";
+  import { key } from "../stores/key.js";
 
   export let styles;
   export let itemInfo;
 
   let newMsg = "";
-  let oldKeyHandler = null;
   let applications;
+  let origKeyboardHandler = null;
+  let handlekey = true;
+  let state = 0;
+  let acc = "";
+  let direction = "";
+  let command = null;
 
   const disbatch = createEventDispatcher();
 
   onMount(() => {
-    oldKeyHandler = $keyHandler;
-    $keyHandler = null;
+    //
+    // Save the original handler and install our new one.
+    //
+    origKeyboardHandler = $keyHandler;
+    $keyHandler = KeyboardHandler;
 
     //
     // Load applications.
@@ -24,11 +37,159 @@
     applications = [];
     applications["todo"] = ToDoListApp;
 
+    //
+    // Make sure the keyboard controler state is neutral.
+    //
+    clearState();
+
     return () => {
-      $keyHandler = oldKeyHandler;
+      //
+      // Put in the original handler.
+      //
+      $keyHandler = origKeyboardHandler;
       disbatch("editOff", {});
     };
   });
+
+  function KeyboardHandler(e) {
+    $ctrlKey = e.ctrlKey;
+    $shiftKey = e.shiftKey;
+    $metaKey = e.metaKey;
+    $altKey = e.altKey;
+    $key = e.key;
+
+    //
+    // Handle the keyboard if not in an input.
+    //
+    if (handlekey) {
+      //
+      // Take over the keyboard!
+      //
+      e.preventDefault();
+      switch (state) {
+        case 0:
+          //
+          // State 0 is the main entry state. Get the command and accumulator values.
+          //
+          switch ($key) {
+            case "a":
+              break;
+
+            case "x":
+              break;
+
+            case "h":
+              break;
+
+            case "k":
+              break;
+
+            case "j":
+              break;
+
+            case "l":
+              break;
+
+            case "b":
+              break;
+
+            case "m":
+              break;
+
+            case "Enter":
+              break;
+
+            case "Escape":
+              clearState();
+              break;
+
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+              acc = acc + $key;
+              break;
+
+            default:
+              clearState();
+              break;
+          }
+          break;
+        case 1:
+          //
+          // This case is for getting the direction for a command.
+          //
+          switch ($key) {
+            case "h":
+              state = 0;
+              direction = "l";
+              break;
+
+            case "k":
+              state = 0;
+              direction = "u";
+              break;
+
+            case "j":
+              direction = "d";
+              state = 0;
+              break;
+
+            case "l":
+              direction = "r";
+              state = 0;
+              break;
+
+            default:
+              //
+              // A valid direction wasn't given. Abort the command.
+              //
+              clearState();
+              break;
+          }
+          break;
+      }
+      if (state === 0) {
+        //
+        // If a command is set, do the command as many times as the acc says.
+        //
+        if (command !== null) {
+          //
+          // Get the acc amount. If blank, at least run the command once.
+          //
+          let times = getAcc();
+
+          //
+          // Execute the command the correct number of times.
+          //
+          for (var i = 0; i < times; i++) {
+            command();
+          }
+
+          //
+          // After executing the command, we need to set the states back to the beginning.
+          //
+          clearState();
+        }
+      }
+    }
+  }
+
+  function clearState() {
+    //
+    // Clear out the variables used in processing the keyboard commands.
+    //
+    state = 0;
+    command = null;
+    direction = "";
+    acc = "";
+  }
 
   function deleteItem() {
     disbatch("deleteItem", {
