@@ -31,5 +31,24 @@ The following are the keyboard assignments and what they do for each mode:
 |   k   |                        Nothing                         |                        Nothing                         |                          Move the current item up the list                           |
 |   h   |           Move to the next board to the left           |           Move to the next list to the left            | Move to the next list to the left with the item at the same count level highlighted  |
 |   l   |          Move to the next board to the right           |           Move to the next list to the right           | Move to the next list to the right with the item at the same count level highlighted |
+|   b   |  Go to the board number pressed before the b key. | Go to the board number pressed before the b key. | Go to the board number pressed before the b key. |
 |  Esc  | Clear all highlights and just have the board selected. | Clear all highlights and just have the board selected. |                Clear all highlights and just have the board selected.                |
 | Enter |                        Nothing                         |                        Nothing                         |                 Opens the List Item that is highlighted for editing.                 |
+
+If a number key is pressed before a hot key is pressed, it is stored in the accumulator. When a hot key is pressed, then that action is performed the number of times that the accumulator has stored. For example, if you press '2l', you will move to the 2nd list to the right of the cursor or if no cursors are shown, then to the second board to the right of the current board. Be careful when using this combined with the 'x' or delete key! Pressing '99x' with just the list cursor highlighted will delete all your lists in the current board!
+
+# Planned features
+The following is a list of the features I plan to add in no particular order. If you have a feature you would like to see, just let me know and I'll add it to the list.
+
+## Features to add:
+
+- Meta grouping of boards and moving between them.
+- Copying and pasting board or list setups to a new board or list.
+- The ability to load themes from a GitHub repository and changing or creating themes.
+- Add drag and drop with the mouse.
+- Add keyboard hotkeys for editing an item. Currently you have to use the mouse and double click on things to add them.
+- Add more apps for items. Currently there is only a todo list app.
+- Command bar to see commands and actioning them.
+- The ability for the user to add new commands. Downloading commands from GitHub as well.
+
+
