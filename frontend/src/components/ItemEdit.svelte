@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, tick } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import EditPField from "./EditPField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
@@ -16,11 +16,13 @@
   let newMsg = "";
   let applications;
   let origKeyboardHandler = null;
+  let inputKeyboardStore = null;
   let handlekey = true;
   let state = 0;
   let acc = "";
   let direction = "";
   let command = null;
+  let msgInputDiv = null;
 
   const disbatch = createEventDispatcher();
 
@@ -42,14 +44,24 @@
     //
     clearState();
 
-    return () => {
-      //
-      // Put in the original handler.
-      //
-      $keyHandler = origKeyboardHandler;
-      disbatch("editOff", {});
-    };
+    return () => {};
   });
+
+  function closeItemEdit() {
+    //
+    // Put in the original handler.
+    //
+    if (inputKeyboardStore !== null) {
+      $keyHandler = inputKeyboardStore;
+      inputKeyboardStore = null;
+    }
+    if (origKeyboardHandler !== null) {
+      $keyHandler = origKeyboardHandler;
+      origKeyboardHandler = null;
+    }
+    console.log($keyHandler);
+    disbatch("editOff", {});
+  }
 
   function KeyboardHandler(e) {
     $ctrlKey = e.ctrlKey;
@@ -72,35 +84,16 @@
           // State 0 is the main entry state. Get the command and accumulator values.
           //
           switch ($key) {
-            case "a":
-              break;
-
-            case "x":
-              break;
-
-            case "h":
-              break;
-
-            case "k":
-              break;
-
-            case "j":
-              break;
-
-            case "l":
-              break;
-
-            case "b":
-              break;
-
-            case "m":
+            case "s":
+              command = closeItemEdit;
               break;
 
             case "Enter":
+              command = closeItemEdit;
               break;
 
             case "Escape":
-              clearState();
+              command = closeItemEdit;
               break;
 
             case "0":
@@ -178,7 +171,22 @@
           clearState();
         }
       }
+    } else {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        closeItemEdit();
+      }
     }
+  }
+
+  function getAcc() {
+    let times = 0;
+    if (acc === "") {
+      times = 1;
+    } else {
+      times = parseInt(acc);
+    }
+    return times;
   }
 
   function clearState() {
@@ -292,9 +300,25 @@
       <input
         class="newMsg"
         type="text"
+        bind:this={msgInputDiv}
         bind:value={newMsg}
         on:keydown={(e) => {
-          if (e.code === "Enter") createNewTextMsg();
+          if (e.key === "Enter") {
+            e.preventDefault();
+            createNewTextMsg();
+          }
+        }}
+        on:focus={() => {
+          if (inputKeyboardStore === null && $keyHandler !== null) {
+            inputKeyboardStore = $keyHandler;
+            $keyHandler = null;
+          }
+        }}
+        on:focusout={() => {
+          if (inputKeyboardStore !== null && $keyHandler === null) {
+            $keyHandler = inputKeyboardStore;
+            inputKeyboardStore = null;
+          }
         }}
       />
       <div class="appButtons">

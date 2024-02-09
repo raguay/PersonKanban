@@ -68,9 +68,6 @@
 
   .editH2Field {
     cursor: pointer;
-  }
-
-  .editH2Field {
     margin: 5px 0px 10px 0px;
   }
 </style>

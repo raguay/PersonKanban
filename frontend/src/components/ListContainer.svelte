@@ -13,6 +13,7 @@
   import { itemCursor } from "../stores/itemCursor.js";
   import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
+  import { commandBar } from "../stores/commandBar.js";
 
   export let board;
   export let styles;
@@ -37,6 +38,90 @@
     $keyHandler = listKeyHandler;
     $listCursor = 0;
     $itemCursor = -1;
+
+    //
+    // Add commandBar commands to the commandBar.
+    //
+    $commandBar.addCommand(
+      "Delete Current Board",
+      deleteCurrentBoard,
+      "<h3>Delecte Current board</h3><p>This command will delete the current board.</p>",
+      "html",
+    );
+    $commandBar.addCommand(
+      "Delete Current List",
+      deleteCurrentList,
+      "### Delete Current List \n\nThis command will delete the current list.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Delete Current Item",
+      deleteCurrentItem,
+      "### Delete Current Item\n\nThis command will delete the current item.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Add New Board",
+      addNewBoard,
+      "### Add New Board\n\nThis will add a new board to the list of boards.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Add New List",
+      addNewList,
+      "### Add New List\n\nThis will add a new list.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Add New Item",
+      addNewItem,
+      "### Add New Item\n\nThis will add a new item.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Open Current Item",
+      openItem,
+      "### Open Current Item\n\nThis will open the current item.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Move Board Cursor Left",
+      moveBoardCursorLeft,
+      "### Move Board Cursor Left\n\nThis will move the board cursor left.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Move Board Cursor Right",
+      moveBoardCursorRight,
+      "### Move Board Cursor Right\n\nThis will move the board cursor right.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Move List Cursor Left",
+      moveListCursorLeft,
+      "### Move List Cursor Left\n\nThis will move the list cursor left.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Move List Cursor Right",
+      moveListCursorRight,
+      "### Move List Cursor Right\n\nThis will move the list cursor right.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Move Item Cursor Up",
+      moveItemCursorUp,
+      "### Move Item Cursor Up\n\nThis will move the item cursor up.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Move Item Cursor Down",
+      moveItemCursorDown,
+      "### Move Item Cursor Down\n\nThis will move the item cursor down.",
+      "md",
+    );
+
+    return () => {};
   });
 
   beforeUpdate(() => {
@@ -174,7 +259,7 @@
             break;
 
           case "Enter":
-            if ($listCursor !== -1 && $itemCursor !== -1) {
+            if ($listCursor !== -1 && $itemCursor >= 0) {
               command = openItem;
             }
             break;
@@ -183,6 +268,16 @@
             $itemCursor = -1;
             $listCursor = -1;
             clearState();
+            break;
+
+          case ":":
+            if ($commandBar.showing) {
+              $commandBar.clearShowing();
+              $commandBar = $commandBar;
+            } else {
+              $commandBar.setShowing();
+              $commandBar = $commandBar;
+            }
             break;
 
           case "0":
@@ -275,18 +370,24 @@
   }
 
   function deleteCurrentList() {
-    dispatch("deleteList", {
-      board: $Kanban.boards[$boardCursor].id,
-      list: $Kanban.boards[$boardCursor].lists[$listCursor].id,
-    });
+    if ($listCursor >= 0) {
+      dispatch("deleteList", {
+        board: $Kanban.boards[$boardCursor].id,
+        list: $Kanban.boards[$boardCursor].lists[$listCursor].id,
+      });
+    }
   }
 
   function deleteCurrentItem() {
-    dispatch("deleteItem", {
-      board: $Kanban.boards[$boardCursor].id,
-      list: $Kanban.boards[$boardCursor].lists[$listCursor].id,
-      item: $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
-    });
+    if ($listCursor >= 0 && $itemCursor >= 0) {
+      dispatch("deleteItem", {
+        board: $Kanban.boards[$boardCursor].id,
+        list: $Kanban.boards[$boardCursor].lists[$listCursor].id,
+        item: $Kanban.boards[$boardCursor].lists[$listCursor].items[
+          $itemCursor
+        ],
+      });
+    }
   }
 
   function addNewBoard() {
@@ -300,10 +401,12 @@
   }
 
   function addNewItem() {
-    let id = $Kanban.boards[$boardCursor].lists[$listCursor].id;
-    dispatch("additem", {
-      list: id,
-    });
+    if ($listCursor >= 0) {
+      let id = $Kanban.boards[$boardCursor].lists[$listCursor].id;
+      dispatch("additem", {
+        list: id,
+      });
+    }
   }
 
   function getAcc() {
@@ -317,7 +420,7 @@
   }
 
   function openItem() {
-    editItem = true;
+    if ($itemCursor >= 0) editItem = true;
   }
 
   function moveBoardCursorLeft() {
@@ -371,7 +474,7 @@
       //
       let orig = structuredClone($Kanban.boards[$boardCursor]);
       $Kanban.boards[$boardCursor] = structuredClone(
-        $Kanban.boards[newboardindex]
+        $Kanban.boards[newboardindex],
       );
       $Kanban.boards[newboardindex] = structuredClone(orig);
       $boardCursor = newboardindex;
@@ -384,35 +487,76 @@
   }
 
   function moveItemCommand(dir) {
-    let newitemindex = $itemCursor;
-    switch (dir) {
-      case "u":
-        newitemindex--;
-        break;
+    if ($listCursor >= 0 && $itemCursor >= 0) {
+      let newitemindex = $itemCursor;
+      switch (dir) {
+        case "u":
+          newitemindex--;
+          break;
 
-      case "d":
-        newitemindex++;
-        break;
+        case "d":
+          newitemindex++;
+          break;
+      }
+      if (newitemindex < 0) newitemindex = 0;
+      if (boardData.lists[$listCursor].items.length - 1 < newitemindex)
+        newitemindex = boardData.lists[$listCursor].items.length - 1;
+      if (newitemindex !== $itemCursor) {
+        //
+        // We have a valid move.
+        //
+        let orig = structuredClone(
+          boardData.lists[$listCursor].items[$itemCursor],
+        );
+        boardData.lists[$listCursor].items[$itemCursor] = structuredClone(
+          boardData.lists[$listCursor].items[newitemindex],
+        );
+        boardData.lists[$listCursor].items[newitemindex] =
+          structuredClone(orig);
+        $itemCursor = newitemindex;
+      } else {
+        //
+        // It was a move to a different list.
+        //
+        let newlistindex = $listCursor;
+        switch (dir) {
+          case "l":
+            newlistindex--;
+            break;
+
+          case "r":
+            newlistindex++;
+            break;
+        }
+        if (newlistindex < 0) newlistindex = 0;
+        if (boardData.lists.length - 1 < newlistindex)
+          newlistindex = boardData.lists.length - 1;
+        if (newlistindex !== $listCursor) {
+          //
+          // Move to the new list index.
+          //
+          let item = structuredClone(
+            boardData.lists[$listCursor].items[$itemCursor],
+          );
+          boardData.lists[$listCursor].items.splice($itemCursor, 1);
+          boardData.lists[newlistindex].items = [
+            item,
+            ...boardData.lists[newlistindex].items,
+          ];
+          $listCursor = newlistindex;
+          $itemCursor = 0;
+        }
+      }
+      saveBoardData();
     }
-    if (newitemindex < 0) newitemindex = 0;
-    if (boardData.lists[$listCursor].items.length - 1 < newitemindex)
-      newitemindex = boardData.lists[$listCursor].items.length - 1;
-    if (newitemindex !== $itemCursor) {
-      //
-      // We have a valid move.
-      //
-      let orig = structuredClone(
-        boardData.lists[$listCursor].items[$itemCursor]
-      );
-      boardData.lists[$listCursor].items[$itemCursor] = structuredClone(
-        boardData.lists[$listCursor].items[newitemindex]
-      );
-      boardData.lists[$listCursor].items[newitemindex] = structuredClone(orig);
-      $itemCursor = newitemindex;
-    } else {
-      //
-      // It was a move to a different list.
-      //
+  }
+
+  function moveList() {
+    moveListCommand(direction);
+  }
+
+  function moveListCommand(dir) {
+    if ($listCursor >= 0) {
       let newlistindex = $listCursor;
       switch (dir) {
         case "l":
@@ -428,61 +572,27 @@
         newlistindex = boardData.lists.length - 1;
       if (newlistindex !== $listCursor) {
         //
-        // Move to the new list index.
+        // We have a valid move.
         //
-        let item = structuredClone(
-          boardData.lists[$listCursor].items[$itemCursor]
+        let orig = structuredClone(boardData.lists[$listCursor]);
+        boardData.lists[$listCursor] = structuredClone(
+          boardData.lists[newlistindex],
         );
-        boardData.lists[$listCursor].items.splice($itemCursor, 1);
-        boardData.lists[newlistindex].items = [
-          item,
-          ...boardData.lists[newlistindex].items,
-        ];
+        boardData.lists[newlistindex] = structuredClone(orig);
         $listCursor = newlistindex;
-        $itemCursor = 0;
       }
+      saveBoardData();
     }
-    saveBoardData();
-  }
-
-  function moveList() {
-    moveListCommand(direction);
-  }
-
-  function moveListCommand(dir) {
-    let newlistindex = $listCursor;
-    switch (dir) {
-      case "l":
-        newlistindex--;
-        break;
-
-      case "r":
-        newlistindex++;
-        break;
-    }
-    if (newlistindex < 0) newlistindex = 0;
-    if (boardData.lists.length - 1 < newlistindex)
-      newlistindex = boardData.lists.length - 1;
-    if (newlistindex !== $listCursor) {
-      //
-      // We have a valid move.
-      //
-      let orig = structuredClone(boardData.lists[$listCursor]);
-      boardData.lists[$listCursor] = structuredClone(
-        boardData.lists[newlistindex]
-      );
-      boardData.lists[newlistindex] = structuredClone(orig);
-      $listCursor = newlistindex;
-    }
-    saveBoardData();
   }
 
   function moveListCursorLeft() {
-    //
-    // Move to the list to the left if any.
-    //
-    $listCursor = $listCursor - 1;
-    if ($listCursor < 0) $listCursor = 0;
+    if ($listCursor >= 0) {
+      //
+      // Move to the list to the left if any.
+      //
+      $listCursor = $listCursor - 1;
+      if ($listCursor < 0) $listCursor = 0;
+    }
   }
 
   function moveListCursorRight() {

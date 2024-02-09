@@ -1,14 +1,17 @@
 <script>
   import { onMount, tick } from "svelte";
   import Board from "./components/Board.svelte";
+  import CommandBar from "./components/CommandBar.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { keyHandler } from "./stores/keyHandler.js";
   import { boardCursor } from "./stores/boardCursor.js";
-  //import { listCursor } from "./stores/listCursor.js";
-  //import { itemCursor } from "./stores/itemCursor.js";
+  import { commandBar } from "./stores/commandBar.js";
+  import { styles } from "./stores/styles.js";
   import * as App from "../wailsjs/go/main/App.js";
+  import { itemCursor } from "./stores/itemCursor";
+  import { listCursor } from "./stores/listCursor";
 
-  let styles = {
+  let defaultStyles = {
     backgroundcolor: "blue",
     textcolor: "white",
     unselectTabColor: "lightgray",
@@ -38,12 +41,16 @@
     $Kanban = JSON.parse(kanbanStr);
     if ($Kanban.boards === null) $Kanban.boards = [];
     let styleStr = await App.ReadThemeString();
-    styles = JSON.parse(styleStr);
+    if ((styleStr !== "") & (styleStr.length > 0)) {
+      defaultStyles = JSON.parse(styleStr);
+    }
+    $styles = defaultStyles;
 
     //
     // For debug purposes. NOTE: Remove when done testing.
     //
     window.Kanban = $Kanban;
+    window.CommandBar = $commandBar;
   });
 
   async function addBoard() {
@@ -121,7 +128,7 @@
     $boardCursor = $boardCursor - 1;
     if ($boardCursor < 0) $boardCursor = 0;
     $Kanban.boards = $Kanban.boards.filter(
-      (board) => board.id !== e.detail.board
+      (board) => board.id !== e.detail.board,
     );
     await SaveKanbanBoards($Kanban);
   }
@@ -134,6 +141,9 @@
     $Kanban.boards.map((board) => {
       if (board.id === e.detail.board) {
         board.lists = board.lists.filter((list) => e.detail.list !== list.id);
+        if (board.lists.length <= $listCursor) {
+          $listCursor = board.lists.length - 1;
+        }
       }
     });
     await SaveKanbanBoards($Kanban);
@@ -149,8 +159,11 @@
         board.lists.map((list) => {
           if (list.id === e.detail.list) {
             list.items = list.items.filter(
-              (item) => e.detail.item.id !== item.id
+              (item) => e.detail.item.id !== item.id,
             );
+            if (list.items.length <= $itemCursor) {
+              $itemCursor = list.items.length - 1;
+            }
           }
         });
       }
@@ -213,7 +226,7 @@
     });
 
     $Kanban.boards[Bdindex].lists[Ltindex].items[Itindex].apps.push(
-      e.detail.app
+      e.detail.app,
     );
     await SaveKanbanBoards($Kanban);
   }
@@ -280,13 +293,13 @@
 
 <div
   id="main"
-  style="background-color: {styles.backgroundcolor}; 
-         color: {styles.textcolor};
-         font-family: {styles.font};
-         font-size: {styles.fontsize}px;"
+  style="background-color: {$styles.backgroundcolor}; 
+         color: {$styles.textcolor};
+         font-family: {$styles.font};
+         font-size: {$styles.fontsize}px;"
 >
   <Board
-    {styles}
+    styles={$styles}
     on:saveBoard={async () => {
       await SaveKanbanBoards($Kanban);
     }}
@@ -310,6 +323,9 @@
     on:deleteboard={deleteBoard}
   />
 </div>
+{#if $commandBar.showing}
+  <CommandBar />
+{/if}
 
 <style>
   #main {
