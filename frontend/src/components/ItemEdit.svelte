@@ -59,7 +59,6 @@
       $keyHandler = origKeyboardHandler;
       origKeyboardHandler = null;
     }
-    console.log($keyHandler);
     disbatch("editOff", {});
   }
 
