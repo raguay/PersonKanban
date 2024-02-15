@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount, tick } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import EditPField from "./EditPField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
@@ -23,6 +23,9 @@
   let direction = "";
   let command = null;
   let msgInputDiv = null;
+  let editDialogDiv = null;
+  let editTitle = false;
+  let editDesc = false;
 
   const disbatch = createEventDispatcher();
 
@@ -83,6 +86,17 @@
           // State 0 is the main entry state. Get the command and accumulator values.
           //
           switch ($key) {
+            case "e":
+              //
+              // Get the item that needs edited.
+              //
+              state = 2;
+              break;
+
+            case "m":
+              msgInputDiv.focus();
+              break;
+
             case "s":
               command = closeItemEdit;
               break;
@@ -146,6 +160,35 @@
               break;
           }
           break;
+
+        case 2:
+          //
+          // This case is getting which item in a card to edit.
+          //
+          switch ($key) {
+            case "t":
+              //
+              // This will edit the title.
+              state = 0;
+              command = editCardTitle;
+              break;
+
+            case "d":
+              //
+              // This will edit the description.
+              //
+              command = editCardDiscription;
+              state = 0;
+              break;
+
+            default:
+              //
+              // A valid item to edit wasn't given. Abort the command.
+              //
+              clearState();
+              break;
+          }
+          break;
       }
       if (state === 0) {
         //
@@ -198,10 +241,12 @@
     acc = "";
   }
 
-  function deleteItem() {
-    disbatch("deleteItem", {
-      item: itemInfo.id,
-    });
+  function editCardTitle() {
+    editTitle = true;
+  }
+
+  function editCardDiscription() {
+    editDesc = true;
   }
 
   function saveItem(exit) {
@@ -213,11 +258,13 @@
 
   function nameChanged(e) {
     itemInfo.name = e.detail.name;
+    editTitle = false;
     saveItem(false);
   }
 
   function descriptionChanged(e) {
     itemInfo.description = e.detail.name;
+    editDesc = false;
     saveItem(false);
   }
 
@@ -281,10 +328,16 @@
   <div
     class="editDialog"
     style="background-color: {styles.dialogBGColor}; color: {styles.dialogTextColor};"
+    bind:this={editDialogDiv}
   >
-    <EditH2Field name={itemInfo.name} on:nameChanged={nameChanged} />
+    <EditH2Field
+      name={itemInfo.name}
+      edit={editTitle}
+      on:nameChanged={nameChanged}
+    />
     <EditPField
       name={itemInfo.description}
+      edit={editDesc}
       on:nameChanged={descriptionChanged}
     />
     <div class="itemContainer">
@@ -304,6 +357,7 @@
         on:keydown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
+            e.stopPropagation();
             createNewTextMsg();
           }
         }}
@@ -329,7 +383,6 @@
             saveItem(true);
           }}>Save</button
         >
-        <button on:click={deleteItem}>Delete</button>
       </div>
       {#if itemInfo.notes.length !== 0}
         {#each itemInfo.notes as note}

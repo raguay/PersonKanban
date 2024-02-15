@@ -10,6 +10,7 @@
   import { altKey } from "../stores/altKey.js";
   import { key } from "../stores/key.js";
   import { skipKey } from "../stores/skipKey.js";
+  import { lastCommand } from "../stores/lastCommand.js";
 
   let inputDiv = null;
   let inputVal = null;
@@ -135,7 +136,7 @@
           break;
 
         case "Tab":
-          inputVal = $commandBar.commands[cursor].name;
+          inputVal = commandlist[cursor].name;
           inputDiv.focus();
           break;
 
@@ -157,6 +158,15 @@
       result = converter.makeHtml(string);
     }
     return result;
+  }
+
+  function searchCommands() {
+    commandlist = $commandBar.commands.filter((item) =>
+      item.name
+        .toLowerCase()
+        .match(inputVal.toLowerCase().split("").join(".*")),
+    );
+    cursor = 0;
   }
 </script>
 
@@ -184,7 +194,10 @@
           //
           e.preventDefault();
           const cmd = $commandBar.getCommand(inputVal);
-          if (cmd !== null) cmd.command();
+          if (cmd !== null) {
+            cmd.command();
+            $lastCommand = cmd.name;
+          }
 
           //
           // Close the commandBar.
@@ -195,6 +208,7 @@
           $skipKey = true;
         }
       }}
+      on:input={searchCommands}
       on:focusin={() => {
         handlekey = false;
         listdis = "";

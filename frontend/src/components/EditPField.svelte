@@ -1,17 +1,23 @@
 <script>
-  import { createEventDispatcher, tick } from "svelte";
+  import { createEventDispatcher, afterUpdate, tick } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
   export let name;
+  export let edit = false;
 
   let editField;
-  let editH2Flag = false;
+  let editPFlag = false;
   let origKeyHandler = null;
 
   const disbatch = createEventDispatcher();
 
+  afterUpdate(() => {
+    if (edit) editName();
+    edit = false;
+  });
+
   async function editName() {
-    editH2Flag = true;
+    editPFlag = true;
     await tick();
     if ($keyHandler !== null) {
       origKeyHandler = $keyHandler;
@@ -28,18 +34,22 @@
     disbatch("nameChanged", {
       name: editField.value,
     });
-    editH2Flag = false;
+    editPFlag = false;
   }
 </script>
 
-<div class="editH2Field">
-  {#if editH2Flag}
+<div class="editPField">
+  {#if editPFlag}
     <textarea
       class="eListName"
       bind:value={name}
       bind:this={editField}
       on:keydown={(e) => {
-        if (e.code === "Enter") nameChanged();
+        if (e.code === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          nameChanged();
+        }
       }}
       on:blur={() => {
         nameChanged();
@@ -72,7 +82,7 @@
     min-height: 16px;
   }
 
-  .editH2Field {
+  .editPField {
     cursor: pointer;
   }
 </style>

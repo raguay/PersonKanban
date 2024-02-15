@@ -1,14 +1,20 @@
 <script>
-  import { createEventDispatcher, tick } from "svelte";
+  import { createEventDispatcher, afterUpdate, tick } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
-  export let name;
+  export let name = "";
+  export let edit = false;
 
   let editField;
   let editH2Flag = false;
   let origKeyHandler = null;
 
   const disbatch = createEventDispatcher();
+
+  afterUpdate(async () => {
+    if (edit) await editName();
+    edit = false;
+  });
 
   async function editName() {
     editH2Flag = true;
@@ -40,7 +46,11 @@
       bind:value={name}
       bind:this={editField}
       on:keydown={(e) => {
-        if (e.code === "Enter") nameChanged();
+        if (e.code === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          nameChanged();
+        }
       }}
       on:blur={() => {
         nameChanged();

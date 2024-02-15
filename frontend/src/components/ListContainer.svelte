@@ -14,6 +14,7 @@
   import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { commandBar } from "../stores/commandBar.js";
+  import { lastCommand } from "../stores/lastCommand.js";
 
   export let board;
   export let styles;
@@ -196,47 +197,60 @@
                 thisboard.lists.length !== 0
               ) {
                 command = addNewBoard;
+                $lastCommand = "Add New Board";
               } else {
                 command = addNewList;
+                $lastCommand = "Add New List";
               }
             } else if ($itemCursor === -1) {
               command = addNewList;
+              $lastCommand = "Add New List";
             } else {
               command = addNewItem;
+              $lastCommand = "Add New Item";
             }
             break;
 
           case "x":
             if ($listCursor === -1) {
               command = deleteCurrentBoard;
+              $lastCommand = "Delete Current Board";
             } else if ($itemCursor === -1) {
               command = deleteCurrentList;
+              $lastCommand = "Delete Current List";
             } else {
               command = deleteCurrentItem;
+              $lastCommand = "Delete Current Item";
             }
             break;
 
           case "h":
             if ($listCursor === -1) {
               command = moveBoardCursorLeft;
+              $lastCommand = "Move Board Cursor Left";
             } else {
               command = moveListCursorLeft;
+              $lastCommand = "Move List Cursor Left";
             }
             break;
 
           case "k":
             command = moveItemCursorUp;
+            $lastCommand = "Move Item Cursor Up";
             break;
 
           case "j":
             command = moveItemCursorDown;
+            $lastCommand = "Move Item Cursor Down";
             break;
 
           case "l":
             if ($listCursor === -1) {
               command = moveBoardCursorRight;
+              $lastCommand = "Move Board Cursor Right";
             } else {
               command = moveListCursorRight;
+              $lastCommand = "Move List Cursor Right";
             }
             break;
 
@@ -247,15 +261,22 @@
           case "m":
             if ($listCursor === -1) {
               command = moveBoard;
+              $lastCommand = "Move Current Board";
             } else if ($itemCursor === -1) {
               command = moveList;
+              $lastCommand = "Move Current List";
             } else {
               command = moveItem;
+              $lastCommand = "Move Current Item";
             }
             //
             // Goto the one state to capture the direction.
             //
             state = 1;
+            break;
+
+          case ".":
+            command = $commandBar.getCommand($lastCommand).command;
             break;
 
           case "Enter":
