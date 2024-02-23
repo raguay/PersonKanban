@@ -35,18 +35,6 @@ export function Quit():Promise<void>;
 
 export function ReadFile(arg1:string):Promise<string>;
 
-export function ReadKanban():Promise<main.KanbanData>;
-
-export function ReadKanbanString():Promise<string>;
-
-export function ReadTheme():Promise<main.ThemeData>;
-
-export function ReadThemeString():Promise<string>;
-
-export function SaveKanbanBoards(arg1:string):Promise<void>;
-
-export function SaveTheme(arg1:string):Promise<void>;
-
 export function SplitFile(arg1:string):Promise<main.FileParts>;
 
 export function WriteFile(arg1:string,arg2:string):Promise<void>;

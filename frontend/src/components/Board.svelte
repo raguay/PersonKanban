@@ -166,7 +166,7 @@
     >
       <span
         class="tabName"
-        style="background-color: {styles.unselectTabColor}; 
+        style="background-color: {styles.unselectTabColor};
                    color: {styles.unselectTabTextColor};
                    font-size: 30px; line-height: 20px;"
       >

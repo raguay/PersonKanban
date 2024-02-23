@@ -3,13 +3,16 @@
   import ItemEdit from "./ItemEdit.svelte";
   import { itemCursor } from "../stores/itemCursor.js";
 
-  export let styles;
   export let itemInfo;
   export let index;
   export let editItem = false;
 
   const disbatch = createEventDispatcher();
   let itemDiv = null;
+  let styles = {
+    itembgcolor: "white",
+    itemtextcolor: "black",
+  };
 
   afterUpdate(() => {
     //
@@ -29,6 +32,11 @@
         inline: "nearest",
       });
     }
+
+    //
+    // Make sure the styles are updated.
+    //
+    styles = itemInfo.styles;
   });
 
   function editItemCommand() {

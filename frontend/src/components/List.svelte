@@ -5,7 +5,6 @@
     beforeUpdate,
     afterUpdate,
   } from "svelte";
-  //  import { dndzone } from "svelte-dnd-action";  TODO: figure this out!
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
@@ -14,13 +13,16 @@
 
   export let board;
   export let id;
-  export let styles;
   export let index;
   export let edit;
 
   let items = null;
   let listData = null;
   let listDiv = null;
+  let styles = {
+    listbgcolor: "#9AC2FA",
+    listtextcolor: "white",
+  };
 
   const disbatch = createEventDispatcher();
 
@@ -81,6 +83,11 @@
     listData = $Kanban.boards
       .filter((item) => item.id === board)[0]
       .lists.filter((item) => item.id === id)[0];
+
+    //
+    // Separate the styles. I should refactor and not use this.
+    //
+    styles = listData.styles;
 
     //
     // Set the items list.
@@ -229,7 +236,6 @@
           {#if item !== null}
             <Item
               itemInfo={item}
-              {styles}
               editItem={$listCursor === index && $itemCursor === itemindex
                 ? edit
                 : false}

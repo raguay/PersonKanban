@@ -66,30 +66,6 @@ export function ReadFile(arg1) {
   return window['go']['main']['App']['ReadFile'](arg1);
 }
 
-export function ReadKanban() {
-  return window['go']['main']['App']['ReadKanban']();
-}
-
-export function ReadKanbanString() {
-  return window['go']['main']['App']['ReadKanbanString']();
-}
-
-export function ReadTheme() {
-  return window['go']['main']['App']['ReadTheme']();
-}
-
-export function ReadThemeString() {
-  return window['go']['main']['App']['ReadThemeString']();
-}
-
-export function SaveKanbanBoards(arg1) {
-  return window['go']['main']['App']['SaveKanbanBoards'](arg1);
-}
-
-export function SaveTheme(arg1) {
-  return window['go']['main']['App']['SaveTheme'](arg1);
-}
-
 export function SplitFile(arg1) {
   return window['go']['main']['App']['SplitFile'](arg1);
 }

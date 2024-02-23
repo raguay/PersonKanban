@@ -15,6 +15,7 @@
   import { boardCursor } from "../stores/boardCursor.js";
   import { commandBar } from "../stores/commandBar.js";
   import { lastCommand } from "../stores/lastCommand.js";
+  import { metaboard } from "../stores/metaboard.js";
 
   export let board;
   export let styles;
@@ -273,6 +274,16 @@
             // Goto the one state to capture the direction.
             //
             state = 1;
+            break;
+
+          case "t":
+            //
+            // Go to the metaboards dialog.
+            //
+            command = null;
+            clearState();
+            $metaboard.setShowing();
+            $lastCommand = "Show Metaboards";
             break;
 
           case ".":
@@ -656,71 +667,36 @@
 <div id="ListsContainer" style="background-color: {styles.listcontainercolor};">
   {#if boardData.lists.length > 0}
     {#each boardData.lists as item, index}
-      {#if $listCursor === index}
-        <List
-          {styles}
-          {board}
-          {index}
-          edit={editItem}
-          id={item.id}
-          on:deleteList={(e) => {
-            dispatch("deleteList", e.detail);
-          }}
-          on:addItem={(e) => {
-            dispatch("additem", e.detail);
-          }}
-          on:deleteItem={(e) => {
-            dispatch("deleteItem", e.detail);
-          }}
-          on:newItemMsg={(e) => {
-            dispatch("newItemMsg", e.detail);
-          }}
-          on:newItemApp={(e) => {
-            dispatch("newItemApp", e.detail);
-          }}
-          on:appUpdate={(e) => {
-            dispatch("appUpdate", e.detail);
-          }}
-          on:listUpdate={(e) => {
-            dispatch("listUpdate", e.detail);
-          }}
-          on:editOff={() => {
-            editItem = false;
-          }}
-        />
-      {:else}
-        <List
-          {styles}
-          {board}
-          {index}
-          edit={false}
-          id={item.id}
-          on:deleteList={(e) => {
-            dispatch("deleteList", e.detail);
-          }}
-          on:addItem={(e) => {
-            dispatch("additem", e.detail);
-          }}
-          on:deleteItem={(e) => {
-            dispatch("deleteItem", e.detail);
-          }}
-          on:newItemMsg={(e) => {
-            dispatch("newItemMsg", e.detail);
-          }}
-          on:newItemApp={(e) => {
-            dispatch("newItemApp", e.detail);
-          }}
-          on:appUpdate={(e) => {
-            dispatch("appUpdate", e.detail);
-          }}
-          on:listUpdate={(e) => {
-            dispatch("listUpdate", e.detail);
-          }}
-          on:editOff={() => {
-            editItem = false;
-          }}
-        />
-      {/if}
+      <List
+        {board}
+        {index}
+        edit={$listCursor === index ? editItem : false}
+        id={item.id}
+        on:deleteList={(e) => {
+          dispatch("deleteList", e.detail);
+        }}
+        on:addItem={(e) => {
+          dispatch("additem", e.detail);
+        }}
+        on:deleteItem={(e) => {
+          dispatch("deleteItem", e.detail);
+        }}
+        on:newItemMsg={(e) => {
+          dispatch("newItemMsg", e.detail);
+        }}
+        on:newItemApp={(e) => {
+          dispatch("newItemApp", e.detail);
+        }}
+        on:appUpdate={(e) => {
+          dispatch("appUpdate", e.detail);
+        }}
+        on:listUpdate={(e) => {
+          dispatch("listUpdate", e.detail);
+        }}
+        on:editOff={() => {
+          editItem = false;
+        }}
+      />
     {/each}
   {/if}
   <div

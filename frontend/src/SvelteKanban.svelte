@@ -2,14 +2,15 @@
   import { onMount, tick } from "svelte";
   import Board from "./components/Board.svelte";
   import CommandBar from "./components/CommandBar.svelte";
+  import MetaBoardList from "./components/MetaBoardList.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { keyHandler } from "./stores/keyHandler.js";
   import { boardCursor } from "./stores/boardCursor.js";
   import { commandBar } from "./stores/commandBar.js";
-  import { styles } from "./stores/styles.js";
-  import * as App from "../wailsjs/go/main/App.js";
   import { itemCursor } from "./stores/itemCursor";
   import { listCursor } from "./stores/listCursor";
+  import { metaboard } from "./stores/metaboard.js";
+  import * as App from "../wailsjs/go/main/App.js";
 
   let defaultStyles = {
     backgroundcolor: "blue",
@@ -20,38 +21,97 @@
     selectTabTextColor: "black",
     mainboardcolor: "lightblue",
     listcontainercolor: "lightblue",
-    listbgcolor: "#9AC2FA",
-    listtextcolor: "white",
-    itembgcolor: "white",
-    itemtextcolor: "black",
     font: '"Fira Code"',
     fontsize: 16,
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
     kanbanInfo: "black",
+  };
+
+  let defaultListStyle = {
+    listbgcolor: "#9AC2FA",
     cursorColor: "blue",
     cursorWidth: "10px",
+    dialogBGColor: "lightblue",
+    dialogTextColor: "black",
+    listtextcolor: "white",
+  };
+
+  let defaultItemStyle = {
+    itembgcolor: "white",
+    cursorColor: "blue",
+    cursorWidth: "10px",
+    dialogBGColor: "lightblue",
+    dialogTextColor: "black",
+    itemtextcolor: "black",
   };
 
   onMount(async () => {
     //
-    // Load the board information from the harddrive.
+    // Load the default board information from the harddrive.
     //
-    let kanbanStr = await App.ReadKanbanString();
-    $Kanban = JSON.parse(kanbanStr);
-    if ($Kanban.boards === null) $Kanban.boards = [];
-    let styleStr = await App.ReadThemeString();
-    if ((styleStr !== "") & (styleStr.length > 0)) {
-      defaultStyles = JSON.parse(styleStr);
+    $boardCursor = 0;
+    const hdir = await App.GetHomeDir();
+    const configdir = await App.AppendPath(hdir, ".config");
+    const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
+    const kanbanfile = await App.AppendPath(kbcnfgdir, "kanban.json");
+    if (await App.FileExists(kbcnfgdir)) {
+      //
+      // The directory exist, so read the config file.
+      //
+      $Kanban = JSON.parse(await App.ReadFile(kanbanfile));
+    } else {
+      //
+      // Create the metaboards.json file.
+      //
+      $Kanban = {
+        boards: [],
+      };
     }
-    $styles = defaultStyles;
+    if ($Kanban.boards.length === 0) {
+      //
+      // Create the default board if there are no boards.
+      //
+      await addBoard();
+    }
 
     //
-    // For debug purposes. NOTE: Remove when done testing.
+    // Make sure all the boards have their own style and information.
     //
-    window.Kanban = $Kanban;
-    window.CommandBar = $commandBar;
+    let boards = $Kanban.boards;
+    boards.forEach((brd, key, arr) => {
+      arr[key].styles = defaultStyles;
+      arr[key].description = "";
+      arr[key].desctype = "text";
+      arr[key].lists.forEach((lst, key2, arr2) => {
+        arr2[key2].styles = defaultListStyle;
+        lst.items.forEach((itm, key3, arr3) => {
+          arr3[key3].styles = defaultItemStyle;
+        });
+      });
+    });
+    $Kanban.boards = boards;
+    $Kanban = $Kanban;
+
+    //
+    //
+    // Load the metaboards.
+    //
+    await $metaboard.loadMetaBoards();
+
+    // Save the board information.
+    //
+    await SaveKanbanBoards($Kanban);
   });
+
+  async function SaveKanbanBoards(kbstruct) {
+    const hdir = await App.GetHomeDir();
+    const configdir = await App.AppendPath(hdir, ".config");
+    const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
+    const kanbanfile = await App.AppendPath(kbcnfgdir, "kanban.json");
+    await App.WriteFile(kanbanfile, JSON.stringify(kbstruct));
+    $Kanban = kbstruct;
+  }
 
   async function addBoard() {
     var newID = 0;
@@ -60,9 +120,16 @@
         if (item.id >= newID) newID = item.id + 1;
       });
     }
+
+    //
+    // Using the default styles as a template. Maybe change that in the future?
+    //
     $Kanban.boards.push({
       id: newID,
       name: "New Board",
+      description: "",
+      desctype: "text",
+      styles: defaultStyles,
       lists: [],
     });
     await SaveKanbanBoards($Kanban);
@@ -84,6 +151,7 @@
     $Kanban.boards[ind].lists.push({
       id: newID,
       name: "New List",
+      styles: defaultListStyle,
       items: [],
     });
     await SaveKanbanBoards($Kanban);
@@ -113,8 +181,8 @@
       id: newID,
       name: "New Item",
       description: "This should describe the card's function.",
-      color: "",
       notes: [],
+      styles: defaultItemStyle,
       apps: [],
     });
     await SaveKanbanBoards($Kanban);
@@ -278,11 +346,6 @@
     $Kanban.boards[Bdindex].lists[Ltindex] = e.detail.list;
     await SaveKanbanBoards($Kanban);
   }
-
-  async function SaveKanbanBoards(boards) {
-    await App.SaveKanbanBoards(JSON.stringify(boards));
-    $Kanban = boards;
-  }
 </script>
 
 <svelte:window
@@ -291,40 +354,40 @@
   }}
 />
 
-<div
-  id="main"
-  style="background-color: {$styles.backgroundcolor}; 
-         color: {$styles.textcolor};
-         font-family: {$styles.font};
-         font-size: {$styles.fontsize}px;"
->
-  <Board
-    styles={$styles}
-    on:saveBoard={async () => {
-      await SaveKanbanBoards($Kanban);
-    }}
-    on:addboard={() => {
-      addBoard();
-    }}
-    on:addlist={(e) => {
-      addList(e);
-    }}
-    on:additem={(e) => {
-      addItem(e);
-    }}
-    on:deleteList={(e) => {
-      deleteList(e);
-    }}
-    on:deleteItem={deleteItem}
-    on:newItemMsg={newItemMsg}
-    on:newItemApp={newItemApp}
-    on:appUpdate={appUpdate}
-    on:listUpdate={listUpdate}
-    on:deleteboard={deleteBoard}
-  />
-</div>
+{#if $Kanban.boards.length > 0}
+  <div
+    id="main"
+    style="background-color:
+    {$Kanban.boards[$boardCursor].styles.backgroundcolor};
+         color: {$Kanban.boards[$boardCursor].styles.textcolor};
+         font-family: {$Kanban.boards[$boardCursor].styles.font};
+         font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
+  >
+    <Board
+      styles={$Kanban.boards[$boardCursor].styles}
+      on:saveBoard={async () => {
+        await SaveKanbanBoards($Kanban);
+      }}
+      on:addboard={addBoard}
+      on:addlist={addList}
+      on:additem={addItem}
+      on:deleteList={deleteList}
+      on:deleteItem={deleteItem}
+      on:newItemMsg={newItemMsg}
+      on:newItemApp={newItemApp}
+      on:appUpdate={appUpdate}
+      on:listUpdate={listUpdate}
+      on:deleteboard={deleteBoard}
+    />
+  </div>
+{/if}
+
 {#if $commandBar.showing}
   <CommandBar />
+{/if}
+
+{#if $metaboard.showing}
+  <MetaBoardList />
 {/if}
 
 <style>

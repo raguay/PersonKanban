@@ -1,7 +1,6 @@
 <script>
   import { onMount, afterUpdate, tick } from "svelte";
   import showdown from "showdown";
-  import { styles } from "../stores/styles.js";
   import { commandBar } from "../stores/commandBar.js";
   import { keyHandler } from "../stores/keyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
@@ -11,6 +10,8 @@
   import { key } from "../stores/key.js";
   import { skipKey } from "../stores/skipKey.js";
   import { lastCommand } from "../stores/lastCommand.js";
+  import { boardCursor } from "../stores/boardCursor.js";
+  import { Kanban } from "../stores/Kanban.js";
 
   let inputDiv = null;
   let inputVal = null;
@@ -173,10 +174,10 @@
 <div id="CBFull">
   <div
     id="commandBarDiv"
-    style="background-color: {$styles.listbgcolor}; 
-           color: {$styles.listtextcolor}; 
-           font-family: {$styles.font};
-           font-size: {$styles.fontsize}px;"
+    style="background-color: {$Kanban[$boardCursor].styles.listbgcolor};
+           color: {$Kanban[$boardCursor].styles.listtextcolor};
+           font-family: {$Kanban[$boardCursor].styles.font};
+           font-size: {$Kanban[$boardCursor].styles.fontsize}px;"
   >
     <input
       id="comandBarInput"
@@ -221,7 +222,8 @@
     <div id="ListContainer">
       <div
         id="commandList"
-        style="background-color: {$styles.listbgcolor}; color: {$styles.listtextcolor}; 
+        style="background-color: {$Kanban[$boardCursor].styles
+          .listbgcolor}; color: {$Kanban[$boardCursor].styles.listtextcolor};
                border-width: {listdis === 'list' ? 2 : 0}px;"
         bind:this={commandListDiv}
       >
@@ -244,7 +246,8 @@
       <div
         id="commandDescription"
         bind:this={commandDescriptionDiv}
-        style="background-color: {$styles.listbgcolor}; color: {$styles.listtextcolor}; 
+        style="background-color: {$Kanban[$boardCursor].styles
+          .listbgcolor}; color: {$Kanban[$boardCursor].styles.listtextcolor};
                border-width: {listdis === 'dis' ? 2 : 0}px;"
       >
         {#if $commandBar.commands[cursor].type === "text"}
