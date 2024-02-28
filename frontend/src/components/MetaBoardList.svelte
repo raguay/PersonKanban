@@ -12,7 +12,12 @@
 
   let origKeyboardHandler = null;
   let handlekey = true;
-  let cursor = 0;
+  let addedit = false;
+  let add = true;
+  let boardName = "";
+  let boardDesc = "";
+  let boardDescType = "text";
+  let boardLoc = "";
 
   onMount(() => {
     //
@@ -51,18 +56,39 @@
       // State 0 is the main entry state. Get the command and accumulator values.
       //
       switch ($key) {
+        case "a":
+          //
+          // Add a new metaboard.
+          //
+          newMetaBoard();
+          break;
+
         case "e":
           //
-          // Edit the metaboard information.
+          // Edit the current board information.
           //
+          editMetaBoard($metaboard.metaboards[$metaboard.cursor]);
+          break;
+
+        case "j":
+          $metaboard.incCursor();
+          break;
+
+        case "k":
+          $metaboard.decCursor();
           break;
 
         case "Enter":
+          gotoMetaBoard($metaboard.metaboards[$metaboard.cursor]);
           close(e);
           break;
 
         case "Escape":
-          close(e);
+          if (addedit) {
+            addedit = false;
+          } else {
+            close(e);
+          }
           break;
 
         default:
@@ -85,28 +111,96 @@
     }
     console.log("Close function: ", $metaboard);
   }
+
+  function gotoMetaBoard(board) {}
+
+  function newMetaBoard() {
+    addedit = true;
+    add = true;
+  }
+
+  function editMetaBoard(board) {
+    addedit = true;
+    add = false;
+    let mb = $metaboard.metaboards[$metaboard.cursor];
+    boardName = mb.name;
+    boardDesc = mb.description;
+    boardDescType = mb.type;
+    boardLoc = mb.loc;
+  }
+
+  async function saveMetaBoard() {
+    if (add) {
+      $metaboard.addmetaboard(boardName, boardDesc, boardDescType, boardLoc);
+      await $metaboard.saveMetaBoards();
+      $metaboard = $metaboard;
+    } else {
+      //
+      // This is for editing. Save the Edit.
+      //
+      let mb = $metaboard.metaboards[$metaboard.cursor];
+      mb.name = boardName;
+      mb.description = boardDesc;
+      mb.type = boardDescType;
+      mb.loc = boardLoc;
+    }
+    addedit = false;
+  }
 </script>
 
 <div id="MBBackground">
   <div
     id="metaboardlist"
     style="background-color: {$Kanban.boards[$boardCursor].styles
-      .dialogBGColor}; color: {$Kanban.boards[$boardCursor].styles
-      .dialogTextColor};"
+      .dialogBGColor};
+           color: {$Kanban.boards[$boardCursor].styles.dialogTextColor};
+           font-family: {$Kanban.boards[$boardCursor].styles.font};
+           font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
   >
-    <h3 style="text-align: center;">MetaBoards</h3>
-    {#each $metaboard.metaboards as board, index}
-      {#if index === cursor}
-        <p
-          style="background-color: {$Kanban.boards[$boardCursor].styles
-            .cursorColor};"
+    {#if addedit}
+      {#if add}
+        <h3 style="text-align: center;">Add MetaBoard</h3>
+      {:else}
+        <h3 style="text-align: center;">Edit MetaBoard</h3>
+      {/if}
+      <label>Board Name:</label>
+      <input type="text" bind:value={boardName} />
+      <label>Board Description:</label>
+      <textarea bind:value={boardDesc} />
+      <label>Board Description Type:</label>
+      <select bind:value={boardDescType}>
+        <option name="text" value="text" />
+        <option name="md" value="md" />
+      </select>
+      <label>Board Location</label>
+      <input type="text" bind:value={boardLoc} />
+      <div id="diaglogButtonBar">
+        <button
+          type="button"
+          on:click={() => {
+            addedit = false;
+          }}>Cancel</button
+        >
+        <button type="button" on:click={saveMetaBoard}>Save</button>
+      </div>
+    {:else}
+      <h3 style="text-align: center;">MetaBoards</h3>
+      {#each $metaboard.metaboards as board, index}
+        <a
+          class="anchorStyle"
+          on:click={() => {
+            gotoMetaBoard(board);
+          }}
+          style="background-color: {$metaboard.cursor === index
+            ? $Kanban.boards[$boardCursor].styles.cursorColor
+            : 'default'}; color: {$metaboard.cursor === index
+            ? $Kanban.boards[$boardCursor].styles.cursorText
+            : 'default'};"
         >
           {board.name}
-        </p>
-      {:else}
-        <p>{board.name}</p>
-      {/if}
-    {/each}
+        </a>
+      {/each}
+    {/if}
   </div>
 </div>
 
@@ -129,5 +223,14 @@
     height: 50%;
     width: 50%;
     margin: auto;
+    border-radius: 10px;
+  }
+
+  .anchorStyle {
+    text-decoration: none;
+    cursor: pointer;
+    margin: 2px 10px 2px 10px;
+    padding: 5px;
+    border-radius: 5px;
   }
 </style>

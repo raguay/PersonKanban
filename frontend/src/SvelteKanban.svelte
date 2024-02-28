@@ -25,12 +25,16 @@
     fontsize: 16,
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
+    cursorColor: "blue",
+    cursorText: "white",
+    cursorWidth: "10px",
     kanbanInfo: "black",
   };
 
   let defaultListStyle = {
     listbgcolor: "#9AC2FA",
     cursorColor: "blue",
+    cursorText: "white",
     cursorWidth: "10px",
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
@@ -40,6 +44,7 @@
   let defaultItemStyle = {
     itembgcolor: "white",
     cursorColor: "blue",
+    cursorText: "white",
     cursorWidth: "10px",
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
@@ -47,6 +52,12 @@
   };
 
   onMount(async () => {
+    //
+    //
+    // Load the metaboards.
+    //
+    await $metaboard.loadMetaBoards();
+
     //
     // Load the default board information from the harddrive.
     //
@@ -59,7 +70,9 @@
       //
       // The directory exist, so read the config file.
       //
-      $Kanban = JSON.parse(await App.ReadFile(kanbanfile));
+      $Kanban = JSON.parse(
+        await App.ReadFile($metaboard.metaboards[$metaboard.cursor].loc),
+      );
     } else {
       //
       // Create the metaboards.json file.
@@ -94,22 +107,16 @@
     $Kanban = $Kanban;
 
     //
-    //
-    // Load the metaboards.
-    //
-    await $metaboard.loadMetaBoards();
-
     // Save the board information.
     //
     await SaveKanbanBoards($Kanban);
   });
 
   async function SaveKanbanBoards(kbstruct) {
-    const hdir = await App.GetHomeDir();
-    const configdir = await App.AppendPath(hdir, ".config");
-    const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
-    const kanbanfile = await App.AppendPath(kbcnfgdir, "kanban.json");
-    await App.WriteFile(kanbanfile, JSON.stringify(kbstruct));
+    await App.WriteFile(
+      $metaboard.metaboards[$metaboard.cursor].loc,
+      JSON.stringify(kbstruct),
+    );
     $Kanban = kbstruct;
   }
 

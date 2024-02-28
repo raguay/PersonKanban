@@ -4,6 +4,18 @@ import * as App from "../../wailsjs/go/main/App.js";
 export const metaboard = writable({
   showing: false,
   metaboards: [],
+  cursor: 0,
+  getCursor: function() {
+    return this.cursor;
+  },
+  incCursor: function() {
+    this.cursor = this.cursor + 1;
+    if(this.cursor >= this.metaboards.length) this.cursor = this.metaboards.length - 1;
+  },
+  decCursor: function() {
+    this.cursor = this. cursor - 1;
+    if(this.cursor < 0) this.cursor = 0;
+  },
   setShowing: function () {
     this.showing = true;
   },
