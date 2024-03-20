@@ -64,6 +64,7 @@ export const metaboard = writable({
     const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
     const kanbanfile = await App.AppendPath(kbcnfgdir, "kanban.json");
     const metafile = await App.AppendPath(kbcnfgdir, "metaboards.json");
+    this.cursor = 0;
     if (!(await App.DirExists(kbcnfgdir))) {
       //
       // The directory exist, so read the config file.
@@ -96,5 +97,5 @@ export const metaboard = writable({
     const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
     const metafile = await App.AppendPath(kbcnfgdir, "metaboards.json");
     await App.WriteFile(metafile, JSON.stringify(this.metaboards));
-  },
+  },  
 });

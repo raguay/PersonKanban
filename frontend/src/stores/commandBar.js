@@ -10,7 +10,11 @@ export const commandBar = writable({
     //
     // If the command parameters are valid, save the new command.
     //
-    if(typeof cmd !== 'undefined' && typeof cmd !== 'string' && name !== "") {
+    if(typeof cmd !== 'undefined' && typeof cmd !== 'string' && typeof name !== "undefined" && name !== null && name !== "") {
+      // 
+      // Make sure the destype is properly set. 
+      //
+      if(typeof destype === 'undefined' || destype == null || destype == "") destype = "text";
       this.commands.push({
         command: cmd,
         name: name,

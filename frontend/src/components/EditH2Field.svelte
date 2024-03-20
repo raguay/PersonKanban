@@ -4,6 +4,7 @@
 
   export let name = "";
   export let edit = false;
+  export let size = "360px";
 
   let editField;
   let editH2Flag = false;
@@ -43,6 +44,7 @@
     <input
       class="eListName"
       type="text"
+      style="width: {size};"
       bind:value={name}
       bind:this={editField}
       on:keydown={(e) => {
@@ -73,7 +75,6 @@
     margin: 10px;
     padding: 10px;
     border-radius: 10px;
-    width: 360px;
   }
 
   .editH2Field {

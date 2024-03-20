@@ -1,45 +1,28 @@
 <script>
   import {
-    createEventDispatcher,
-    onMount,
-    beforeUpdate,
     afterUpdate,
+    createEventDispatcher,
   } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
-  import { Kanban } from "../stores/Kanban.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
 
-  export let board;
-  export let id;
-  export let index;
-  export let edit;
-
-  let items = null;
-  let listData = null;
-  let listDiv = null;
-  let styles = {
-    listbgcolor: "#9AC2FA",
-    listtextcolor: "white",
-  };
+  export let boardcur = null;
+  export let listcur = null;
+  export let listData = null;
+  export let edit = false;
 
   const disbatch = createEventDispatcher();
 
-  onMount(() => {
-    SetItems();
-  });
-
-  beforeUpdate(() => {
-    SetItems();
-  });
+  let listDiv = null;
 
   afterUpdate(() => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
     if (
-      $listCursor === index &&
+      $listCursor === listcur &&
       typeof listDiv !== "undefined" &&
       listDiv !== null
     ) {
@@ -71,152 +54,28 @@
     }
   });
 
-  function SetItems() {
-    //
-    // Make sure the id is valid. Set to zero if not.
-    //
-    if (id === null) id = 0;
-
-    //
-    // Get the updated list information.
-    //
-    listData = $Kanban.boards
-      .filter((item) => item.id === board)[0]
-      .lists.filter((item) => item.id === id)[0];
-
-    //
-    // Separate the styles. I should refactor and not use this.
-    //
-    styles = listData.styles;
-
-    //
-    // Set the items list.
-    //
-    items = listData.items;
-  }
-
-  async function addItem() {
-    //
-    // Get the upper routines set a new list item.
-    //
-    disbatch("addItem", {
-      list: id,
-    });
-  }
-
-  async function deleteList() {
-    //
-    // Tell the powers above to remove this list.
-    //
-    disbatch("deleteList", {
-      list: id,
-    });
-  }
-
-  function deleteItem(e) {
-    //
-    // Tell the powers above to remove a list item.
-    //
-    disbatch("deleteItem", {
-      item: e.detail.item,
-      list: id,
-    });
-  }
-
-  function nameChanged(e) {
-    //
-    // Update the list data.
-    //
-    listData = $Kanban.boards
-      .filter((item) => item.id === board)[0]
-      .lists.filter((item) => item.id === id)[0];
-
-    //
-    // Set the new name.
-    //
-    listData.name = e.detail.name;
-
-    //
-    // Tell the powers above.
-    //
-    disbatch("listUpdate", {
-      list: listData,
-    });
-  }
-
-  function newItemMsg(e) {
-    //
-    // Ask the powers above to create a new item.
-    //
-    disbatch("newItemMsg", {
-      list: id,
-      item: e.detail.item,
-      msg: e.detail.msg,
-    });
-  }
-
-  function newItemApp(e) {
-    //
-    // Tell the powers above to create a new item app.
-    //
-    disbatch("newItemApp", {
-      list: id,
-      item: e.detail.item,
-      app: e.detail.app,
-    });
-  }
-
-  function appUpdate(e) {
-    //
-    // Update the application item.
-    //
-    disbatch("appUpdate", {
-      list: id,
-      item: e.detail.item,
-      app: e.detail.app,
-    });
-  }
-
-  function saveItem(e) {
-    //
-    // Get the current list data.
-    //
-    listData = $Kanban.boards
-      .filter((item) => item.id === board)[0]
-      .lists.filter((item) => item.id === id)[0];
-
-    //
-    // Update the particular item data.
-    //
-    listData.items = listData.items.map((item) => {
-      if (item.id === e.detail.id) {
-        item = e.detail;
-      }
-      return item;
-    });
-
-    //
-    // Send it upstream.
-    //
-    disbatch("listUpdate", {
-      list: listData,
-    });
-  }
+  function nameChanged() {}
+  function deleteList() {}
+  function addItem() {}
 </script>
 
 <div
   class="list"
-  style="background-color: {styles.listbgcolor}; color: {styles.listtextcolor}; border-width: {$listCursor ===
-  index
-    ? styles.cursorWidth
-    : '5px'}; border-color: {$listCursor === index
-    ? styles.cursorColor
-    : styles.listbgcolor};"
+  style="background-color: {listData.styles.listbgcolor}; color: {listData.styles.listtextcolor}; border-width: {$listCursor ===
+  listcur
+    ? listData.styles.cursorWidth
+    : '5px'}; border-color: {$listCursor === listcur
+    ? listData.styles.cursorColor
+    : listData.styles.listbgcolor};"
   bind:this={listDiv}
 >
   {#if listData !== null}
     <div class="listheader">
-      <EditH2Field name={listData.name} on:nameChanged={nameChanged} />
+      <EditH2Field
+        size={"110px"}
+        name={listData.name}
+        on:nameChanged={nameChanged}
+      />
       <span
         class="remove"
         on:click={() => {
@@ -231,20 +90,15 @@
       >
     </div>
     <div class="itemcontainer">
-      {#if items.length !== 0}
-        {#each items as item, itemindex}
+      {#if listData.items.length !== 0}
+        {#each listData.items as item, itemindex}
           {#if item !== null}
             <Item
               itemInfo={item}
-              editItem={$listCursor === index && $itemCursor === itemindex
+              editItem={$listCursor === listcur && $itemCursor === itemindex
                 ? edit
                 : false}
-              index={$listCursor === index ? itemindex : -2}
-              on:deleteItem={deleteItem}
-              on:newItemMsg={newItemMsg}
-              on:newItemApp={newItemApp}
-              on:appUpdate={appUpdate}
-              on:saveItem={saveItem}
+              index={$listCursor === listcur ? itemindex : -2}
               on:editOff={() => {
                 disbatch("editOff", {});
               }}

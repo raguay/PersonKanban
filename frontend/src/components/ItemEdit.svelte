@@ -10,11 +10,10 @@
   import { altKey } from "../stores/altKey.js";
   import { key } from "../stores/key.js";
 
-  export let styles;
   export let itemInfo;
 
   let newMsg = "";
-  let applications;
+  let applications = [];
   let origKeyboardHandler = null;
   let inputKeyboardStore = null;
   let handlekey = true;
@@ -39,7 +38,6 @@
     //
     // Load applications.
     //
-    applications = [];
     applications["todo"] = ToDoListApp;
 
     //
@@ -250,10 +248,6 @@
   }
 
   function saveItem(exit) {
-    disbatch("saveItem", {
-      item: itemInfo,
-      exit: exit,
-    });
   }
 
   function nameChanged(e) {
@@ -320,14 +314,13 @@
   }
 
   function appUpdate(e) {
-    disbatch("appUpdate", e.detail);
   }
 </script>
 
 <div class="editDialogBG">
   <div
     class="editDialog"
-    style="background-color: {styles.dialogBGColor}; color: {styles.dialogTextColor};"
+    style="background-color: {itemInfo.styles.dialogBGColor}; color: {itemInfo.styles.dialogTextColor};"
     bind:this={editDialogDiv}
   >
     <EditH2Field
