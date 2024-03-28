@@ -1,11 +1,13 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
+  import { keyHandler } from "../stores/keyHandler.js";
 
   export let app;
-  export let item;
 
-  let newToDo;
+  let newToDo = '';
+  let oldkbhdl = null;
+  let todoInputEl = null;
 
   const disbatch = createEventDispatcher();
 
@@ -21,7 +23,6 @@
 
   function saveApp() {
     disbatch("appUpdate", {
-      item: item.id,
       app: app,
     });
   }
@@ -58,8 +59,21 @@
     class="todoInput"
     type="text"
     bind:value={newToDo}
+    bind:this={todoInputEl}
+    on:focusin={() => {
+      oldkbhdl = $keyHandler;
+      $keyHandler = null;
+    }}
+    on:focusout={() => {
+      $keyHandler = oldkbhdl;
+      oldkbhdl = null;
+    }}
     on:keydown={(e) => {
-      if (e.code === "Enter") createNewTodo();
+      if (e.code === "Enter") {
+        e.preventDefault();
+        createNewTodo();
+        todoInputEl.focus();
+      }
     }}
   />
   <div class="todoContainer">
@@ -95,6 +109,9 @@
     display: flex;
     flex-direction: column;
     margin: 5px 0px 5px 10px;
+    border: 3px solid rgba(255,255,255,.6);
+    border-radius: 10px;
+    padding: 5px;
   }
 
   .todoContainer {
@@ -102,8 +119,7 @@
   }
 
   .todoInput {
-    margin: 5px 0px 10px 0px;
-    width: 364px;
+    margin: 5px;
     background-color: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     color: inherit;

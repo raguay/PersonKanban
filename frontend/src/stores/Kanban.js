@@ -70,24 +70,6 @@ const DefaultKanban = {
        //
        this.addBoard();
     }
-
-    //
-    // Make sure all the boards have their own style and information. This is to update
-    //  the data structures from an old build.
-    //
-    /*
-    this.boards = this.boards.forEach((_, key, arr) => {
-      arr[key].styles = this.defaultStyles;
-      arr[key].description = "";
-      arr[key].desctype = "text";
-      arr[key].lists.forEach((lst, key2, arr2) => {
-        arr2[key2].styles = this.defaultListStyle;
-        lst.items.forEach((_, key3, arr3) => {
-          arr3[key3].styles = this.defaultItemStyle;
-        });
-      });
-    });
-    */
     this.SaveKanbanBoards();
   },
   addBoard: async function() {
@@ -142,14 +124,19 @@ const DefaultKanban = {
     this.boards[bcur].lists[lcur].items = this.boards[bcur].lists[lcur].items.filter((_, index) => index !== icur);
     await this.SaveKanbanBoards();
   },
-  newItemMsg: async function(msg) {
+  newItemMsg: async function(date, type, msg) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     const icur = get(itemCursor);
 
     const notes = this.boards[bcur].lists[lcur].items[icur].notes;
     this.boards[bcur].lists[lcur].items[icur].notes = [
-      msg,
+      {
+        date: date,
+        type: type,
+        info: msg
+
+      },
       ...notes,
     ];
     await this.SaveKanbanBoards();

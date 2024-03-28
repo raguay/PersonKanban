@@ -149,9 +149,11 @@
 
   async function deleteCurrentBoard() {
     await tick();
-    await $Kanban.deleteboard();
+    await $Kanban.deleteBoard();
     $boardCursor = $boardCursor - 1;
     if($boardCursor < 0) $boardCursor = 0;
+    $listCursor = 0;
+    $itemCursor = -1;
     $Kanban = $Kanban;
 
   }
@@ -164,6 +166,7 @@
     await $Kanban.deleteList();
     $listCursor = $listCursor - 1;
     if($listCursor < 0) $listCursor = 0;
+    $itemCursor = -1;
     $Kanban = $Kanban;
   }
 
@@ -757,7 +760,9 @@
             listData={list}
             edit={$listCursor === index ? editItem : false}
             on:editOff={() => {
+              console.log("editOff flag")
               editItem = false;
+              $Kanban = $Kanban;
             }}
           />
         {/each}

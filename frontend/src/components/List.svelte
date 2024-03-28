@@ -5,6 +5,8 @@
   } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
+  import { Kanban } from "../stores/Kanban.js";
+  import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
 
@@ -43,20 +45,34 @@
           //
           // This is the last list. Make sure the new list button is shown.
           //
-          listDiv.parentNode.scrollLeft = elRight - elParentRight + 205;
+          listDiv.parentNode.scrollLeft += 205;
         }
-      }
-
-      // check if left side of the element is not in view
-      else if (elLeft < elParentLeft + listDiv.parentNode.scrollLeft) {
+      } else if  (elLeft < elParentLeft + listDiv.parentNode.scrollLeft) {
+        // 
+        // Left element is not in view. 
+        //
         listDiv.parentNode.scrollLeft = elLeft - elParentLeft;
       }
     }
   });
 
-  function nameChanged() {}
-  function deleteList() {}
-  function addItem() {}
+  async function nameChanged() {
+    await $Kanban.SaveKanbanBoards();
+  }
+
+  async function deleteList() {
+    $boardCursor = boardcur;
+    $listCursor = listcur;
+    await $Kanban.deleteList();
+    $Kanban = $Kanban;
+  }
+
+  async function addItem() {
+    $boardCursor = boardcur;
+    $listCursor = listcur;
+    await $Kanban.addItem();
+    $Kanban = $Kanban;
+  }
 </script>
 
 <div
@@ -68,6 +84,9 @@
     ? listData.styles.cursorColor
     : listData.styles.listbgcolor};"
   bind:this={listDiv}
+  on:click|capture={() => {
+    $listCursor = listcur;
+  }}
 >
   {#if listData !== null}
     <div class="listheader">
@@ -101,6 +120,7 @@
               index={$listCursor === listcur ? itemindex : -2}
               on:editOff={() => {
                 disbatch("editOff", {});
+                edit = false;
               }}
             />
           {/if}

@@ -3,6 +3,7 @@
   import EditH2Field from "./EditH2Field.svelte";
   import EditPField from "./EditPField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
+  import { Kanban } from "../stores/Kanban.js";
   import { keyHandler } from "../stores/keyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
@@ -247,7 +248,12 @@
     editDesc = true;
   }
 
-  function saveItem(exit) {
+  async function saveItem(exit) {
+    await $Kanban.SaveKanbanBoards();
+    if(exit) {
+      disbatch("editOff", {});
+    }
+    $Kanban = $Kanban;
   }
 
   function nameChanged(e) {
@@ -262,7 +268,7 @@
     saveItem(false);
   }
 
-  function createNewTextMsg() {
+  async function createNewTextMsg() {
     var td = new Date();
     var tdate =
       td.getDate() +
@@ -280,40 +286,24 @@
       (td.getSeconds().toString().length === 1
         ? "0" + td.getSeconds()
         : td.getSeconds());
-    let msgID = 0;
-    itemInfo.notes.map((note) => {
-      if (note.id >= msgID) msgID = note.id + 1;
-    });
-    disbatch("newItemMsg", {
-      item: itemInfo.id,
-      msg: {
-        id: msgID,
-        date: tdate,
-        type: "text",
-        info: typeof newMsg !== "undefined" ? newMsg : "",
-      },
-    });
+    await $Kanban.newItemMsg(tdate, "text", typeof newMsg !== "undefined" ? newMsg : "");
     newMsg = "";
+    $Kanban = $Kanban;
   }
 
-  function createToDoList() {
-    var newID = 0;
-    itemInfo.apps.map((app) => {
-      if (app.id >= newID) newID = app.id + 1;
+  async function createToDoList() {
+    await $Kanban.newItemApp({
+      name: itemInfo.name + ": " + "ToDoApp",
+      type: "todo",
+      styles: {},
+      todos: [],
     });
-    disbatch("newItemApp", {
-      item: itemInfo.id,
-      app: {
-        id: newID,
-        name: itemInfo.name + ": " + "ToDoListApp",
-        type: "todo",
-        styles: {},
-        todos: [],
-      },
-    });
+    $Kanban = $Kanban;
   }
 
-  function appUpdate(e) {
+  async function appUpdate(appindex, app) {
+    await $Kanban.appUpdate(appindex, app);
+    $Kanban = $Kanban;
   }
 </script>
 
@@ -334,12 +324,11 @@
       on:nameChanged={descriptionChanged}
     />
     <div class="itemContainer">
-      {#each itemInfo.apps as app}
+      {#each itemInfo.apps as app, appindex}
         <svelte:component
           this={applications[app.type]}
           {app}
-          item={itemInfo}
-          on:appUpdate={appUpdate}
+          on:appUpdate={async (e) => {await appUpdate(appindex,e.detail.app)}}
         />
       {/each}
       <input
@@ -347,7 +336,7 @@
         type="text"
         bind:this={msgInputDiv}
         bind:value={newMsg}
-        on:keydown={(e) => {
+        on:keydown|capture={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
             e.stopPropagation();
@@ -386,7 +375,8 @@
               </div>
             </div>
             {#if note.type === "text"}
-              <p class="noteText">{note.info}</p>{/if}
+              <p class="noteText">{note.info}</p>
+            {/if}
           </div>
         {/each}
       {/if}

@@ -149,29 +149,28 @@
     $metaboard.metaboards = $metaboard.metaboards.filter((item, key) => {
       if (key !== $metaboard.cursor) return item;
     });
+    await $metaboard.saveMetaBoards();
     $metaboard = $metaboard;
   }
 
   async function gotoMetaBoard(brdcursor) {
+    $metaboard.cursor = brdcursor;
     if (await App.FileExists($metaboard.metaboards[brdcursor].loc)) {
       //
       // The file is there. Therefore, read it an apply it.
       //
-      $Kanban = JSON.parse(
-        await App.ReadFile($metaboard.metaboards[brdcursor].loc),
-      );
+      await $Kanban.LoadCurrentKanbanBoards();
       $metaboard.clearShowing();
     } else {
       //
       // The file hasn't been created yet. Create it and set it.
       //
-      $Kanban = {
-        boards: [],
-      };
+      $Kanban.boards = [];
       let cmd = $commandBar.getCommand("Add a New Board");
       cmd.command();
       $metaboard.clearShowing();
     }
+    $Kanban = $Kanban;
     $boardCursor = 0;
     $listCursor = -1;
     $itemCursor = -1;
@@ -205,18 +204,17 @@
   async function saveMetaBoard() {
     if (add) {
       $metaboard.addmetaboard(boardName, boardDesc, boardDescType, boardLoc);
-      await $metaboard.saveMetaBoards();
-      $metaboard = $metaboard;
     } else {
       //
       // This is for editing. Save the Edit.
       //
-      let mb = $metaboard.metaboards[$metaboard.cursor];
-      mb.name = boardName;
-      mb.description = boardDesc;
-      mb.type = boardDescType;
-      mb.loc = boardLoc;
+      $metaboard.metaboards[$metaboard.cursor].name = boardName;
+      $metaboard.metaboards[$metaboard.cursor].description = boardDesc;
+      $metaboard.metaboards[$metaboard.cursor].type = boardDescType;
+      $metaboard.metaboards[$metaboard.cursor].loc = boardLoc;
     }
+    await $metaboard.saveMetaBoards();
+    $metaboard = $metaboard;
     addedit = false;
     handlekey = true;
   }

@@ -33,6 +33,7 @@
 
   function editItemCommand() {
     editItem = true;
+    $itemCursor = index;
   }
 </script>
 
@@ -47,14 +48,18 @@
     : itemInfo.styles.itembgcolor};"
   on:dblclick={editItemCommand}
   bind:this={itemDiv}
+  on:click|capture={() => {
+    $itemCursor = index;
+  }}
 >
   <h2>{itemInfo.name}</h2>
   <p>{itemInfo.description}</p>
   {#if editItem}
     <ItemEdit
-      {itemInfo}
+      itemInfo={itemInfo}
       on:editOff={() => {
         disbatch("editOff", {});
+        editItem = false;
       }}
     />
   {/if}
