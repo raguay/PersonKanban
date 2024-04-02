@@ -11,6 +11,7 @@
   import { skipKey } from "../stores/skipKey.js";
   import { lastCommand } from "../stores/lastCommand.js";
   import { boardCursor } from "../stores/boardCursor.js";
+  import { listCursor } from "../stores/listCursor.js";
   import { Kanban } from "../stores/Kanban.js";
 
   let inputDiv = null;
@@ -174,10 +175,10 @@
 <div id="CBFull">
   <div
     id="commandBarDiv"
-    style="background-color: {$Kanban[$boardCursor].styles.listbgcolor};
-           color: {$Kanban[$boardCursor].styles.listtextcolor};
-           font-family: {$Kanban[$boardCursor].styles.font};
-           font-size: {$Kanban[$boardCursor].styles.fontsize}px;"
+    style="background-color: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.listbgcolor};
+           color: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.listtextcolor};
+           font-family: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.font};
+           font-size: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.fontsize}px;"
   >
     <input
       id="comandBarInput"
@@ -222,8 +223,8 @@
     <div id="ListContainer">
       <div
         id="commandList"
-        style="background-color: {$Kanban[$boardCursor].styles
-          .listbgcolor}; color: {$Kanban[$boardCursor].styles.listtextcolor};
+        style="background-color: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.listbgcolor}; 
+               color: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.listtextcolor};
                border-width: {listdis === 'list' ? 2 : 0}px;"
         bind:this={commandListDiv}
       >
@@ -246,8 +247,8 @@
       <div
         id="commandDescription"
         bind:this={commandDescriptionDiv}
-        style="background-color: {$Kanban[$boardCursor].styles
-          .listbgcolor}; color: {$Kanban[$boardCursor].styles.listtextcolor};
+        style="background-color: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.listbgcolor}; 
+               color: {$Kanban.boards[$boardCursor].lists[$listCursor].styles.listtextcolor};
                border-width: {listdis === 'dis' ? 2 : 0}px;"
       >
         {#if $commandBar.commands[cursor].type === "text"}

@@ -753,11 +753,10 @@
   {#if $Kanban.boards.length > 0}
     <div id="ListsContainer" style="background-color: {$Kanban.boards[$boardCursor].styles.listcontainercolor};">
       {#if $Kanban.boards[$boardCursor].lists.length > 0}
-        {#each $Kanban.boards[$boardCursor].lists as list, index}
+        {#each $Kanban.boards[$boardCursor].lists as _, index}
           <List
             boardcur={$boardCursor}
             listcur={index}
-            listData={list}
             edit={$listCursor === index ? editItem : false}
             on:editOff={() => {
               console.log("editOff flag")

@@ -2,6 +2,7 @@
   import { afterUpdate, createEventDispatcher} from "svelte";
   import ItemEdit from "./ItemEdit.svelte";
   import { itemCursor } from "../stores/itemCursor.js";
+  import { Kanban } from "../stores/Kanban.js";
 
   export let itemInfo = null;
   export let index = 0;

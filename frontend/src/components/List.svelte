@@ -12,7 +12,6 @@
 
   export let boardcur = null;
   export let listcur = null;
-  export let listData = null;
   export let edit = false;
 
   const disbatch = createEventDispatcher();
@@ -56,7 +55,9 @@
     }
   });
 
-  async function nameChanged() {
+  async function nameChanged(e) {
+    console.log("nameChanged: ", e.detail, $Kanban, boardcur, listcur);
+    $Kanban.boards[boardcur].lists[listcur].name = e.detail.name;
     await $Kanban.SaveKanbanBoards();
   }
 
@@ -77,22 +78,22 @@
 
 <div
   class="list"
-  style="background-color: {listData.styles.listbgcolor}; color: {listData.styles.listtextcolor}; border-width: {$listCursor ===
+  style="background-color: {$Kanban.boards[boardcur].lists[listcur].styles.listbgcolor}; color: {$Kanban.boards[boardcur].lists[listcur].styles.listtextcolor}; border-width: {$listCursor ===
   listcur
-    ? listData.styles.cursorWidth
+    ? $Kanban.boards[boardcur].lists[listcur].styles.cursorWidth
     : '5px'}; border-color: {$listCursor === listcur
-    ? listData.styles.cursorColor
-    : listData.styles.listbgcolor};"
+    ? $Kanban.boards[boardcur].lists[listcur].styles.cursorColor
+    : $Kanban.boards[boardcur].lists[listcur].styles.listbgcolor};"
   bind:this={listDiv}
   on:click|capture={() => {
     $listCursor = listcur;
   }}
 >
-  {#if listData !== null}
+  {#if $Kanban.boards[boardcur].lists[listcur] !== null}
     <div class="listheader">
       <EditH2Field
         size={"110px"}
-        name={listData.name}
+        name={$Kanban.boards[boardcur].lists[listcur].name}
         on:nameChanged={nameChanged}
       />
       <span
@@ -109,8 +110,8 @@
       >
     </div>
     <div class="itemcontainer">
-      {#if listData.items.length !== 0}
-        {#each listData.items as item, itemindex}
+      {#if $Kanban.boards[boardcur].lists[listcur].items.length !== 0}
+        {#each $Kanban.boards[boardcur].lists[listcur].items as item, itemindex}
           {#if item !== null}
             <Item
               itemInfo={item}
