@@ -17,7 +17,7 @@
   import { altKey } from "./stores/altKey.js";
   import { key } from "./stores/key.js";
   import { skipKey } from "./stores/skipKey.js";
- 
+
   let editNameFlag = false;
   let editField = null;
   let origKH = null;
@@ -47,8 +47,6 @@
     // Setup the keyboard handler.
     //
     $keyHandler = listKeyHandler;
-    $listCursor = 0;
-    $itemCursor = -1;
 
     //
     // Add Commands for the CommandBar.
@@ -151,11 +149,10 @@
     await tick();
     await $Kanban.deleteBoard();
     $boardCursor = $boardCursor - 1;
-    if($boardCursor < 0) $boardCursor = 0;
+    if ($boardCursor < 0) $boardCursor = 0;
     $listCursor = 0;
     $itemCursor = -1;
     $Kanban = $Kanban;
-
   }
 
   async function deleteCurrentList() {
@@ -165,7 +162,7 @@
     await tick();
     await $Kanban.deleteList();
     $listCursor = $listCursor - 1;
-    if($listCursor < 0) $listCursor = 0;
+    if ($listCursor < 0) $listCursor = 0;
     $itemCursor = -1;
     $Kanban = $Kanban;
   }
@@ -177,7 +174,7 @@
     await tick();
     await $Kanban.deleteItem();
     $itemCursor = $itemCursor - 1;
-    if($itemCursor < 0) $itemCursor = 0;
+    if ($itemCursor < 0) $itemCursor = 0;
     $Kanban = $Kanban;
   }
 
@@ -248,7 +245,7 @@
                 command = addNewList;
                 $lastCommand = "Add New List";
               }
-            } else if ($itemCursor === -1) {
+            } else if ($itemCursor <= -1) {
               command = addNewList;
               $lastCommand = "Add New List";
             } else {
@@ -261,7 +258,7 @@
             if ($listCursor === -1) {
               command = deleteCurrentBoard;
               $lastCommand = "Delete Current Board";
-            } else if ($itemCursor === -1) {
+            } else if ($itemCursor <= -1) {
               command = deleteCurrentList;
               $lastCommand = "Delete Current List";
             } else {
@@ -308,7 +305,7 @@
             if ($listCursor === -1) {
               command = moveBoard;
               $lastCommand = "Move Current Board";
-            } else if ($itemCursor === -1) {
+            } else if ($itemCursor <= -1) {
               command = moveList;
               $lastCommand = "Move Current List";
             } else {
@@ -529,8 +526,12 @@
           break;
       }
       if (newitemindex < 0) newitemindex = 0;
-      if ($Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1 < newitemindex)
-        newitemindex = $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
+      if (
+        $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1 <
+        newitemindex
+      )
+        newitemindex =
+          $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
       if (newitemindex !== $itemCursor) {
         //
         // We have a valid move.
@@ -538,9 +539,10 @@
         let orig = structuredClone(
           $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
         );
-        $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor] = structuredClone(
-          $Kanban.boards[$boardCursor].lists[$listCursor].items[newitemindex],
-        );
+        $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor] =
+          structuredClone(
+            $Kanban.boards[$boardCursor].lists[$listCursor].items[newitemindex],
+          );
         $Kanban.boards[$boardCursor].lists[$listCursor].items[newitemindex] =
           structuredClone(orig);
         $itemCursor = newitemindex;
@@ -568,7 +570,10 @@
           let item = structuredClone(
             $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
           );
-          $Kanban.boards[$boardCursor].lists[$listCursor].items.splice($itemCursor, 1);
+          $Kanban.boards[$boardCursor].lists[$listCursor].items.splice(
+            $itemCursor,
+            1,
+          );
           $Kanban.boards[$boardCursor].lists[newlistindex].items = [
             item,
             ...$Kanban.boards[$boardCursor].lists[newlistindex].items,
@@ -604,11 +609,14 @@
         //
         // We have a valid move.
         //
-        let orig = structuredClone($Kanban.boards[$boardCursor].lists[$listCursor]);
+        let orig = structuredClone(
+          $Kanban.boards[$boardCursor].lists[$listCursor],
+        );
         $Kanban.boards[$boardCursor].lists[$listCursor] = structuredClone(
           $Kanban.boards[$boardCursor].lists[newlistindex],
         );
-        $Kanban.boards[$boardCursor].lists[newlistindex] = structuredClone(orig);
+        $Kanban.boards[$boardCursor].lists[newlistindex] =
+          structuredClone(orig);
         $listCursor = newlistindex;
       }
       await $Kanban.SaveKanbanBoards();
@@ -622,7 +630,12 @@
       //
       $listCursor = $listCursor - 1;
       if ($listCursor < 0) $listCursor = 0;
-      if($itemCursor >= $Kanban.boards[$boardCursor].lists[$listCursor].items.length) $itemCursor = $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
+      if (
+        $itemCursor >=
+        $Kanban.boards[$boardCursor].lists[$listCursor].items.length
+      )
+        $itemCursor =
+          $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
     }
   }
 
@@ -633,7 +646,12 @@
     $listCursor = $listCursor + 1;
     if ($listCursor >= $Kanban.boards[$boardCursor].lists.length)
       $listCursor = $Kanban.boards[$boardCursor].lists.length - 1;
-    if($itemCursor >= $Kanban.boards[$boardCursor].lists[$listCursor].items.length) $itemCursor = $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
+    if (
+      $itemCursor >=
+      $Kanban.boards[$boardCursor].lists[$listCursor].items.length
+    )
+      $itemCursor =
+        $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
   }
 
   function moveItemCursorUp() {
@@ -671,112 +689,128 @@
 />
 
 {#if $Kanban.boards.length > 0}
-<div id="MainBoard">
-  <div id="tabs">
-    {#if $Kanban.boards.length > 0}
-      {#each $Kanban.boards as board, index}
-        {#if $boardCursor === index}
-          <div
-            class="tab"
-            style="background-color: {$Kanban.boards[$boardCursor].styles.selectTabColor}; color: {$Kanban.boards[$boardCursor].styles.selectTabTextColor}"
-            data-key={index}
-            on:dblclick={(e) => {
-              editName(index);
-            }}
-          >
-            <span
-              style="background-color: {$Kanban.boards[$boardCursor].styles.selectTabColor}; color: {$Kanban.boards[$boardCursor].styles.selectTabTextColor}"
-              class="tabName"
+  <div id="MainBoard">
+    <div id="tabs">
+      {#if $Kanban.boards.length > 0}
+        {#each $Kanban.boards as board, index}
+          {#if $boardCursor === index}
+            <div
+              class="tab"
+              style="background-color: {$Kanban.boards[$boardCursor].styles
+                .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
+                .selectTabTextColor}"
+              data-key={index}
+              on:dblclick={(e) => {
+                editName(index);
+              }}
             >
-              {#if editNameFlag}
-                <input
-                  type="text"
-                  bind:value={board.name}
-                  bind:this={editField}
-                  on:keydown={async (e) => {
-                    if (e.code === "Enter") {
-                      editNameFlag = false;
+              <span
+                style="background-color: {$Kanban.boards[$boardCursor].styles
+                  .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
+                  .selectTabTextColor}"
+                class="tabName"
+              >
+                {#if editNameFlag}
+                  <input
+                    type="text"
+                    bind:value={board.name}
+                    bind:this={editField}
+                    on:keydown={async (e) => {
+                      if (e.code === "Enter") {
+                        editNameFlag = false;
+                        $keyHandler = origKH;
+                        origKH = null;
+                        await $Kanban.saveBoard();
+                      }
+                    }}
+                    on:blur={async () => {
                       $keyHandler = origKH;
                       origKH = null;
+                      editNameFlag = false;
                       await $Kanban.saveBoard();
-                    }
-                  }}
-                  on:blur={async () => {
-                    $keyHandler = origKH;
-                    origKH = null;
-                    editNameFlag = false;
-                    await $Kanban.saveBoard();
-                  }}
-                />
-              {:else}
-                {board.name}
-              {/if}
-            </span>
-          </div>
-        {:else}
-          <div
-            class="tab"
-            style="background-color: {$Kanban.boards[$boardCursor].styles.unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles.unselectTabTextColor}"
-            data-key={index}
-            on:click={() => {
-              setBoard(index);
-            }}
-          >
-            <span
-              class="tabName"
-              style="background-color: {$Kanban.boards[$boardCursor].styles.unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles.unselectTabTextColor}"
+                    }}
+                  />
+                {:else}
+                  {board.name}
+                {/if}
+              </span>
+            </div>
+          {:else}
+            <div
+              class="tab"
+              style="background-color: {$Kanban.boards[$boardCursor].styles
+                .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
+                .unselectTabTextColor}"
+              data-key={index}
+              on:click={() => {
+                setBoard(index);
+              }}
             >
-              {board.name}
-            </span>
-          </div>
-        {/if}
-      {/each}
-    {/if}
-    <div
-      class="tab"
-      style="background-color: {$Kanban.boards[$boardCursor].styles.unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles.unselectTabTextColor}"
-      data-key={-1}
-      on:click={(e) => {
-        addNewBoard();
-      }}
-    >
-      <span
-        class="tabName"
-        style="background-color: {$Kanban.boards[$boardCursor].styles.unselectTabColor};
-                   color: {$Kanban.boards[$boardCursor].styles.unselectTabTextColor};
-                   font-size: 30px; line-height: 20px;"
-      >
-        +
-      </span>
-    </div>
-  </div>
-  {#if $Kanban.boards.length > 0}
-    <div id="ListsContainer" style="background-color: {$Kanban.boards[$boardCursor].styles.listcontainercolor};">
-      {#if $Kanban.boards[$boardCursor].lists.length > 0}
-        {#each $Kanban.boards[$boardCursor].lists as _, index}
-          <List
-            boardcur={$boardCursor}
-            listcur={index}
-            edit={$listCursor === index ? editItem : false}
-            on:editOff={() => {
-              console.log("editOff flag")
-              editItem = false;
-              $Kanban = $Kanban;
-            }}
-          />
+              <span
+                class="tabName"
+                style="background-color: {$Kanban.boards[$boardCursor].styles
+                  .unselectTabColor}; color: {$Kanban.boards[$boardCursor]
+                  .styles.unselectTabTextColor}"
+              >
+                {board.name}
+              </span>
+            </div>
+          {/if}
         {/each}
       {/if}
       <div
-        id="addList"
-        on:click={() => {
-          addNewList();
+        class="tab"
+        style="background-color: {$Kanban.boards[$boardCursor].styles
+          .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
+          .unselectTabTextColor}"
+        data-key={-1}
+        on:click={(e) => {
+          addNewBoard();
         }}
       >
-        <p>+ New List</p>
+        <span
+          class="tabName"
+          style="background-color: {$Kanban.boards[$boardCursor].styles
+            .unselectTabColor};
+                   color: {$Kanban.boards[$boardCursor].styles
+            .unselectTabTextColor};
+                   font-size: 30px; line-height: 20px;"
+        >
+          +
+        </span>
       </div>
     </div>
-  {/if}
-</div>
+    {#if $Kanban.boards.length > 0}
+      <div
+        id="ListsContainer"
+        style="background-color: {$Kanban.boards[$boardCursor].styles
+          .listcontainercolor};"
+      >
+        {#if $Kanban.boards[$boardCursor].lists.length > 0}
+          {#each $Kanban.boards[$boardCursor].lists as _, index}
+            <List
+              boardcur={$boardCursor}
+              listcur={index}
+              edit={$listCursor === index ? editItem : false}
+              on:editOff={() => {
+                console.log("editOff flag");
+                editItem = false;
+                $Kanban = $Kanban;
+              }}
+            />
+          {/each}
+        {/if}
+        <div
+          id="addList"
+          on:click={() => {
+            addNewList();
+          }}
+        >
+          <p>+ New List</p>
+        </div>
+      </div>
+    {/if}
+  </div>
 {/if}
 
 {#if $commandBar.showing}
@@ -791,17 +825,32 @@
   :global(h1) {
     font-size: 18px !important;
     text-align: center;
+    overflow: hidden;
+  }
+
+  :global(body) {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100vh;
+    user-select: none;
+    overflow: hidden;
   }
 
   #MainBoard {
     position: absolute;
+    top: 0px;
+    left: 0px;
     display: flex;
     flex: 1fr;
     flex-direction: column;
     margin: 0px;
-    padding: 10px;
-    height: 97%;
-    width: 97%;
+    height: 100vh;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    min-height: 100vh;
+    min-width: 100%;
   }
 
   #tabs {

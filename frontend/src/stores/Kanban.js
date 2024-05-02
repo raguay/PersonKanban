@@ -1,5 +1,5 @@
-import { writable, get } from 'svelte/store';
-import { metaboard } from './metaboard.js';
+import { writable, get } from "svelte/store";
+import { metaboard } from "./metaboard.js";
 import { boardCursor } from "./boardCursor.js";
 import { listCursor } from "./listCursor.js";
 import { itemCursor } from "./itemCursor.js";
@@ -24,6 +24,8 @@ const DefaultKanban = {
     cursorText: "white",
     cursorWidth: "10px",
     kanbanInfo: "black",
+    commandbarbgcolor: "#9AC2FA",
+    commandbartextcolor: "white",
   },
   defaultListStyle: {
     listbgcolor: "#9AC2FA",
@@ -43,13 +45,14 @@ const DefaultKanban = {
     dialogTextColor: "black",
     itemtextcolor: "black",
   },
-  SaveKanbanBoards: async function() {
+  SaveKanbanBoards: async function () {
     const mtboard = get(metaboard);
     await App.WriteFile(
-    mtboard.metaboards[mtboard.cursor].loc,
-    JSON.stringify(this.boards),
-  )},
-  LoadCurrentKanbanBoards: async function() {
+      mtboard.metaboards[mtboard.cursor].loc,
+      JSON.stringify(this.boards),
+    );
+  },
+  LoadCurrentKanbanBoards: async function () {
     const mtboard = get(metaboard);
     if (await App.FileExists(mtboard.metaboards[mtboard.cursor].loc)) {
       //
@@ -59,20 +62,20 @@ const DefaultKanban = {
         await App.ReadFile(mtboard.metaboards[mtboard.cursor].loc),
       );
     } else {
-       //
-       // Clear the boards.
-       //
-       this.boards = [];
+      //
+      // Clear the boards.
+      //
+      this.boards = [];
     }
     if (this.boards.length === 0) {
-       //
-       // Create the default board if there are no boards.
-       //
-       this.addBoard();
+      //
+      // Create the default board if there are no boards.
+      //
+      this.addBoard();
     }
     this.SaveKanbanBoards();
   },
-  addBoard: async function() {
+  addBoard: async function () {
     //
     // Using the default styles as a template. Maybe change that in the future?
     //
@@ -81,11 +84,11 @@ const DefaultKanban = {
       description: "",
       desctype: "text",
       styles: this.defaultStyles,
-      lists: []
+      lists: [],
     });
     await this.SaveKanbanBoards();
   },
-  addList: async function() {
+  addList: async function () {
     const bcur = get(boardCursor);
     this.boards[bcur].lists.push({
       name: "New List",
@@ -94,7 +97,7 @@ const DefaultKanban = {
     });
     await this.SaveKanbanBoards();
   },
-  addItem: async function() {
+  addItem: async function () {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     this.boards[bcur].lists[lcur].items.push({
@@ -106,25 +109,29 @@ const DefaultKanban = {
     });
     await this.SaveKanbanBoards();
   },
-  deleteBoard: async function() {
+  deleteBoard: async function () {
     const bcur = get(boardCursor);
     this.boards = this.boards.filter((_, index) => index !== bcur);
     await this.SaveKanbanBoards();
   },
-  deleteList: async function() {
+  deleteList: async function () {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
-    this.boards[bcur].lists = this.boards[bcur].lists.filter((_, index) => index !== lcur);
+    this.boards[bcur].lists = this.boards[bcur].lists.filter(
+      (_, index) => index !== lcur,
+    );
     await this.SaveKanbanBoards();
   },
-  deleteItem: async function() {
+  deleteItem: async function () {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     const icur = get(itemCursor);
-    this.boards[bcur].lists[lcur].items = this.boards[bcur].lists[lcur].items.filter((_, index) => index !== icur);
+    this.boards[bcur].lists[lcur].items = this.boards[bcur].lists[
+      lcur
+    ].items.filter((_, index) => index !== icur);
     await this.SaveKanbanBoards();
   },
-  newItemMsg: async function(date, type, msg) {
+  newItemMsg: async function (date, type, msg) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     const icur = get(itemCursor);
@@ -134,24 +141,21 @@ const DefaultKanban = {
       {
         date: date,
         type: type,
-        info: msg
-
+        info: msg,
       },
       ...notes,
     ];
     await this.SaveKanbanBoards();
   },
-  newItemApp: async function(app) {
+  newItemApp: async function (app) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     const icur = get(itemCursor);
 
-    this.boards[bcur].lists[lcur].items[icur].apps.push(
-      app,
-    );
+    this.boards[bcur].lists[lcur].items[icur].apps.push(app);
     await this.SaveKanbanBoards();
   },
-  appUpdate: async function(Apindex, app) {
+  appUpdate: async function (Apindex, app) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     const icur = get(itemCursor);
@@ -159,13 +163,13 @@ const DefaultKanban = {
     this.boards[bcur].lists[lcur].items[icur].apps[Apindex] = app;
     await this.SaveKanbanBoards();
   },
-  listUpdate: async function(list) {
+  listUpdate: async function (list) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
 
     this.boards[bcur].lists[lcur] = list;
     await this.SaveKanbanBoards();
-  }
+  },
 };
 
 export const Kanban = writable(DefaultKanban);
