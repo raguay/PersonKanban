@@ -132,14 +132,16 @@
     e.preventDefault();
     e.stopPropagation();
     $metaboard.clearShowing();
+    addedit = false;
     $metaboard = $metaboard;
     if (origKeyboardHandler !== null) {
       $keyHandler = origKeyboardHandler;
+      origKeyboardHandler = null;
     }
   }
 
   async function deleteCurrentMetaboard() {
-    await deleteMetaboard($metaboard.metaboards[$metaboard.cursor]);
+    await deleteMetaboard($metaboard.cursor);
   }
 
   async function deleteMetaboard(cur) {
@@ -147,9 +149,13 @@
     // Remove the metaboard at the cursor location.
     //
     $metaboard.metaboards = $metaboard.metaboards.filter((item, key) => {
-      if (key !== $metaboard.cursor) return item;
+      if (key !== cur) return item;
     });
     await $metaboard.saveMetaBoards();
+    if ($metaboard.cursor == cur) {
+      $metaboard.cursor = $metaboard.cursor - 1;
+      if ($metaboard.cursor < 0) $metaboard.cursor = 0;
+    }
     $metaboard = $metaboard;
   }
 
@@ -305,9 +311,24 @@
     </div>
     {#if !addedit}
       <div id="buttonrow">
-        <button class="brbutton">Add</button>
-        <button class="brbutton">Delete</button>
-        <button class="brbutton">Cancel</button>
+        <button
+          class="brbutton"
+          on:click={() => {
+            newMetaBoard();
+          }}>Add</button
+        >
+        <button
+          class="brbutton"
+          on:click={() => {
+            deleteCurrentMetaboard();
+          }}>Delete</button
+        >
+        <button
+          class="brbutton"
+          on:click={(e) => {
+            close(e);
+          }}>Cancel</button
+        >
       </div>
     {/if}
   </div>

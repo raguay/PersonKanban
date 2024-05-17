@@ -17,6 +17,7 @@
   import { altKey } from "./stores/altKey.js";
   import { key } from "./stores/key.js";
   import { skipKey } from "./stores/skipKey.js";
+  import * as App from "../wailsjs/go/main/App.js";
 
   let editNameFlag = false;
   let editField = null;
@@ -127,6 +128,12 @@
       "Move Item Cursor Down",
       moveItemCursorDown,
       "### Move Item Cursor Down\n\nThis will move the item cursor down.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Quit",
+      quit,
+      "### quit\n\nThis will exit out of the program.",
       "md",
     );
   });
@@ -680,6 +687,10 @@
       }
     }
   }
+
+  async function quit() {
+    await App.Quit();
+  }
 </script>
 
 <svelte:window
@@ -835,6 +846,7 @@
     height: 100vh;
     user-select: none;
     overflow: hidden;
+    background-color: transparent;
   }
 
   #MainBoard {
@@ -851,6 +863,7 @@
     padding: 0px;
     min-height: 100vh;
     min-width: 100%;
+    background-color: transparent;
   }
 
   #tabs {
@@ -859,6 +872,7 @@
     margin: 0px 10px 0px 0px;
     overflow-x: auto;
     overflow-y: hidden;
+    background-color: transparent;
   }
 
   #tabs::-webkit-scrollbar {

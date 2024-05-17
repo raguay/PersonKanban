@@ -6,6 +6,7 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
 )
 
 //go:embed all:frontend/dist
@@ -28,6 +29,19 @@ func main() {
 		Bind: []interface{}{
 			app,
 		},
+		Frameless:						 true,
+    CSSDragProperty:   "--wails-draggable",
+    CSSDragValue:      "drag",
+    Mac: &mac.Options{
+             TitleBar:             mac.TitleBarHiddenInset(),
+             Appearance:           mac.NSAppearanceNameDarkAqua,
+             WebviewIsTransparent: true,
+             WindowIsTranslucent:  true,
+             About: &mac.AboutInfo{
+                    Title:   "Personal Kanban",
+                    Message: "© 2022 Richard Guay <raguay@customct.com>",
+             },
+    },
 	})
 
 	if err != nil {
