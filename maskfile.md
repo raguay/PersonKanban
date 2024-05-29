@@ -6,7 +6,7 @@ wails dev
 ## build
 
 ```zsh
-wails build
+wails build --platform "darwin/universal"
 ```
 
 ## copy

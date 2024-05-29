@@ -136,7 +136,29 @@
       "### quit\n\nThis will exit out of the program.",
       "md",
     );
+    $commandBar.addCommand(
+      "Edit List Title",
+      editListTitle,
+      "### Edit List Title\n\nEdit the title for the current list.",
+      "md",
+    )
+    $commandBar.addCommand(
+      "Edit Board Name",
+      editBoardName,
+      "### Edit Board Name\n\nEdit the name of the current board.",
+      "md",
+    )
   });
+
+  function editListTitle() {
+    editItem = true;
+    $Kanban = $Kanban;
+  }
+
+  async function editBoardName() {
+    let num = $boardCursor;
+    await editName(num);
+  }
 
   async function addNewBoard() {
     await $Kanban.addBoard();
@@ -228,7 +250,7 @@
     acc = "";
   }
 
-  function processKey(e) {
+  async function processKey(e) {
     //
     // This is just normal key processing. Run the command for that key.
     //
@@ -258,6 +280,16 @@
             } else {
               command = addNewItem;
               $lastCommand = "Add New Item";
+            }
+            break;
+
+          case "e":
+            if($itemCursor < 0 && $listCursor >= 0) {
+              command = editListTitle;
+              $lastCommand = "Edit List Title";
+            } else if($itemCursor < 0 && $listCursor < 0) {
+              command = editBoardName;
+              $lastCommand = "Edit Board Name";
             }
             break;
 
@@ -804,7 +836,6 @@
               listcur={index}
               edit={$listCursor === index ? editItem : false}
               on:editOff={() => {
-                console.log("editOff flag");
                 editItem = false;
                 $Kanban = $Kanban;
               }}
@@ -873,6 +904,7 @@
     overflow-x: auto;
     overflow-y: hidden;
     background-color: transparent;
+    --wails-draggable: drag;
   }
 
   #tabs::-webkit-scrollbar {

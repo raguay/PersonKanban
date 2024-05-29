@@ -1,8 +1,5 @@
 <script>
-  import {
-    afterUpdate,
-    createEventDispatcher,
-  } from "svelte";
+  import { afterUpdate, createEventDispatcher } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
@@ -46,9 +43,9 @@
           //
           listDiv.parentNode.scrollLeft += 205;
         }
-      } else if  (elLeft < elParentLeft + listDiv.parentNode.scrollLeft) {
-        // 
-        // Left element is not in view. 
+      } else if (elLeft < elParentLeft + listDiv.parentNode.scrollLeft) {
+        //
+        // Left element is not in view.
         //
         listDiv.parentNode.scrollLeft = elLeft - elParentLeft;
       }
@@ -56,8 +53,8 @@
   });
 
   async function nameChanged(e) {
-    console.log("nameChanged: ", e.detail, $Kanban, boardcur, listcur);
     $Kanban.boards[boardcur].lists[listcur].name = e.detail.name;
+    disbatch("editOff", {});
     await $Kanban.SaveKanbanBoards();
   }
 
@@ -78,8 +75,9 @@
 
 <div
   class="list"
-  style="background-color: {$Kanban.boards[boardcur].lists[listcur].styles.listbgcolor}; color: {$Kanban.boards[boardcur].lists[listcur].styles.listtextcolor}; border-width: {$listCursor ===
-  listcur
+  style="background-color: {$Kanban.boards[boardcur].lists[listcur].styles
+    .listbgcolor}; color: {$Kanban.boards[boardcur].lists[listcur].styles
+    .listtextcolor}; border-width: {$listCursor === listcur
     ? $Kanban.boards[boardcur].lists[listcur].styles.cursorWidth
     : '5px'}; border-color: {$listCursor === listcur
     ? $Kanban.boards[boardcur].lists[listcur].styles.cursorColor
@@ -95,6 +93,7 @@
         size={"110px"}
         name={$Kanban.boards[boardcur].lists[listcur].name}
         on:nameChanged={nameChanged}
+        edit={$listCursor === listcur && $itemCursor < 0 ? edit : false}
       />
       <span
         class="remove"
@@ -142,7 +141,6 @@
     border: 5px solid transparent;
     border-radius: 5px;
     max-height: -webkit-fill-available;
-    height: 96%;
   }
 
   .listheader {
