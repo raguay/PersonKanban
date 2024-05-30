@@ -877,7 +877,9 @@
     height: 100vh;
     user-select: none;
     overflow: hidden;
-    background-color: transparent;
+    background-color:argba(0,0,0,0);
+    border-radius: 10px;
+    border: solid 0px transparent;
   }
 
   #MainBoard {
@@ -904,7 +906,6 @@
     overflow-x: auto;
     overflow-y: hidden;
     background-color: transparent;
-    --wails-draggable: drag;
   }
 
   #tabs::-webkit-scrollbar {
@@ -929,6 +930,7 @@
     padding: 10px;
     cursor: pointer;
     user-select: none;
+    --wails-draggable: drag;
   }
 
   .tab span input[type="text"] {

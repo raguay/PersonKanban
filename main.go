@@ -24,7 +24,7 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 0},
+		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 0},
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
@@ -36,7 +36,7 @@ func main() {
              TitleBar:             mac.TitleBarHiddenInset(),
              Appearance:           mac.NSAppearanceNameDarkAqua,
              WebviewIsTransparent: true,
-             WindowIsTranslucent:  true,
+             WindowIsTranslucent:  false,
              About: &mac.AboutInfo{
                     Title:   "Personal Kanban",
                     Message: "© 2022 Richard Guay <raguay@customct.com>",
