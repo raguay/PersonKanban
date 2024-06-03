@@ -409,17 +409,19 @@
 
   .editDialogBG {
     position: absolute;
-    top: 0px;
+    top: 36px;
     left: 0px;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+    height: 95%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 5px solid transparent;
+    border-radius: 10px;
   }
 
   .editDialog {
     width: 400px;
     height: 80%;
-    margin: auto;
+    margin: 5% auto;
     display: flex;
     flex-direction: column;
     border: 5px solid transparent;
