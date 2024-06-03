@@ -71,5 +71,6 @@ The following is a list of the features I plan to add in no particular order. If
 - Command bar to see commands and actioning them. - done It is called the QuickBar.
 - The ability for the user to add new commands and themes. Downloading commands from GitHub as well.
 - The ability to change themes and create new themes.
+- Create a way to do things with Personal Kanban from the command line.
 
 
