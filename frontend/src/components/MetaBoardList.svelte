@@ -336,15 +336,17 @@
 
 <style>
   #MBBackground {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.2);
     position: absolute;
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    top: 0px;
+    top: 36px;
     left: 0px;
     z-index: 200;
+    border: 5px solid transparent;
+    border-radius: 10px;
   }
 
   #metaboardlist {
