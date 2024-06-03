@@ -75,13 +75,16 @@ const DefaultKanban = {
     }
     this.SaveKanbanBoards();
   },
-  addBoard: async function () {
+  addBoard: async function() {
+    await addBoardNamed("New Board","");
+  },
+  addBoardNamed: async function (name, description) {
     //
     // Using the default styles as a template. Maybe change that in the future?
     //
     this.boards.push({
-      name: "New Board",
-      description: "",
+      name: name,
+      description: description,
       desctype: "text",
       styles: this.defaultStyles,
       lists: [],
@@ -89,20 +92,27 @@ const DefaultKanban = {
     await this.SaveKanbanBoards();
   },
   addList: async function () {
-    const bcur = get(boardCursor);
+    await this.addListNamed("New List");
+  },
+  addListNamed: async function(name) {
+     const bcur = get(boardCursor);
     this.boards[bcur].lists.push({
-      name: "New List",
+      name: name,
       styles: this.defaultListStyle,
       items: [],
     });
     await this.SaveKanbanBoards();
+   
   },
-  addItem: async function () {
+  addItem: async function() {
+    await addItemNamed("New Item", "This should describe the card's function.");
+  },
+  addItemNamed: async function (name, description) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     this.boards[bcur].lists[lcur].items.push({
-      name: "New Item",
-      description: "This should describe the card's function.",
+      name: name,
+      description: description,
       notes: [],
       styles: this.defaultItemStyle,
       apps: [],

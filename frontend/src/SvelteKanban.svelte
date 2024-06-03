@@ -2,6 +2,7 @@
   import { onMount, tick } from "svelte";
   import CommandBar from "./components/CommandBar.svelte";
   import MetaBoardList from "./components/MetaBoardList.svelte";
+  import QuickBar from "./components/QuickBar.svelte";
   import List from "./components/List.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { lastCommand } from "./stores/lastCommand.js";
@@ -27,6 +28,7 @@
   let command = null;
   let direction = "";
   let editItem = false;
+  let quickBarOpen = false;
 
   onMount(async () => {
     //
@@ -261,6 +263,11 @@
         // State 0 is the main entry state. Get the command and accumulator values.
         //
         switch ($key) {
+          case " ":
+            quickBarOpen = true;
+            command = null;
+            break;
+
           case "a":
             let thisboard = $Kanban.boards[$boardCursor];
             if ($listCursor === -1) {
@@ -861,6 +868,14 @@
 
 {#if $metaboard.showing}
   <MetaBoardList />
+{/if}
+
+{#if quickBarOpen}
+  <QuickBar 
+    on:close={() => {
+      quickBarOpen = false;
+    }}
+  />
 {/if}
 
 <style>
