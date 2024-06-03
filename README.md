@@ -13,7 +13,7 @@ It is built using [Wails 2](wails.io) and [Go](golang.org). Once they are instal
 wails dev
 ```
 
-or you can use the Maskfile to run [Mask]() scripts:
+or you can use the Maskfile to run [Mask](https://github.com/jacobdeichert/mask) scripts:
 
 ```sh 
 mask dev
@@ -24,7 +24,7 @@ To run the developmental environment. To make a full binary build, you need to r
 ```sh
 wails build
 ```
-or you can use the Maskfile to run [Mask]() scripts:
+or you can use the Maskfile to run [Mask](https://github.com/jacobdeichert/mask) scripts:
 
 ```sh 
 mask build 
