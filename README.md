@@ -4,7 +4,7 @@
 
 A lightweight personal Kanban board for everyday use.
 
-[Personal Kanban](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban.webp)
+![Personal Kanban](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban.webp)
 
 It is currently a working Alpha project with many of the planned features in place. I am currently using it daily to track my projects and bugs. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
 
