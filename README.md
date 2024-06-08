@@ -4,9 +4,23 @@
 
 A lightweight personal Kanban board for everyday use.
 
+
 ![Personal Kanban](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban.webp)
 
-It is currently a working Alpha project with many of the planned features in place. I am currently using it daily to track my projects and bugs. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
+
+You also can create, delete, and navigate around collections of boards call MetaBoards.
+
+![Personal Kanban MetaBoards](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-2.webp)
+
+Personal Kanban also has a CommandBar to run special commands.
+
+![Personal Kanban CommandBar](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-3.webp)
+
+There is also a QuickBar to quickly add new items like boards, lists, and items.
+
+![Personal Kanban QuickBar](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-4.webp)
+
+It is currently a working Beta project with many of the planned features in place. I am currently using it daily to track my projects and bugs. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
 
 # How to Build
 It is built using [Wails 2](wails.io) and [Go](golang.org). Once they are installed on your system, you can run it using:
