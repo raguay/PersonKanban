@@ -22,6 +22,14 @@ There is also a QuickBar to quickly add new items like boards, lists, and items.
 
 It is currently a working Beta project with many of the planned features in place. I am currently using it daily to track my projects and bugs. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
 
+# Table of Contents
+
+- [How to Build](#how-to-build)
+- [Installing from Releases](#installing-from-releases)
+- [How to Use](#how-to-use)
+- [Hot Keys](#hot-keys)
+- [Planned Features](#planned-features)
+
 # How to Build
 It is built using [Wails 2](wails.io) and [Go](golang.org). Once they are installed on your system, you can run it using:
 
@@ -51,6 +59,10 @@ Just remember, this is beta quality software at the moment. Use at your own risk
 # Installing from Releases
 
 You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from a unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. If you do or have any suggestions, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
+
+# How to Use 
+
+Working on it.
 
 # Hot Keys
 The following are the keyboard assignments and what they do for each mode:
