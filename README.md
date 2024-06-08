@@ -94,16 +94,16 @@ The following is a list of the features I plan to add in no particular order. If
 
 ## Features to add:
 
-- Meta grouping of boards and moving between them. - done
-- A quick entry ability to quickly add different items. - done
-- Copying and pasting board or list setups to a new board or list.
-- The ability to load themes from a GitHub repository and changing or creating themes.
-- Add drag and drop with the mouse.
-- Add keyboard hotkeys for editing an item. Currently you have to use the mouse and double click on things to add them. - done
-- Add more apps for items. Currently there is only a todo list app.
-- Command bar to see commands and actioning them. - done It is called the QuickBar.
-- The ability for the user to add new commands and themes. Downloading commands from GitHub as well.
-- The ability to change themes and create new themes.
-- Create a way to do things with Personal Kanban from the command line.
+- [x] Meta grouping of boards and moving between them. - done
+- [x] A quick entry ability to quickly add different items. - done
+- [x] Copying and pasting board or list setups to a new board or list.
+- [x] The ability to load themes from a GitHub repository and changing or creating themes.
+- [ ] Add drag and drop with the mouse.
+- [x] Add keyboard hotkeys for editing an item. Currently you have to use the mouse and double click on things to add them. - done
+- [ ] Add more apps for items. Currently there is only a todo list app.
+- [x] Command bar to see commands and actioning them. - done It is called the QuickBar.
+- [ ] The ability for the user to add new commands and themes. Downloading commands from GitHub as well.
+- [ ] The ability to change themes and create new themes.
+- [ ] Create a way to do things with Personal Kanban from the command line.
 
 
