@@ -193,7 +193,7 @@
   }
 
   function editCurrentMetaBoard() {
-    editMetaBoard($metaboard.metaboards[$metaboard.cursor]);
+    editMetaBoard($metaboard.cursor);
   }
 
   function editMetaBoard(board) {
