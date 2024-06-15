@@ -75,8 +75,8 @@ const DefaultKanban = {
     }
     this.SaveKanbanBoards();
   },
-  addBoard: async function() {
-    await addBoardNamed("New Board","");
+  addBoard: async function () {
+    await addBoardNamed("New Board", "");
   },
   addBoardNamed: async function (name, description) {
     //
@@ -94,18 +94,20 @@ const DefaultKanban = {
   addList: async function () {
     await this.addListNamed("New List");
   },
-  addListNamed: async function(name) {
-     const bcur = get(boardCursor);
+  addListNamed: async function (name) {
+    const bcur = get(boardCursor);
     this.boards[bcur].lists.push({
       name: name,
       styles: this.defaultListStyle,
       items: [],
     });
     await this.SaveKanbanBoards();
-   
   },
-  addItem: async function() {
-    await addItemNamed("New Item", "This should describe the card's function.");
+  addItem: async function () {
+    await this.addItemNamed(
+      "New Item",
+      "This should describe the card's function.",
+    );
   },
   addItemNamed: async function (name, description) {
     const bcur = get(boardCursor);
@@ -117,6 +119,7 @@ const DefaultKanban = {
       styles: this.defaultItemStyle,
       apps: [],
     });
+    console.log(this.boards[bcur].lists[lcur].items);
     await this.SaveKanbanBoards();
   },
   deleteBoard: async function () {
