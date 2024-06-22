@@ -119,7 +119,6 @@ const DefaultKanban = {
       styles: this.defaultItemStyle,
       apps: [],
     });
-    console.log(this.boards[bcur].lists[lcur].items);
     await this.SaveKanbanBoards();
   },
   deleteBoard: async function () {

@@ -6,7 +6,7 @@ toolchain go1.21.5
 
 require (
 	github.com/google/go-github/v49 v49.1.0
-	github.com/wailsapp/wails/v2 v2.8.2
+	github.com/wailsapp/wails/v2 v2.9.1
 )
 
 require (

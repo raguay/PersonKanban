@@ -4,6 +4,7 @@
   import MetaBoardList from "./components/MetaBoardList.svelte";
   import QuickBar from "./components/QuickBar.svelte";
   import List from "./components/List.svelte";
+  import Preferences from "./components/Preferences.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { lastCommand } from "./stores/lastCommand.js";
   import { keyHandler } from "./stores/keyHandler.js";
@@ -18,6 +19,7 @@
   import { altKey } from "./stores/altKey.js";
   import { key } from "./stores/key.js";
   import { skipKey } from "./stores/skipKey.js";
+  import { preferences } from "./stores/preferences.js";
   import * as App from "../wailsjs/go/main/App.js";
 
   let editNameFlag = false;
@@ -54,6 +56,12 @@
     //
     // Add Commands for the CommandBar.
     //
+    $commandBar.addCommand(
+      "Open Preferences",
+      openPreferences,
+      "Opens the preferences for the currently selected item.",
+      "text",
+    );
     $commandBar.addCommand(
       "Add a New Board",
       addNewBoard,
@@ -151,6 +159,13 @@
       "md",
     )
   });
+
+  function openPreferences() {
+    $preferences.showing = true;
+    $preferences.keyboardHandler = listKeyHandler;
+    $preferences = $preferences;
+    $Kanban = $Kanban;
+  }
 
   function editListTitle() {
     editItem = true;
@@ -372,6 +387,14 @@
             clearState();
             $metaboard.setShowing();
             $lastCommand = "Show Metaboards";
+            break;
+
+          case "p":
+            // 
+            // Open Preferences.
+            // 
+            command = openPreferences;
+            $lastCommand = "Open Preferences";
             break;
 
           case ".":
@@ -860,6 +883,10 @@
       </div>
     {/if}
   </div>
+{/if}
+
+{#if $preferences.showing}
+  <Preferences />
 {/if}
 
 {#if $commandBar.showing}
