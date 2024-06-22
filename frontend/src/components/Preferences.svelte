@@ -9,6 +9,7 @@
 
   let state = 0;
   let original = null;
+  let prefs = null;
 
   onMount(async () => {
     await tick();
@@ -36,6 +37,7 @@
       state = 0;
       original = $Kanban.boards[$boardCursor].styles;
     }
+    prefs = original;
     return () => {
       // 
       // Restore the keyboardHandler.
@@ -60,6 +62,14 @@
   }
 
   async function savePreference() {
+    if($itemCursor >= 0) {
+      $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles = prefs;
+    } else if($listCursor >= 0) {
+      $Kanban.boards[$boardCursor].lists[$listCursor].styles = prefs;
+    } else {
+      $Kanban.boards[$boardCursor].styles = prefs;
+    }
+    $Kanban = $Kanban;
     await $Kanban.SaveKanbanBoards();
   }
 
