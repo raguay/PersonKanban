@@ -1,5 +1,8 @@
 <script>
   import { onMount, tick } from "svelte";
+  import BoardPref from "./BoardPref.svelte";
+  import ListPref from "./ListPref.svelte";
+  import ItemPref from "./ItemPref.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
@@ -14,23 +17,25 @@
   onMount(async () => {
     await tick();
     await tick();
-    // 
+    //
     // Clear the keyboardHandler.
     //
     $keyHandler = null;
 
-    // 
+    //
     // Figure the state for displaying preferences.
-    // 
+    //
     // State      Meaning
     // 0          Edit board preferences
     // 1          Edit list preferences
-    // 2          Edit item preferences 
+    // 2          Edit item preferences
     //
-    if($itemCursor >= 0) {
+    if ($itemCursor >= 0) {
       state = 2;
-      original = $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles;
-    } else if($listCursor >= 0) {
+      original =
+        $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor]
+          .styles;
+    } else if ($listCursor >= 0) {
       state = 1;
       original = $Kanban.boards[$boardCursor].lists[$listCursor].styles;
     } else {
@@ -39,20 +44,22 @@
     }
     prefs = original;
     return () => {
-      // 
+      //
       // Restore the keyboardHandler.
-      // 
+      //
       $keyHandler = $preferences.keyboardHandler;
     };
   });
 
   async function revertChanges() {
-    // 
+    //
     // Undo the changes made.
-    // 
-    if($itemCursor >= 0) {
-      $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles = original;
-    } else if($listCursor >= 0) {
+    //
+    if ($itemCursor >= 0) {
+      $Kanban.boards[$boardCursor].lists[$listCursor].items[
+        $itemCursor
+      ].styles = original;
+    } else if ($listCursor >= 0) {
       $Kanban.boards[$boardCursor].lists[$listCursor].styles = original;
     } else {
       $Kanban.boards[$boardCursor].styles = original;
@@ -62,9 +69,11 @@
   }
 
   async function savePreference() {
-    if($itemCursor >= 0) {
-      $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles = prefs;
-    } else if($listCursor >= 0) {
+    if ($itemCursor >= 0) {
+      $Kanban.boards[$boardCursor].lists[$listCursor].items[
+        $itemCursor
+      ].styles = prefs;
+    } else if ($listCursor >= 0) {
       $Kanban.boards[$boardCursor].lists[$listCursor].styles = prefs;
     } else {
       $Kanban.boards[$boardCursor].styles = prefs;
@@ -82,33 +91,36 @@
 
 <div
   id="PrefMainDiv"
-  style="background-color: {$Kanban.boards[$boardCursor].styles.commandbarbgcolor};
+  style="background-color: {$Kanban.boards[$boardCursor].styles
+    .commandbarbgcolor};
          color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
          font-family: {$Kanban.boards[$boardCursor].styles.font};
          font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
 >
   {#if state === 0}
-    <h2>Board Preferences</h2>
+    <BoardPref />
   {:else if state === 1}
-    <h2>List Preferences</h2>
+    <ListPref />
   {:else if state === 2}
-    <h2>Item Preferences</h2>
+    <ItemPref />
   {/if}
-  <div 
-    id="buttonbar"
-  >
+  <div id="buttonbar">
     <div id="buttons">
-       <button on:click={async ()=>{
-         await savePreference();
-         await Quit();
-       }}> 
-          Save 
-       </button>
-       <button on:click={async () => {
-         await revertChanges();
-         await Quit();
-       }}>
-         Close
+      <button
+        on:click={async () => {
+          await savePreference();
+          await Quit();
+        }}
+      >
+        Save
+      </button>
+      <button
+        on:click={async () => {
+          await revertChanges();
+          await Quit();
+        }}
+      >
+        Close
       </button>
     </div>
   </div>
@@ -139,11 +151,12 @@
     left: 0px;
     width: 100%;
     height: 50px;
+    margin: auto;
   }
 
   #buttonbar button {
     height: 30px;
-    margin: auto;
+    margin: 0px 10px;
     border-radius: 10px;
   }
 
@@ -151,9 +164,5 @@
     display: flex;
     flex-direction: row;
     margin: 0px 5px;
-  }
-
-  h2 {
-    text-align: center;
   }
 </style>
