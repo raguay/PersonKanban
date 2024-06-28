@@ -35,7 +35,7 @@ func main() {
     Mac: &mac.Options{
              TitleBar:             mac.TitleBarHiddenInset(),
              Appearance:           mac.NSAppearanceNameDarkAqua,
-             WebviewIsTransparent: false,
+             WebviewIsTransparent: true,
              WindowIsTranslucent:  false,
              About: &mac.AboutInfo{
                     Title:   "Personal Kanban",

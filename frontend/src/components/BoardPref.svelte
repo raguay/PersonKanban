@@ -1,8 +1,8 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import ColorPicker from "./ColorPicker.svelte";
-  import { boardCursor } from "../stores/boardCursor.js";
-  import { Kanban } from "../stores/Kanban.js";
+
+  const dispatch = createEventDispatcher();
 
   export let prefs;
 
@@ -20,30 +20,33 @@
     colorchange = value;
     showPicker = true;
   }
+
   function setColor(id, value) {
     switch (id) {
-      case "backgroundcolor":
-        prefs.backgroundcolor = value;
+      case "unselectTabColor":
+        prefs.unselectTabColor = value;
         break;
       default:
         break;
     }
     showPicker = false;
+    dispatch("change", prefs);
   }
 </script>
 
-<h2>Board Preferences</h2>
-<label class="variousPickerLabel1"> backgroundcolor </label>
-<div
-  class="circlePicker"
-  on:click={(event) => {
-    changeColor("backgroundcolor", prefs.backgroundcolor);
-  }}
-  style="background-color: {prefs.backgroundcolor};"
-/>
-<label class="variousPickerLabel2">{prefs.backgroundcolor}</label>
-
-{#if prefs !== undefined}
+{#if prefs !== null}
+  <h2>Board Preferences</h2>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> unselectTabColor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("unselectTabColor", prefs.unselectTabColor);
+      }}
+      style="background-color: {prefs.unselectTabColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.unselectTabColor}</label>
+  </div>
   <ColorPicker
     item={pickerType}
     explainText={explanation}
@@ -88,5 +91,14 @@
     cursor: pointer;
     border: solid 1px white;
     grid-column: 2;
+  }
+
+  .colorPicker {
+    display: grid;
+    grid-auto-flow: row dense;
+    grid-template-columns: 400px 40px 80px;
+    grid-column-gap: 10px;
+    grid-row-gap: 20px;
+    margin-left: 10px;
   }
 </style>

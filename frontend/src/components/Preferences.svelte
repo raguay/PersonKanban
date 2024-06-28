@@ -15,8 +15,6 @@
   let prefs = null;
 
   onMount(async () => {
-    await tick();
-    await tick();
     //
     // Clear the keyboardHandler.
     //
@@ -42,7 +40,7 @@
       state = 0;
       original = $Kanban.boards[$boardCursor].styles;
     }
-    prefs = original;
+    prefs = { ...original };
     return () => {
       //
       // Restore the keyboardHandler.
@@ -102,12 +100,14 @@
          font-family: {$Kanban.boards[$boardCursor].styles.font};
          font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
 >
-  {#if state === 0}
-    <BoardPref {prefs} on:change={onchange} />
-  {:else if state === 1}
-    <ListPref {prefs} on:change={onchange} />
-  {:else if state === 2}
-    <ItemPref {prefs} on:change={onchange} />
+  {#if prefs !== null}
+    {#if state === 0}
+      <BoardPref {prefs} on:change={onchange} />
+    {:else if state === 1}
+      <ListPref {prefs} on:change={onchange} />
+    {:else if state === 2}
+      <ItemPref {prefs} on:change={onchange} />
+    {/if}
   {/if}
   <div id="buttonbar">
     <div id="buttons">

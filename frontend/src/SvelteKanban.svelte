@@ -39,8 +39,6 @@
     //
     await $metaboard.loadMetaBoards();
 
-    console.log($metaboard);
-
     //
     // Load the default board information from the harddrive.
     //
@@ -49,8 +47,6 @@
     $itemCursor = -1;
     await $Kanban.LoadCurrentKanbanBoards();
     $Kanban = $Kanban;
-
-    console.log($Kanban);
 
     //
     // Setup the keyboard handler.

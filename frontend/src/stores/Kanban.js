@@ -8,8 +8,6 @@ import * as App from "../../wailsjs/go/main/App.js";
 const DefaultKanban = {
   boards: [],
   defaultStyles: {
-    backgroundcolor: "blue",
-    textcolor: "white",
     unselectTabColor: "lightgray",
     unselectTabTextColor: "black",
     selectTabColor: "lightblue",
@@ -67,7 +65,6 @@ const DefaultKanban = {
       //
       this.boards = [];
     }
-    console.log("LoadCurrentKanbanBoards", this.boards.length, this.boards);
     if (this.boards.length === 0) {
       //
       // Create the default board if there are no boards.
