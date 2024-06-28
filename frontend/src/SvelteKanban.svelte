@@ -39,6 +39,8 @@
     //
     await $metaboard.loadMetaBoards();
 
+    console.log($metaboard);
+
     //
     // Load the default board information from the harddrive.
     //
@@ -47,6 +49,8 @@
     $itemCursor = -1;
     await $Kanban.LoadCurrentKanbanBoards();
     $Kanban = $Kanban;
+
+    console.log($Kanban);
 
     //
     // Setup the keyboard handler.
@@ -151,13 +155,13 @@
       editListTitle,
       "### Edit List Title\n\nEdit the title for the current list.",
       "md",
-    )
+    );
     $commandBar.addCommand(
       "Edit Board Name",
       editBoardName,
       "### Edit Board Name\n\nEdit the name of the current board.",
       "md",
-    )
+    );
   });
 
   function openPreferences() {
@@ -306,10 +310,10 @@
             break;
 
           case "e":
-            if($itemCursor < 0 && $listCursor >= 0) {
+            if ($itemCursor < 0 && $listCursor >= 0) {
               command = editListTitle;
               $lastCommand = "Edit List Title";
-            } else if($itemCursor < 0 && $listCursor < 0) {
+            } else if ($itemCursor < 0 && $listCursor < 0) {
               command = editBoardName;
               $lastCommand = "Edit Board Name";
             }
@@ -390,9 +394,9 @@
             break;
 
           case "p":
-            // 
+            //
             // Open Preferences.
-            // 
+            //
             command = openPreferences;
             $lastCommand = "Open Preferences";
             break;
@@ -898,7 +902,7 @@
 {/if}
 
 {#if quickBarOpen}
-  <QuickBar 
+  <QuickBar
     on:close={() => {
       quickBarOpen = false;
     }}
@@ -919,7 +923,7 @@
     height: 100vh;
     user-select: none;
     overflow: hidden;
-    background-color:argba(0,0,0,0);
+    background-color: argba(0, 0, 0, 0);
     border-radius: 10px;
     border: solid 0px transparent;
   }

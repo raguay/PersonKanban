@@ -61,7 +61,7 @@
       ].styles = original;
     } else if ($listCursor >= 0) {
       $Kanban.boards[$boardCursor].lists[$listCursor].styles = original;
-    } else {
+    } else if ($boardCursor >= 0) {
       $Kanban.boards[$boardCursor].styles = original;
     }
     $Kanban = $Kanban;
@@ -75,7 +75,7 @@
       ].styles = prefs;
     } else if ($listCursor >= 0) {
       $Kanban.boards[$boardCursor].lists[$listCursor].styles = prefs;
-    } else {
+    } else if ($boardCursor >= 0) {
       $Kanban.boards[$boardCursor].styles = prefs;
     }
     $Kanban = $Kanban;
@@ -86,6 +86,11 @@
     $keyHandler = $preferences.keyboardHandler;
     $preferences.showing = false;
     $preferences = $preferences;
+  }
+
+  async function onchange(e) {
+    prefs = e.detail;
+    await savePreference();
   }
 </script>
 
@@ -98,11 +103,11 @@
          font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
 >
   {#if state === 0}
-    <BoardPref />
+    <BoardPref {prefs} on:change={onchange} />
   {:else if state === 1}
-    <ListPref />
+    <ListPref {prefs} on:change={onchange} />
   {:else if state === 2}
-    <ItemPref />
+    <ItemPref {prefs} on:change={onchange} />
   {/if}
   <div id="buttonbar">
     <div id="buttons">

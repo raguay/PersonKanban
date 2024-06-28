@@ -67,16 +67,30 @@ const DefaultKanban = {
       //
       this.boards = [];
     }
+    console.log("LoadCurrentKanbanBoards", this.boards.length, this.boards);
     if (this.boards.length === 0) {
       //
       // Create the default board if there are no boards.
       //
-      this.addBoard();
+      await this.addBoard();
     }
+
+    //
+    // Make sure all the boards, lists, and items have the right styles.
+    //
+    this.boards.forEach((board) => {
+      board.styles = this.defaultStyles;
+      board.lists.forEach((list) => {
+        list.styles = this.defaultListStyle;
+        list.items.forEach((item) => {
+          item.styles = this.defaultItemStyle;
+        });
+      });
+    });
     this.SaveKanbanBoards();
   },
   addBoard: async function () {
-    await addBoardNamed("New Board", "");
+    await this.addBoardNamed("New Board", "");
   },
   addBoardNamed: async function (name, description) {
     //
