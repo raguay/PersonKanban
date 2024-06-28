@@ -75,6 +75,7 @@ const DefaultKanban = {
     //
     // Make sure all the boards, lists, and items have the right styles.
     //
+    /*
     this.boards.forEach((board) => {
       board.styles = this.defaultStyles;
       board.lists.forEach((list) => {
@@ -84,6 +85,7 @@ const DefaultKanban = {
         });
       });
     });
+    */
     this.SaveKanbanBoards();
   },
   addBoard: async function () {

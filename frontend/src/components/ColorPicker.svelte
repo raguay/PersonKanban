@@ -1,13 +1,13 @@
 <script>
   import { createEventDispatcher, afterUpdate } from "svelte";
   import { KellyColorPicker } from "./html5kellycolorpicker.js";
+  import { Kanban } from "../stores/Kanban.js";
+  import { boardCursor } from "../stores/boardCursor.js";
 
   export let color = "";
   export let id = 0;
   export let show = false;
-  export let item = "circle";
   export let explainText = "";
-  export let theme = {};
 
   let canvas;
   let input;
@@ -53,7 +53,11 @@
 {#if show}
   <div
     id="colorPicker"
-    style="background-color: {theme.backgroundcolor}; font-family: {theme.font}; color: {theme.textColor}; font-size: {theme.fontSize};"
+    style="background-color: {$Kanban.boards[$boardCursor].styles
+      .commandbarbgcolor}; font-family: {$Kanban.boards[$boardCursor].styles
+      .font}; color: {$Kanban.boards[$boardCursor].styles
+      .commandbartextcolor}; font-size: {$Kanban.boards[$boardCursor].styles
+      .fontsize};"
   >
     <p>The color for {explainText}:</p>
     <canvas id="picker" bind:this={canvas}></canvas><br />
@@ -69,7 +73,11 @@
       on:click={(event) => {
         saveColor();
       }}
-      style="background-color: {theme.textAreaColor}; font-family: {theme.font}; color: {theme.textColor}; font-size: {theme.fontSize};"
+      style="background-color: {$Kanban.boards[$boardCursor].styles
+        .commandbarbgcolor}; font-family: {$Kanban.boards[$boardCursor].styles
+        .font}; color: {$Kanban.boards[$boardCursor].styles
+        .commandbartextcolor}; font-size: {$Kanban.boards[$boardCursor].styles
+        .fontsize};"
     >
       Select
     </button>
@@ -77,7 +85,11 @@
       on:click={(event) => {
         quitColorPicker();
       }}
-      style="background-color: {theme.textAreaColor}; font-family: {theme.font}; color: {theme.textColor}; font-size: {theme.fontSize};"
+      style="background-color: {$Kanban.boards[$boardCursor].styles
+        .commandbarbgcolor}; font-family: {$Kanban.boards[$boardCursor].styles
+        .font}; color: {$Kanban.boards[$boardCursor].styles
+        .commandbartextcolor}; font-size: {$Kanban.boards[$boardCursor].styles
+        .fontsize};"
     >
       Quit
     </button>

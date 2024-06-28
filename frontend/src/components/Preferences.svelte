@@ -40,6 +40,10 @@
       state = 0;
       original = $Kanban.boards[$boardCursor].styles;
     }
+
+    //
+    // Make a copy for the preferences to use in the dialog.
+    //
     prefs = { ...original };
     return () => {
       //

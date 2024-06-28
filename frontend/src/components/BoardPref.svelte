@@ -9,7 +9,6 @@
   let colorchange = "";
   let colorID = 0;
   let showPicker = false;
-  let pickerType = "";
   let explanation;
 
   onMount(() => {});
@@ -48,12 +47,10 @@
     <label class="variousPickerLabel2">{prefs.unselectTabColor}</label>
   </div>
   <ColorPicker
-    item={pickerType}
     explainText={explanation}
     color={colorchange}
     id={colorID}
     show={showPicker}
-    theme={prefs}
     on:colorChanged={(event) => {
       setColor(event.detail.data.id, event.detail.data.color);
     }}
