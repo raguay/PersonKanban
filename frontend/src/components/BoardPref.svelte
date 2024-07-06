@@ -25,6 +25,36 @@
       case "unselectTabColor":
         prefs.unselectTabColor = value;
         break;
+      case "selectTabColor":
+        prefs.selectTabColor = value;
+        break;
+      case "unselectTabTextColor":
+        prefs.unselectTabTextColor = value;
+        break;
+      case "selectTabTextColor":
+        prefs.selectTabTextColor = value;
+        break;
+      case "listcontainercolor":
+        prefs.listcontainercolor = value;
+        break;
+      case "dialogBGColor":
+        prefs.dialogBGColor = value;
+        break;
+      case "dialogTextColor":
+        prefs.dialogTextColor = value;
+        break;
+      case "cursorColor":
+        prefs.cursorColor = value;
+        break;
+      case "cursorText":
+        prefs.cursorText = value;
+        break;
+      case "commandbarbgcolor":
+        prefs.commandbarbgcolor = value;
+        break;
+      case "commandbartextcolor":
+        prefs.commandbartextcolor = value;
+        break;
       default:
         break;
     }
@@ -46,6 +76,117 @@
     />
     <label class="variousPickerLabel2">{prefs.unselectTabColor}</label>
   </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> selectTabColor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("selectTabColor", prefs.selectTabColor);
+      }}
+      style="background-color: {prefs.selectTabColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.selectTabColor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> unselectTabTextColor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("unselectTabTextColor", prefs.unselectTabTextColor);
+      }}
+      style="background-color: {prefs.unselectTabTextColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.unselectTabTextColor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> selectTabTextColor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("selectTabTextColor", prefs.selectTabTextColor);
+      }}
+      style="background-color: {prefs.selectTabTextColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.selectTabTextColor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> listcontainercolor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("list", prefs.listcontainercolor);
+      }}
+      style="background-color: {prefs.listcontainercolor};"
+    />
+    <label class="variousPickerLabel2">{prefs.listcontainercolor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> dialogBGColor</label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("dialogBGColor", prefs.dialogBGColor);
+      }}
+      style="background-color: {prefs.dialogBGColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.dialogBGColor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> dialogTextColor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("dialogTextColor", prefs.dialogTextColor);
+      }}
+      style="background-color: {prefs.dialogTextColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.dialogTextColor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> cursorColor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("cursorColor", prefs.cursorColor);
+      }}
+      style="background-color: {prefs.cursorColor};"
+    />
+    <label class="variousPickerLabel2">{prefs.cursorColor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> cursorText </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("cursorText", prefs.cursorText);
+      }}
+      style="background-color: {prefs.cursorText};"
+    />
+    <label class="variousPickerLabel2">{prefs.cursorText}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> commandbarbgcolor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("commandbarbgcolor", prefs.commandbarbgcolor);
+      }}
+      style="background-color: {prefs.commandbarbgcolor};"
+    />
+    <label class="variousPickerLabel2">{prefs.commandbarbgcolor}</label>
+  </div>
+  <div class="colorPicker">
+    <label class="variousPickerLabel1"> commandbartextcolor </label>
+    <div
+      class="circlePicker"
+      on:click={(event) => {
+        changeColor("commandbartextcolor", prefs.commandbartextcolor);
+      }}
+      style="background-color: {prefs.commandbartextcolor};"
+    />
+    <label class="variousPickerLabel2">{prefs.commandbartextcolor}</label>
+  </div>
+
   <ColorPicker
     explainText={explanation}
     color={colorchange}
@@ -97,5 +238,6 @@
     grid-column-gap: 10px;
     grid-row-gap: 20px;
     margin-left: 10px;
+    margin-top: 10px;
   }
 </style>
