@@ -138,12 +138,12 @@
 <style>
   #PrefMainDiv {
     position: absolute;
-    bottom: 10%;
+    bottom: 5%;
     left: 10%;
     display: flex;
     flex-direction: column;
     width: 80%;
-    height: 80%;
+    height: 86%;
     margin: auto;
     padding: 10px;
     border: 5px;
@@ -172,6 +172,6 @@
   #buttons {
     display: flex;
     flex-direction: row;
-    margin: 0px 5px;
+    margin: 0px auto;
   }
 </style>
