@@ -28,6 +28,7 @@ It is currently a working Beta project with many of the planned features in plac
 - [How to Use](#how-to-use)
 - [Hot Keys](#hot-keys)
 - [Planned Features](#planned-features)
+- [My Different Open Source Projects](#my-different-open-source-projects)
 
 # How to Build
 
@@ -121,3 +122,11 @@ The following is a list of the features I plan to add in no particular order. If
 - [ ] The ability to change themes and create new themes.
 - [ ] Create a way to do things with Personal Kanban from the command line.
 - [ ] Add documentation on how to use Personal Kanban.
+
+## My Different Open Source Projects
+
+[EmailIt](https://GitHub.com/raguay/EmailIt)
+[BullitenBoard](https://github.com/raguay/BulletinBoard)
+[ScriptBar](https://GitHub.com/raguay/scriptbarapp)
+[Modal File Manager](https://github.com/raguay/ModalFileManager)
+[Personal Kanban](https://github.com/raguay/PersonKanban)
