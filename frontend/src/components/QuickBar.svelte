@@ -8,8 +8,8 @@
 
   const disbatch = createEventDispatcher();
 
-  let inputDiv = null;
-  let inputVal = "";
+  let inputDiv = $state(null);
+  let inputVal = $state("");
   let oldKeyHandler = null;
   let handlekey = true;
 
@@ -49,7 +49,7 @@
     type="text"
     bind:this={inputDiv}
     bind:value={inputVal}
-    on:keydown={async (e) => {
+    onkeydown={async (e) => {
       if (e.key === "Escape") {
         e.preventDefault();
         //

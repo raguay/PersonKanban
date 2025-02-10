@@ -1,6 +1,7 @@
 import SvelteKanban from './SvelteKanban.svelte';
+import { mount } from "svelte";
 
-const app = new SvelteKanban({
+const app = mount(SvelteKanban, {
   target: document.body,
   props: {
   }

@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
   import { createEventDispatcher, afterUpdate, tick } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";

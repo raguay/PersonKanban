@@ -3,11 +3,11 @@
   import EditH2Field from "./EditH2Field.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
-  export let app;
+  let { app = $bindable() } = $props();
 
-  let newToDo = '';
-  let oldkbhdl = null;
-  let todoInputEl = null;
+  let newToDo = $state('');
+  let oldkbhdl = $state(null);
+  let todoInputEl = $state(null);
 
   const disbatch = createEventDispatcher();
 
@@ -60,15 +60,15 @@
     type="text"
     bind:value={newToDo}
     bind:this={todoInputEl}
-    on:focusin={() => {
+    onfocusin={() => {
       oldkbhdl = $keyHandler;
       $keyHandler = null;
     }}
-    on:focusout={() => {
+    onfocusout={() => {
       $keyHandler = oldkbhdl;
       oldkbhdl = null;
     }}
-    on:keydown={(e) => {
+    onkeydown={(e) => {
       if (e.code === "Enter") {
         e.preventDefault();
         createNewTodo();
@@ -80,7 +80,7 @@
     {#each app.todos as todo}
       {#if !todo.done}
         <p
-          on:click={(e) => {
+          onclick={(e) => {
             todo.done = true;
             setDone(todo);
           }}
@@ -92,7 +92,7 @@
     {#each app.todos as todo}
       {#if todo.done}
         <p
-          on:click={(e) => {
+          onclick={(e) => {
             todo.done = false;
             setNotDone(todo);
           }}

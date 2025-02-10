@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `let newMsg = "";` to `$state` because there's a variable named state.
+     Rename the variable and try again or migrate by hand. -->
 <script>
   import { createEventDispatcher, onMount } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";

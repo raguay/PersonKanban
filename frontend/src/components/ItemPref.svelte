@@ -4,12 +4,12 @@
 
   const dispatch = createEventDispatcher();
 
-  export let prefs;
+  let { prefs = $bindable() } = $props();
 
-  let colorchange = "";
-  let colorID = 0;
-  let showPicker = false;
-  let explanation;
+  let colorchange = $state("");
+  let colorID = $state(0);
+  let showPicker = $state(false);
+  let explanation = $state();
 
   onMount(() => {});
 
@@ -48,9 +48,9 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-label-has-associated-control -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_label_has_associated_control -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 {#if prefs !== null}
   <h2>Item Preferences</h2>
   <div class="colorPicker">
@@ -59,7 +59,7 @@
     <input
       bind:value={prefs.cursorWidth}
       size="20"
-      on:change={() => {
+      onchange={() => {
         dispatch("change", prefs);
       }}
     />
@@ -68,66 +68,66 @@
     <label class="variousPickerLabel1"> Item Background Color:</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("itembgcolor", prefs.itembgcolor);
       }}
       style="background-color: {prefs.itembgcolor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.itembgcolor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Cursor Color</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("cursorColor", prefs.cursorColor);
       }}
       style="background-color: {prefs.cursorColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.cursorColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Cursor Text Color: </label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("cursorText", prefs.cursorText);
       }}
       style="background-color: {prefs.cursorText};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.cursorText}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Dialog Background Color </label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("dialogBGColor", prefs.dialogBGColor);
       }}
       style="background-color: {prefs.dialogBGColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.dialogBGColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Dialog Text Color</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("dialogTextColor", prefs.dialogTextColor);
       }}
       style="background-color: {prefs.dialogTextColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.dialogTextColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Item Text Color </label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("itemtextcolor", prefs.itemtextcolor);
       }}
       style="background-color: {prefs.itemtextcolor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.itemtextcolor}</label>
   </div>
 

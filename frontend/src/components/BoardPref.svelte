@@ -4,12 +4,12 @@
 
   const dispatch = createEventDispatcher();
 
-  export let prefs;
+  let { prefs = $bindable() } = $props();
 
-  let colorchange = "";
-  let colorID = 0;
-  let showPicker = false;
-  let explanation;
+  let colorchange = $state("");
+  let colorID = $state(0);
+  let showPicker = $state(false);
+  let explanation = $state();
 
   onMount(() => {});
 
@@ -71,7 +71,7 @@
     <input
       bind:value={prefs.font}
       size="60"
-      on:change={() => {
+      onchange={() => {
         dispatch("change", prefs);
       }}
     />
@@ -82,7 +82,7 @@
     <input
       bind:value={prefs.fontsize}
       size="20"
-      on:change={() => {
+      onchange={() => {
         dispatch("change", prefs);
       }}
     />
@@ -91,121 +91,121 @@
     <label class="variousPickerLabel1"> Unselected Tab</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("unselectTabColor", prefs.unselectTabColor);
       }}
       style="background-color: {prefs.unselectTabColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.unselectTabColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Selected Tab </label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("selectTabColor", prefs.selectTabColor);
       }}
       style="background-color: {prefs.selectTabColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.selectTabColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Unselected Tab Text</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("unselectTabTextColor", prefs.unselectTabTextColor);
       }}
       style="background-color: {prefs.unselectTabTextColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.unselectTabTextColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Selected Tab Text</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("selectTabTextColor", prefs.selectTabTextColor);
       }}
       style="background-color: {prefs.selectTabTextColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.selectTabTextColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> List Container</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("listcontainercolor", prefs.listcontainercolor);
       }}
       style="background-color: {prefs.listcontainercolor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.listcontainercolor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Dialog Background</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("dialogBGColor", prefs.dialogBGColor);
       }}
       style="background-color: {prefs.dialogBGColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.dialogBGColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Dialog Text</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("dialogTextColor", prefs.dialogTextColor);
       }}
       style="background-color: {prefs.dialogTextColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.dialogTextColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Cursor</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("cursorColor", prefs.cursorColor);
       }}
       style="background-color: {prefs.cursorColor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.cursorColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Cursor Text</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("cursorText", prefs.cursorText);
       }}
       style="background-color: {prefs.cursorText};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.cursorText}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Commandbar Background</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("commandbarbgcolor", prefs.commandbarbgcolor);
       }}
       style="background-color: {prefs.commandbarbgcolor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.commandbarbgcolor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Commandbar Text</label>
     <div
       class="circlePicker"
-      on:click={(event) => {
+      onclick={(event) => {
         changeColor("commandbartextcolor", prefs.commandbartextcolor);
       }}
       style="background-color: {prefs.commandbartextcolor};"
-    />
+></div>
     <label class="variousPickerLabel2">{prefs.commandbartextcolor}</label>
   </div>
 
