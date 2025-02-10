@@ -48,6 +48,9 @@
   }
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 {#if prefs !== null}
   <h2>Item Preferences</h2>
   <div class="colorPicker">

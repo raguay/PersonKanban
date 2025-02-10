@@ -106,8 +106,10 @@
           break;
 
         case "Enter":
-          await gotoMetaBoard($metaboard.cursor);
-          close(e);
+          if (!addedit) {
+            await gotoMetaBoard($metaboard.cursor);
+            close(e);
+          }
           break;
 
         case "Escape":
@@ -208,8 +210,10 @@
   }
 
   async function saveMetaBoard() {
+    console.log("Saving metaboard...");
     if (add) {
       $metaboard.addmetaboard(boardName, boardDesc, boardDescType, boardLoc);
+      console.log("Created a metaboard: ", $metaboard.metaboards);
     } else {
       //
       // This is for editing. Save the Edit.
@@ -222,6 +226,7 @@
     await $metaboard.saveMetaBoards();
     $metaboard = $metaboard;
     addedit = false;
+    add = false;
     handlekey = true;
   }
 </script>
@@ -268,8 +273,11 @@
               handlekey = true;
             }}>Cancel</button
           >
-          <button type="button" class="brbutton" on:click={saveMetaBoard}
-            >Save</button
+          <button
+            type="button"
+            class="brbutton"
+            on:click={saveMetaBoard}
+            on:enter={saveMetaBoard}>Save</button
           >
         </div>
       {:else}
@@ -313,6 +321,7 @@
       <div id="buttonrow">
         <button
           class="brbutton"
+          on
           on:click={() => {
             newMetaBoard();
           }}>Add</button

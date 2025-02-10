@@ -5,16 +5,17 @@ export const metaboard = writable({
   showing: false,
   metaboards: [],
   cursor: 0,
-  getCursor: function() {
+  getCursor: function () {
     return this.cursor;
   },
-  incCursor: function() {
+  incCursor: function () {
     this.cursor = this.cursor + 1;
-    if(this.cursor >= this.metaboards.length) this.cursor = this.metaboards.length - 1;
+    if (this.cursor >= this.metaboards.length)
+      this.cursor = this.metaboards.length - 1;
   },
-  decCursor: function() {
-    this.cursor = this. cursor - 1;
-    if(this.cursor < 0) this.cursor = 0;
+  decCursor: function () {
+    this.cursor = this.cursor - 1;
+    if (this.cursor < 0) this.cursor = 0;
   },
   setShowing: function () {
     this.showing = true;
@@ -25,7 +26,7 @@ export const metaboard = writable({
   toggleShowing: function () {
     this.showing = !this.showing;
   },
-  addmetaboard: function (name, desc, destype, loc) {
+  addmetaboard: async function (name, desc, destype, loc) {
     //
     // If the metaboard parameters are valid, save the new metaboard.
     //
@@ -36,6 +37,7 @@ export const metaboard = writable({
         type: destype,
         loc: loc,
       });
+      await this.saveMetaBoards();
     }
   },
   getmetaboard: function (name) {
@@ -52,11 +54,12 @@ export const metaboard = writable({
     }
     return result;
   },
-  removemetaboard: function (name) {
+  removemetaboard: async function (name) {
     //
     // This will remove the metaboard given.
     //
     this.metaboards = this.metaboards.filter((item) => item.name !== name);
+    await this.saveMetaBoards();
   },
   loadMetaBoards: async function () {
     const hdir = await App.GetHomeDir();
@@ -97,5 +100,5 @@ export const metaboard = writable({
     const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
     const metafile = await App.AppendPath(kbcnfgdir, "metaboards.json");
     await App.WriteFile(metafile, JSON.stringify(this.metaboards));
-  },  
+  },
 });
