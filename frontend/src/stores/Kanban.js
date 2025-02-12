@@ -155,6 +155,14 @@ const DefaultKanban = {
     ].items.filter((_, index) => index !== icur);
     await this.SaveKanbanBoards();
   },
+  deleteApp: async function (ind) {
+    const bcur = get(boardCursor);
+    const lcur = get(listCursor);
+    const icur = get(itemCursor);
+    console.log("deleteApp: ", this.boards[bcur].lists[lcur].items[icur].apps);
+    this.boards[bcur].lists[lcur].items[icur].apps.splice(ind, 1);
+    await this.SaveKanbanBoards();
+  },
   newItemMsg: async function (date, type, msg) {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);

@@ -276,6 +276,13 @@
       styles: {},
       todos: [],
     });
+    $Kanban = $Kanban;
+    itemInfo = itemInfo;
+  }
+
+  async function deleteApp(ind) {
+    await $Kanban.deleteApp(ind);
+    $Kanban = $Kanban;
   }
 
   async function appUpdate(appindex, app) {
@@ -302,12 +309,7 @@
     />
     <div class="itemContainer">
       {#each itemInfo.apps as app, appindex}
-        <app
-          this={applications[app.type]}
-          {applications}
-          {appindex}
-          update={appUpdate}
-        />
+        <ToDoListApp {app} {appindex} update={appUpdate} {deleteApp} />
       {/each}
       <input
         class="newMsg"
@@ -338,7 +340,11 @@
         }}
       />
       <div class="appButtons">
-        <button onclick={createToDoList}>Todo List</button>
+        <button
+          onclick={async () => {
+            await createToDoList();
+          }}>Todo List</button
+        >
       </div>
       <div class="buttonRow">
         <button

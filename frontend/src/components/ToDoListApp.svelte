@@ -2,7 +2,7 @@
   import EditH2Field from "./EditH2Field.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
-  let { app = $bindable(), appindex, update } = $props();
+  let { app = $bindable(), appindex, update, deleteApp } = $props();
 
   let newToDo = $state("");
   let oldkbhdl = $state(null);
@@ -14,12 +14,10 @@
       done: false,
     });
     newToDo = "";
-    app = app;
     update();
   }
 
-  function nameChanged(e) {
-    app.name = e.detail.name;
+  function nameChanged() {
     update(appindex, app);
   }
 
@@ -42,10 +40,31 @@
     todo.description = todo.description.replace(dtReg, "");
     update(appindex, app);
   }
+
+  async function editoff() {
+    await update(appindex, app);
+  }
+
+  async function deleteTodo(todoindex) {
+    app.todos.splice(todoindex, 1);
+    await update(appindex, app);
+  }
+
+  async function editTodo(todoindex) {
+    let desc = app.todos[todoindex].description;
+    newToDo = desc;
+    todoInputEl.focus();
+    await deleteTodo(todoindex);
+  }
 </script>
 
 <div class="ToDoList">
-  <EditH2Field name={app.name} on:nameChanged={nameChanged} />
+  <div class="header">
+    <EditH2Field bind:name={app.name} {nameChanged} {editoff} />
+    <span class="todographicbackheader" onclick={() => deleteApp(appindex)}
+      >❌</span
+    >
+  </div>
   <input
     class="todoInput"
     type="text"
@@ -69,28 +88,41 @@
     }}
   />
   <div class="todoContainer">
-    {#each app.todos as todo}
+    {#each app.todos as todo, index}
       {#if !todo.done}
-        <p
-          onclick={() => {
-            todo.done = true;
-            setDone(todo);
-          }}
-        >
-          🔲 {todo.description}
-        </p>
+        <div class="tododiv">
+          <span
+            class="todographicfront"
+            onclick={() => {
+              todo.done = false;
+              setDone(todo);
+            }}>🔲</span
+          >
+          <p class="todotext">{todo.description}</p>
+          <span class="todographicback" onclick={() => deleteTodo(index)}
+            >❌</span
+          >
+          <span class="todographiclast" onclick={() => editTodo(index)}>
+            ✏️</span
+          >
+        </div>
       {/if}
     {/each}
-    {#each app.todos as todo}
+    {#each app.todos as todo, index}
       {#if todo.done}
-        <p
-          onclick={() => {
-            todo.done = false;
-            setNotDone(todo);
-          }}
-        >
-          ✅ {todo.description}
-        </p>
+        <div class="tododiv">
+          <span
+            class="todographicfront"
+            onclick={() => {
+              todo.done = false;
+              setNotDone(todo);
+            }}>✅</span
+          >
+          <p class="todotext">{todo.description}</p>
+          <span class="todographicback" onclick={() => deleteTodo(index)}
+            >❌</span
+          >
+        </div>
       {/if}
     {/each}
   </div>
@@ -104,6 +136,41 @@
     border: 3px solid rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     padding: 5px;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .todographicfront {
+    height: 10px;
+    margin: 0px 5px 5px 5px;
+  }
+
+  .todographicbackheader {
+    height: 10px;
+    margin: 25px 5px 5px auto;
+  }
+
+  .todographicback {
+    height: 10px;
+    margin: 0px 5px 5px auto;
+  }
+
+  .todographiclast {
+    height: 10px;
+    margin: 5px;
+  }
+
+  .todotext {
+    margin: 5px auto 5px 5px;
+  }
+
+  .tododiv {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
   }
 
   .todoContainer {
