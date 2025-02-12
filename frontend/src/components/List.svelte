@@ -1,6 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-  import { afterUpdate, createEventDispatcher } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
@@ -8,15 +6,29 @@
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
 
-  export let boardcur = null;
-  export let listcur = null;
-  export let edit = false;
+  let { boardcur, listcur, edit, editoff } = $props();
 
-  const disbatch = createEventDispatcher();
+  let listDiv = $state(null);
+  let localNameEdit = $state(false);
+  let editItem = $state(false);
+  let editing = false;
 
-  let listDiv = null;
+  $effect(() => {
+    //
+    // If edit has been turned off, make sure it's upward progated.
+    //
+    localNameEdit = $listCursor === listcur && $itemCursor < 0 ? edit : false;
+    editItem = $listCursor === listcur && $itemCursor >= 0 ? edit : false;
+    if (!editItem && !localNameEdit) {
+      if (editing) {
+        editing = false;
+        $Kanban.SaveKanbanBoards();
+        editoff();
+      }
+    } else {
+      editing = true;
+    }
 
-  afterUpdate(() => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
@@ -53,27 +65,20 @@
     }
   });
 
-  async function nameChanged(e) {
-    $Kanban.boards[boardcur].lists[listcur].name = e.detail.name;
-    disbatch("editOff", {});
-    await $Kanban.SaveKanbanBoards();
-  }
-
   async function deleteList() {
     $boardCursor = boardcur;
     $listCursor = listcur;
     await $Kanban.deleteList();
-    $Kanban = $Kanban;
   }
 
   async function addItem() {
     $boardCursor = boardcur;
     $listCursor = listcur;
     await $Kanban.addItem();
-    $Kanban = $Kanban;
   }
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="list"
   style="background-color: {$Kanban.boards[boardcur].lists[listcur].styles
@@ -84,7 +89,10 @@
     ? $Kanban.boards[boardcur].lists[listcur].styles.cursorColor
     : $Kanban.boards[boardcur].lists[listcur].styles.listbgcolor};"
   bind:this={listDiv}
-  on:click|capture={() => {
+  onkeydown={() => {}}
+  onclick={(e) => {
+    e.stopPropagation();
+    e.preventDefault();
     $listCursor = listcur;
   }}
 >
@@ -92,19 +100,21 @@
     <div class="listheader">
       <EditH2Field
         size={"110px"}
-        name={$Kanban.boards[boardcur].lists[listcur].name}
-        on:nameChanged={nameChanged}
-        edit={$listCursor === listcur && $itemCursor < 0 ? edit : false}
+        bind:name={$Kanban.boards[boardcur].lists[listcur].name}
+        edit={localNameEdit}
+        {editoff}
       />
       <span
         class="remove"
-        on:click={() => {
+        onkeydown={() => {}}
+        onclick={() => {
           deleteList();
         }}>-</span
       >
       <span
         class="add"
-        on:click={() => {
+        onkeydown={() => {}}
+        onclick={() => {
           addItem();
         }}>+</span
       >
@@ -115,14 +125,9 @@
           {#if item !== null}
             <Item
               itemInfo={item}
-              editItem={$listCursor === listcur && $itemCursor === itemindex
-                ? edit
-                : false}
+              {editItem}
               index={$listCursor === listcur ? itemindex : -2}
-              on:editOff={() => {
-                disbatch("editOff", {});
-                edit = false;
-              }}
+              {editoff}
             />
           {/if}
         {/each}

@@ -1,7 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `let newMsg = "";` to `$state` because there's a variable named state.
-     Rename the variable and try again or migrate by hand. -->
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { onMount } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import EditPField from "./EditPField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
@@ -13,23 +11,21 @@
   import { altKey } from "../stores/altKey.js";
   import { key } from "../stores/key.js";
 
-  export let itemInfo;
+  let { itemInfo = $bindable(), editoff } = $props();
 
-  let newMsg = "";
+  let newMsg = $state("");
   let applications = [];
   let origKeyboardHandler = null;
   let inputKeyboardStore = null;
   let handlekey = true;
-  let state = 0;
+  let keystate = 0;
   let acc = "";
   let direction = "";
   let command = null;
   let msgInputDiv = null;
   let editDialogDiv = null;
-  let editTitle = false;
-  let editDesc = false;
-
-  const disbatch = createEventDispatcher();
+  let editTitle = $state(false);
+  let editDesc = $state(false);
 
   onMount(() => {
     //
@@ -51,7 +47,7 @@
     return () => {};
   });
 
-  function closeItemEdit() {
+  async function closeItemEdit() {
     //
     // Put in the original handler.
     //
@@ -63,7 +59,8 @@
       $keyHandler = origKeyboardHandler;
       origKeyboardHandler = null;
     }
-    disbatch("editOff", {});
+    await $Kanban.SaveKanbanBoards();
+    editoff();
   }
 
   function KeyboardHandler(e) {
@@ -81,7 +78,7 @@
       // Take over the keyboard!
       //
       e.preventDefault();
-      switch (state) {
+      switch (keystate) {
         case 0:
           //
           // State 0 is the main entry state. Get the command and accumulator values.
@@ -91,7 +88,7 @@
               //
               // Get the item that needs edited.
               //
-              state = 2;
+              keystate = 2;
               break;
 
             case "m":
@@ -99,10 +96,6 @@
               break;
 
             case "s":
-              command = closeItemEdit;
-              break;
-
-            case "Enter":
               command = closeItemEdit;
               break;
 
@@ -134,23 +127,23 @@
           //
           switch ($key) {
             case "h":
-              state = 0;
+              keystate = 0;
               direction = "l";
               break;
 
             case "k":
-              state = 0;
+              keystate = 0;
               direction = "u";
               break;
 
             case "j":
               direction = "d";
-              state = 0;
+              keystate = 0;
               break;
 
             case "l":
               direction = "r";
-              state = 0;
+              keystate = 0;
               break;
 
             default:
@@ -170,7 +163,7 @@
             case "t":
               //
               // This will edit the title.
-              state = 0;
+              keystate = 0;
               command = editCardTitle;
               break;
 
@@ -179,7 +172,7 @@
               // This will edit the description.
               //
               command = editCardDiscription;
-              state = 0;
+              keystate = 0;
               break;
 
             default:
@@ -191,7 +184,7 @@
           }
           break;
       }
-      if (state === 0) {
+      if (keystate === 0) {
         //
         // If a command is set, do the command as many times as the acc says.
         //
@@ -214,11 +207,10 @@
           clearState();
         }
       }
-    } else {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        closeItemEdit();
-      }
+    } else if (e.key === "Enter") {
+      e.stopPropagation();
+      e.preventDefault();
+      closeItemEdit();
     }
   }
 
@@ -236,7 +228,7 @@
     //
     // Clear out the variables used in processing the keyboard commands.
     //
-    state = 0;
+    keystate = 0;
     command = null;
     direction = "";
     acc = "";
@@ -248,26 +240,6 @@
 
   function editCardDiscription() {
     editDesc = true;
-  }
-
-  async function saveItem(exit) {
-    await $Kanban.SaveKanbanBoards();
-    if(exit) {
-      disbatch("editOff", {});
-    }
-    $Kanban = $Kanban;
-  }
-
-  function nameChanged(e) {
-    itemInfo.name = e.detail.name;
-    editTitle = false;
-    saveItem(false);
-  }
-
-  function descriptionChanged(e) {
-    itemInfo.description = e.detail.name;
-    editDesc = false;
-    saveItem(false);
   }
 
   async function createNewTextMsg() {
@@ -288,7 +260,11 @@
       (td.getSeconds().toString().length === 1
         ? "0" + td.getSeconds()
         : td.getSeconds());
-    await $Kanban.newItemMsg(tdate, "text", typeof newMsg !== "undefined" ? newMsg : "");
+    await $Kanban.newItemMsg(
+      tdate,
+      "text",
+      typeof newMsg !== "undefined" ? newMsg : "",
+    );
     newMsg = "";
     $Kanban = $Kanban;
   }
@@ -300,37 +276,37 @@
       styles: {},
       todos: [],
     });
-    $Kanban = $Kanban;
   }
 
   async function appUpdate(appindex, app) {
     await $Kanban.appUpdate(appindex, app);
-    $Kanban = $Kanban;
   }
 </script>
 
 <div class="editDialogBG">
   <div
     class="editDialog"
-    style="background-color: {itemInfo.styles.dialogBGColor}; color: {itemInfo.styles.dialogTextColor};"
+    style="background-color: {itemInfo.styles.dialogBGColor}; color: {itemInfo
+      .styles.dialogTextColor};"
     bind:this={editDialogDiv}
   >
     <EditH2Field
-      name={itemInfo.name}
-      edit={editTitle}
-      on:nameChanged={nameChanged}
+      bind:name={itemInfo.name}
+      bind:edit={editTitle}
+      editoff={() => {}}
     />
     <EditPField
-      name={itemInfo.description}
-      edit={editDesc}
-      on:nameChanged={descriptionChanged}
+      bind:name={itemInfo.description}
+      bind:edit={editDesc}
+      editoff={() => {}}
     />
     <div class="itemContainer">
       {#each itemInfo.apps as app, appindex}
-        <svelte:component
+        <app
           this={applications[app.type]}
-          {app}
-          on:appUpdate={async (e) => {await appUpdate(appindex,e.detail.app)}}
+          {applications}
+          {appindex}
+          update={appUpdate}
         />
       {/each}
       <input
@@ -338,20 +314,23 @@
         type="text"
         bind:this={msgInputDiv}
         bind:value={newMsg}
-        on:keydown|capture={(e) => {
+        autocomplete="off"
+        spellcheck="false"
+        autocorrect="off"
+        onkeydown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
             e.stopPropagation();
             createNewTextMsg();
           }
         }}
-        on:focus={() => {
+        onfocus={() => {
           if (inputKeyboardStore === null && $keyHandler !== null) {
             inputKeyboardStore = $keyHandler;
             $keyHandler = null;
           }
         }}
-        on:focusout={() => {
+        onfocusout={() => {
           if (inputKeyboardStore !== null && $keyHandler === null) {
             $keyHandler = inputKeyboardStore;
             inputKeyboardStore = null;
@@ -359,12 +338,12 @@
         }}
       />
       <div class="appButtons">
-        <button on:click={createToDoList}>Todo List</button>
+        <button onclick={createToDoList}>Todo List</button>
       </div>
       <div class="buttonRow">
         <button
-          on:click={() => {
-            saveItem(true);
+          onclick={() => {
+            closeItemEdit();
           }}>Save</button
         >
       </div>

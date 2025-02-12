@@ -1,23 +1,28 @@
 <script>
-  import { onMount, createEventDispatcher } from "svelte";
-  import ColorPicker from "./ColorPicker.svelte";
+  import { onMount } from "svelte";
+  import ColorPicker from "svelte-awesome-color-picker";
 
-  const dispatch = createEventDispatcher();
-
-  let { prefs = $bindable() } = $props();
+  let { prefs = $bindable(), onchange } = $props();
 
   let colorchange = $state("");
   let colorID = $state(0);
   let showPicker = $state(false);
   let explanation = $state();
 
-  onMount(() => {});
+  onMount(() => {
+    //
+    // Have it update the preferences when removed.
+    //
+    return () => {
+      onchange(prefs);
+    };
+  });
 
   function changeColor(id, value) {
     colorID = id;
     explanation = id;
     colorchange = value;
-    showPicker = true;
+    showPicker = !showPicker;
   }
 
   function setColor(id, value) {
@@ -43,8 +48,6 @@
       default:
         break;
     }
-    showPicker = false;
-    dispatch("change", prefs);
   }
 </script>
 
@@ -65,81 +68,85 @@
     <label class="variousPickerLabel1"> List Background Color:</label>
     <div
       class="circlePicker"
-      onclick={(event) => {
+      onclick={() => {
         changeColor("listbgcolor", prefs.listbgcolor);
       }}
       style="background-color: {prefs.listbgcolor};"
-></div>
+    ></div>
     <label class="variousPickerLabel2">{prefs.listbgcolor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Cursor Color</label>
     <div
       class="circlePicker"
-      onclick={(event) => {
+      onclick={() => {
         changeColor("cursorColor", prefs.cursorColor);
       }}
       style="background-color: {prefs.cursorColor};"
-></div>
+    ></div>
     <label class="variousPickerLabel2">{prefs.cursorColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Cursor Text Color: </label>
     <div
       class="circlePicker"
-      onclick={(event) => {
+      onclick={() => {
         changeColor("cursorText", prefs.cursorText);
       }}
       style="background-color: {prefs.cursorText};"
-></div>
+    ></div>
     <label class="variousPickerLabel2">{prefs.cursorText}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Dialog Background Color </label>
     <div
       class="circlePicker"
-      onclick={(event) => {
+      onclick={() => {
         changeColor("dialogBGColor", prefs.dialogBGColor);
       }}
       style="background-color: {prefs.dialogBGColor};"
-></div>
+    ></div>
     <label class="variousPickerLabel2">{prefs.dialogBGColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> Dialog Text Color</label>
     <div
       class="circlePicker"
-      onclick={(event) => {
+      onclick={() => {
         changeColor("dialogTextColor", prefs.dialogTextColor);
       }}
       style="background-color: {prefs.dialogTextColor};"
-></div>
+    ></div>
     <label class="variousPickerLabel2">{prefs.dialogTextColor}</label>
   </div>
   <div class="colorPicker">
     <label class="variousPickerLabel1"> List Text Color </label>
     <div
       class="circlePicker"
-      onclick={(event) => {
+      onclick={() => {
         changeColor("listtextcolor", prefs.listtextcolor);
       }}
       style="background-color: {prefs.listtextcolor};"
-></div>
+    ></div>
     <label class="variousPickerLabel2">{prefs.listtextcolor}</label>
   </div>
-
-  <ColorPicker
-    explainText={explanation}
-    color={colorchange}
-    id={colorID}
-    show={showPicker}
-    on:colorChanged={(event) => {
-      setColor(event.detail.data.id, event.detail.data.color);
-    }}
-    on:quitColorPicker={(event) => {
-      showPicker = false;
-    }}
-  />
+  {#if showPicker}
+    <div
+      style="position: absolute; top: 20%; left: 60%; display: flex; z-index: 100;"
+    >
+      <ColorPicker
+        hex={colorchange}
+        {explanation}
+        bind:isOpen={showPicker}
+        isPopup={false}
+        isDialog={false}
+        position="responsive"
+        onInput={(color) => {
+          setColor(colorID, color.hex);
+        }}
+      />
+    </div>
+  {/if}
 {/if}
 
 <style>

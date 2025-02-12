@@ -1,6 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-  import { onMount, afterUpdate } from "svelte";
+  import { onMount } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
@@ -15,33 +14,37 @@
   import { commandBar } from "../stores/commandBar.js";
   import * as App from "../../wailsjs/go/main/App.js";
 
-  let origKeyboardHandler = null;
-  let handlekey = true;
-  let addedit = false;
-  let add = true;
-  let boardName = "";
-  let boardDesc = "";
-  let boardDescType = "text";
-  let boardLoc = "";
-  let itemDiv = null;
+  let origKeyboardHandler = $state(null);
+  let handlekey = $state(true);
+  let addedit = $state(false);
+  let add = $state(true);
+  let boardName = $state("");
+  let boardDesc = $state("");
+  let boardDescType = $state("text");
+  let boardLoc = $state("");
+  let itemDiv = $state(null);
 
   onMount(() => {
     //
     // Save the original handler and install our new one.
     //
-    if ($keyHandler !== null) {
+    if ($keyHandler !== null && $keyHandler != KeyboardHandler) {
       origKeyboardHandler = $keyHandler;
       $keyHandler = KeyboardHandler;
     }
 
     return () => {
+      //
+      // Restore the original keyboard handler.
+      //
       if (origKeyboardHandler !== null) {
         $keyHandler = origKeyboardHandler;
+        origKeyboardHandler = null;
       }
     };
   });
 
-  afterUpdate(() => {
+  $effect(() => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
@@ -69,6 +72,8 @@
       // Take over the keyboard!
       //
       e.preventDefault();
+      e.stopPropagation();
+
       //
       // State 0 is the main entry state. Get the command and accumulator values.
       //
@@ -109,7 +114,7 @@
         case "Enter":
           if (!addedit) {
             await gotoMetaBoard($metaboard.cursor);
-            close(e);
+            close();
           }
           break;
 
@@ -117,7 +122,7 @@
           if (addedit) {
             addedit = false;
           } else {
-            close(e);
+            close();
           }
           break;
 
@@ -126,21 +131,15 @@
       }
     } else {
       if (e.key === "Enter") {
-        close(e);
+        close();
       }
     }
   }
 
-  function close(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  function close() {
     $metaboard.clearShowing();
     addedit = false;
     $metaboard = $metaboard;
-    if (origKeyboardHandler !== null) {
-      $keyHandler = origKeyboardHandler;
-      origKeyboardHandler = null;
-    }
   }
 
   async function deleteCurrentMetaboard() {
@@ -211,10 +210,8 @@
   }
 
   async function saveMetaBoard() {
-    console.log("Saving metaboard...");
     if (add) {
       $metaboard.addmetaboard(boardName, boardDesc, boardDescType, boardLoc);
-      console.log("Created a metaboard: ", $metaboard.metaboards);
     } else {
       //
       // This is for editing. Save the Edit.
@@ -269,7 +266,7 @@
           <button
             class="brbutton"
             type="button"
-            on:click={() => {
+            onclick={() => {
               addedit = false;
               handlekey = true;
             }}>Cancel</button
@@ -277,8 +274,8 @@
           <button
             type="button"
             class="brbutton"
-            on:click={saveMetaBoard}
-            on:enter={saveMetaBoard}>Save</button
+            onclick={saveMetaBoard}
+            onenter={saveMetaBoard}>Save</button
           >
         </div>
       {:else}
@@ -287,7 +284,7 @@
             <a
               class="anchorStyle"
               bind:this={itemDiv}
-              on:click={async () => {
+              onclick={async () => {
                 gotoMetaBoard(index);
               }}
               style="background-color: {$metaboard.cursor === index
@@ -302,7 +299,7 @@
           {:else}
             <a
               class="anchorStyle"
-              on:click={async () => {
+              onclick={async () => {
                 gotoMetaBoard(index);
               }}
               style="background-color: {$metaboard.cursor === index
@@ -323,20 +320,20 @@
         <button
           class="brbutton"
           on
-          on:click={() => {
+          onclick={() => {
             newMetaBoard();
           }}>Add</button
         >
         <button
           class="brbutton"
-          on:click={() => {
+          onclick={() => {
             deleteCurrentMetaboard();
           }}>Delete</button
         >
         <button
           class="brbutton"
-          on:click={(e) => {
-            close(e);
+          onclick={() => {
+            close();
           }}>Cancel</button
         >
       </div>

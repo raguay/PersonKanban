@@ -1,15 +1,12 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import EditH2Field from "./EditH2Field.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
-  let { app = $bindable() } = $props();
+  let { app = $bindable(), appindex, update } = $props();
 
-  let newToDo = $state('');
+  let newToDo = $state("");
   let oldkbhdl = $state(null);
   let todoInputEl = $state(null);
-
-  const disbatch = createEventDispatcher();
 
   function createNewTodo() {
     app.todos.push({
@@ -18,18 +15,12 @@
     });
     newToDo = "";
     app = app;
-    saveApp();
-  }
-
-  function saveApp() {
-    disbatch("appUpdate", {
-      app: app,
-    });
+    update();
   }
 
   function nameChanged(e) {
     app.name = e.detail.name;
-    saveApp();
+    update(appindex, app);
   }
 
   function setDone(todo) {
@@ -42,14 +33,14 @@
       td.getDay() +
       "/" +
       td.getFullYear();
-    saveApp();
+    update(appindex, app);
   }
 
   function setNotDone(todo) {
     todo.done = false;
     var dtReg = /\s+\@done\s+\d+\/\d+\/\d+/;
     todo.description = todo.description.replace(dtReg, "");
-    saveApp();
+    update(appindex, app);
   }
 </script>
 
@@ -71,6 +62,7 @@
     onkeydown={(e) => {
       if (e.code === "Enter") {
         e.preventDefault();
+        e.stopPropagation();
         createNewTodo();
         todoInputEl.focus();
       }
@@ -80,7 +72,7 @@
     {#each app.todos as todo}
       {#if !todo.done}
         <p
-          onclick={(e) => {
+          onclick={() => {
             todo.done = true;
             setDone(todo);
           }}
@@ -92,7 +84,7 @@
     {#each app.todos as todo}
       {#if todo.done}
         <p
-          onclick={(e) => {
+          onclick={() => {
             todo.done = false;
             setNotDone(todo);
           }}
@@ -109,7 +101,7 @@
     display: flex;
     flex-direction: column;
     margin: 5px 0px 5px 10px;
-    border: 3px solid rgba(255,255,255,.6);
+    border: 3px solid rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     padding: 5px;
   }

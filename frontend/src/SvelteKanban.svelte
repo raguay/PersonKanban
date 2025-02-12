@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `let editNameFlag = false;` to `$state` because there's a variable named state.
-     Rename the variable and try again or migrate by hand. -->
 <script>
   import { onMount, tick } from "svelte";
   import CommandBar from "./components/CommandBar.svelte";
@@ -28,7 +26,7 @@
   let editField = null;
   let origKH = null;
   let acc = "";
-  let state = 0;
+  let keystate = 0;
   let command = null;
   let direction = "";
   let editItem = false;
@@ -58,6 +56,7 @@
     //
     // Add Commands for the CommandBar.
     //
+    $commandBar.commands = [];
     $commandBar.addCommand(
       "Open Preferences",
       openPreferences,
@@ -162,6 +161,16 @@
     );
   });
 
+  function showMetaboards() {
+    $metaboard.setShowing();
+    $metaboard = $metaboard;
+  }
+
+  function editoff() {
+    editItem = false;
+    $Kanban = $Kanban;
+  }
+
   function openPreferences() {
     $preferences.showing = true;
     $preferences.keyboardHandler = listKeyHandler;
@@ -263,7 +272,7 @@
     //
     $listCursor = $listCursor;
     $Kanban = $Kanban;
-    state = 0;
+    keystate = 0;
     command = null;
     direction = "";
     acc = "";
@@ -274,10 +283,10 @@
     // This is just normal key processing. Run the command for that key.
     //
     e.preventDefault();
-    switch (state) {
+    switch (keystate) {
       case 0:
         //
-        // State 0 is the main entry state. Get the command and accumulator values.
+        // keystate 0 is the main entry state. Get the command and accumulator values.
         //
         switch ($key) {
           case " ":
@@ -378,16 +387,15 @@
             //
             // Goto the one state to capture the direction.
             //
-            state = 1;
+            keystate = 1;
             break;
 
           case "t":
             //
             // Go to the metaboards dialog.
             //
-            command = null;
-            clearState();
-            $metaboard.setShowing();
+            command = showMetaboards;
+            acc = "";
             $lastCommand = "Show Metaboards";
             break;
 
@@ -410,9 +418,11 @@
             break;
 
           case "Escape":
-            $itemCursor = -1;
-            $listCursor = -1;
+            if ($itemCursor >= 0) {
+              $itemCursor = -1;
+            } else if ($itemCursor < 0) $listCursor = -1;
             clearState();
+            $keyHandler = listKeyHandler;
             break;
 
           case ":":
@@ -440,7 +450,7 @@
 
           default:
             acc = "";
-            state = 0;
+            keystate = 0;
             command = null;
             break;
         }
@@ -451,23 +461,23 @@
         //
         switch ($key) {
           case "h":
-            state = 0;
+            keystate = 0;
             direction = "l";
             break;
 
           case "k":
-            state = 0;
+            keystate = 0;
             direction = "u";
             break;
 
           case "j":
             direction = "d";
-            state = 0;
+            keystate = 0;
             break;
 
           case "l":
             direction = "r";
-            state = 0;
+            keystate = 0;
             break;
 
           default:
@@ -479,7 +489,7 @@
         }
         break;
     }
-    if (state === 0) {
+    if (keystate === 0) {
       //
       // If a command is set, do the command as many times as the acc says.
       //
@@ -795,14 +805,14 @@
                         editNameFlag = false;
                         $keyHandler = origKH;
                         origKH = null;
-                        await $Kanban.saveBoard();
+                        await $Kanban.SaveKanbanBoards();
                       }
                     }}
                     on:blur={async () => {
                       $keyHandler = origKH;
                       origKH = null;
                       editNameFlag = false;
-                      await $Kanban.saveBoard();
+                      await $Kanban.SaveKanbanBoards();
                     }}
                   />
                 {:else}
@@ -867,10 +877,7 @@
               boardcur={$boardCursor}
               listcur={index}
               edit={$listCursor === index ? editItem : false}
-              on:editOff={() => {
-                editItem = false;
-                $Kanban = $Kanban;
-              }}
+              {editoff}
             />
           {/each}
         {/if}

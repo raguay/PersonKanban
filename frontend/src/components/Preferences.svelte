@@ -1,7 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `let state = 0;` to `$state` because there's a variable named state.
-     Rename the variable and try again or migrate by hand. -->
 <script>
-  import { onMount, tick } from "svelte";
+  import { onMount } from "svelte";
   import BoardPref from "./BoardPref.svelte";
   import ListPref from "./ListPref.svelte";
   import ItemPref from "./ItemPref.svelte";
@@ -12,9 +10,9 @@
   import { preferences } from "../stores/preferences.js";
   import { Kanban } from "../stores/Kanban.js";
 
-  let state = 0;
+  let prefstate = $state(0);
   let original = null;
-  let prefs = null;
+  let prefs = $state(null);
 
   onMount(async () => {
     //
@@ -31,15 +29,15 @@
     // 2          Edit item preferences
     //
     if ($itemCursor >= 0) {
-      state = 2;
+      prefstate = 2;
       original =
         $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor]
           .styles;
     } else if ($listCursor >= 0) {
-      state = 1;
+      prefstate = 1;
       original = $Kanban.boards[$boardCursor].lists[$listCursor].styles;
     } else {
-      state = 0;
+      prefstate = 0;
       original = $Kanban.boards[$boardCursor].styles;
     }
 
@@ -92,8 +90,8 @@
     $preferences = $preferences;
   }
 
-  async function onchange(e) {
-    prefs = e.detail;
+  async function onchange(newprefs) {
+    prefs = newprefs;
     await savePreference();
   }
 </script>
@@ -107,18 +105,18 @@
          font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
 >
   {#if prefs !== null}
-    {#if state === 0}
-      <BoardPref {prefs} on:change={onchange} />
-    {:else if state === 1}
-      <ListPref {prefs} on:change={onchange} />
-    {:else if state === 2}
-      <ItemPref {prefs} on:change={onchange} />
+    {#if prefstate === 0}
+      <BoardPref {prefs} {onchange} />
+    {:else if prefstate === 1}
+      <ListPref {prefs} {onchange} />
+    {:else if prefstate === 2}
+      <ItemPref {prefs} {onchange} />
     {/if}
   {/if}
   <div id="buttonbar">
     <div id="buttons">
       <button
-        on:click={async () => {
+        onclick={async () => {
           await savePreference();
           await Quit();
         }}
@@ -126,7 +124,7 @@
         Save
       </button>
       <button
-        on:click={async () => {
+        onclick={async () => {
           await revertChanges();
           await Quit();
         }}

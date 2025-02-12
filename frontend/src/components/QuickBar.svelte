@@ -1,25 +1,24 @@
 <script>
-  import { onMount, createEventDispatcher } from "svelte";
+  import { onMount } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
   import { Kanban } from "../stores/Kanban.js";
 
-  const disbatch = createEventDispatcher();
+  let { show = $bindable() } = $props();
 
   let inputDiv = $state(null);
   let inputVal = $state("");
   let oldKeyHandler = null;
-  let handlekey = true;
 
   onMount(() => {
     //
     // Focus the input first.
     //
-    inputDiv.focus();
+    if (inputDiv !== null) inputDiv.focus();
 
-    // 
+    //
     // Store the key handler.
     //
     oldKeyHandler = $keyHandler;
@@ -39,7 +38,8 @@
 
 <div
   id="QuickBarDiv"
-  style="background-color: {$Kanban.boards[$boardCursor].styles.commandbarbgcolor};
+  style="background-color: {$Kanban.boards[$boardCursor].styles
+    .commandbarbgcolor};
          color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
          font-family: {$Kanban.boards[$boardCursor].styles.font};
          font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
@@ -55,46 +55,46 @@
         //
         // Close the quickBar.
         //
-        disbatch("close",{});
+        show = false;
       } else if (e.key === "Enter") {
         //
         // Add the contents of the input to the current focused item.
         //
         e.preventDefault();
+        e.stopPropagation();
 
         inputVal = inputVal.trim();
-        if(inputVal !== "") {
-          // 
+        if (inputVal !== "") {
+          //
           // Split the input to a name and description. There will not always be a description.
-          // 
+          //
           let parts = inputVal.split("|");
           let newName = parts[0];
           let newDes = "";
-          if(parts.length > 1) {
+          if (parts.length > 1) {
             newDes = parts[1];
           }
 
-          if($listCursor < 0 && $itemCursor < 0){
-            await $Kanban.addBoardNamed(newName,newDes);
-          } else if($listCursor >= 0) {
-            if($itemCursor >= 0) {
-              // 
+          if ($listCursor < 0 && $itemCursor < 0) {
+            await $Kanban.addBoardNamed(newName, newDes);
+          } else if ($listCursor >= 0) {
+            if ($itemCursor >= 0) {
+              //
               // Add an item.
               //
               await $Kanban.addItemNamed(newName, newDes);
             } else {
-              // 
+              //
               // Add a list.
-              // 
+              //
               await $Kanban.addListNamed(newName);
             }
           }
-          $Kanban = $Kanban;
         }
         //
         // Close the quickBar.
         //
-        disbatch("close",{});
+        show = false;
       }
     }}
   />

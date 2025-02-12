@@ -1,6 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-  import { onMount, afterUpdate, tick } from "svelte";
+  import { onMount, tick } from "svelte";
   import showdown from "showdown";
   import { commandBar } from "../stores/commandBar.js";
   import { keyHandler } from "../stores/keyHandler.js";
@@ -15,15 +14,15 @@
   import { Kanban } from "../stores/Kanban.js";
 
   let inputDiv = null;
-  let inputVal = null;
+  let inputVal = $state(null);
   let commandListDiv = null;
-  let currentCommandDiv = null;
+  let currentCommandDiv = $state(null);
   let commandDescriptionDiv = null;
-  let commandlist = [];
+  let commandlist = $state([]);
   let oldKeyHandler = null;
   let handlekey = true;
-  let cursor = 0;
-  let listdis = "";
+  let cursor = $state(0);
+  let listdis = $state("");
 
   onMount(() => {
     //
@@ -53,7 +52,7 @@
     };
   });
 
-  afterUpdate(() => {
+  $effect(() => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
@@ -175,7 +174,8 @@
 <div id="CBFull">
   <div
     id="commandBarDiv"
-    style="background-color: {$Kanban.boards[$boardCursor].styles.commandbarbgcolor};
+    style="background-color: {$Kanban.boards[$boardCursor].styles
+      .commandbarbgcolor};
            color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
            font-family: {$Kanban.boards[$boardCursor].styles.font};
            font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
@@ -223,7 +223,8 @@
     <div id="ListContainer">
       <div
         id="commandList"
-        style="background-color: {$Kanban.boards[$boardCursor].styles.commandbarbgcolor}; 
+        style="background-color: {$Kanban.boards[$boardCursor].styles
+          .commandbarbgcolor}; 
                color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
                border-width: {listdis === 'list' ? 2 : 0}px;"
         bind:this={commandListDiv}
@@ -247,7 +248,8 @@
       <div
         id="commandDescription"
         bind:this={commandDescriptionDiv}
-        style="background-color: {$Kanban.boards[$boardCursor].styles.commandbarbgcolor}; 
+        style="background-color: {$Kanban.boards[$boardCursor].styles
+          .commandbarbgcolor}; 
                color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
                border-width: {listdis === 'dis' ? 2 : 0}px;"
       >

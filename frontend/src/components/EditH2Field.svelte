@@ -1,21 +1,15 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-  import { createEventDispatcher, afterUpdate, tick } from "svelte";
+  import { tick } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
-  export let name = "";
-  export let edit = false;
-  export let size = "360px";
+  let { name = $bindable(), edit, size, editoff } = $props();
 
-  let editField;
-  let editH2Flag = false;
+  let editField = $state(null);
+  let editH2Flag = $state(false);
   let origKeyHandler = null;
 
-  const disbatch = createEventDispatcher();
-
-  afterUpdate(async () => {
+  $effect.pre(async () => {
     if (edit) await editName();
-    edit = false;
   });
 
   async function editName() {
@@ -29,14 +23,12 @@
   }
 
   function nameChanged() {
-    disbatch("nameChanged", {
-      name: editField.value,
-    });
     editH2Flag = false;
     if (origKeyHandler !== null) {
       $keyHandler = origKeyHandler;
       origKeyHandler = null;
     }
+    editoff();
   }
 </script>
 
@@ -48,20 +40,20 @@
       style="width: {size};"
       bind:value={name}
       bind:this={editField}
-      on:keydown={(e) => {
+      onkeydown={(e) => {
         if (e.code === "Enter") {
           e.preventDefault();
           e.stopPropagation();
           nameChanged();
         }
       }}
-      on:blur={() => {
+      onblur={() => {
         nameChanged();
       }}
     />
   {:else}
     <h2
-      on:dblclick={() => {
+      ondblclick={() => {
         editName();
       }}
     >

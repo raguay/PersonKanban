@@ -1,22 +1,17 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-  import { afterUpdate, createEventDispatcher} from "svelte";
   import ItemEdit from "./ItemEdit.svelte";
   import { itemCursor } from "../stores/itemCursor.js";
-  import { Kanban } from "../stores/Kanban.js";
 
-  export let itemInfo = null;
-  export let index = 0;
-  export let editItem = false;
+  let { itemInfo = $bindable(), index, editItem, editoff } = $props();
 
-  const disbatch = createEventDispatcher();
+  let itemDiv = $state(null);
+  let localedit = $state(false);
 
-  let itemDiv = null;
-
-  afterUpdate(() => {
+  $effect.pre(() => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
+    localedit = index === $itemCursor ? editItem : false;
     if (
       $itemCursor === index &&
       typeof itemDiv !== "undefined" &&
@@ -35,37 +30,39 @@
 
   function editItemCommand() {
     editItem = true;
+    localedit = true;
     $itemCursor = index;
   }
 </script>
 
 {#if itemInfo !== null}
-<div
-  class="item"
-  style="background-color: {itemInfo.styles.itembgcolor}; color: {itemInfo.styles.itemtextcolor}; border-width: {$itemCursor ===
-  index
-    ? itemInfo.styles.cursorWidth
-    : '5px'}; border-color: {$itemCursor === index
-    ? itemInfo.styles.cursorColor
-    : itemInfo.styles.itembgcolor};"
-  on:dblclick={editItemCommand}
-  bind:this={itemDiv}
-  on:click|capture={() => {
-    $itemCursor = index;
-  }}
->
-  <h2>{itemInfo.name}</h2>
-  <p>{itemInfo.description}</p>
-  {#if editItem}
-    <ItemEdit
-      itemInfo={itemInfo}
-      on:editOff={() => {
-        disbatch("editOff", {});
-        editItem = false;
-      }}
-    />
-  {/if}
-</div>
+  <div
+    class="item"
+    style="background-color: {itemInfo.styles.itembgcolor}; color: {itemInfo
+      .styles.itemtextcolor}; border-width: {$itemCursor === index
+      ? itemInfo.styles.cursorWidth
+      : '5px'}; border-color: {$itemCursor === index
+      ? itemInfo.styles.cursorColor
+      : itemInfo.styles.itembgcolor};"
+    ondblclick={editItemCommand}
+    bind:this={itemDiv}
+    onclick={() => {
+      $itemCursor = index;
+    }}
+  >
+    <h2>{itemInfo.name}</h2>
+    <p>{itemInfo.description}</p>
+    {#if localedit}
+      <ItemEdit
+        {itemInfo}
+        editoff={() => {
+          editItem = false;
+          localedit = false;
+          editoff();
+        }}
+      />
+    {/if}
+  </div>
 {/if}
 
 <style>
