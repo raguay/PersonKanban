@@ -22,15 +22,15 @@
   import { preferences } from "./stores/preferences.js";
   import * as App from "../wailsjs/go/main/App.js";
 
-  let editNameFlag = false;
-  let editField = null;
+  let editNameFlag = $state(false);
+  let editField = $state(null);
   let origKH = null;
   let acc = "";
   let keystate = 0;
   let command = null;
   let direction = "";
-  let editItem = false;
-  let quickBarOpen = false;
+  let editItem = $state(false);
+  let quickBarOpen = $state(false);
 
   onMount(async () => {
     //
@@ -503,7 +503,7 @@
         // Execute the command the correct number of times.
         //
         for (var i = 0; i < times; i++) {
-          command();
+          await command();
         }
 
         //
@@ -580,11 +580,9 @@
       //
       // It's a valid move. Move it.
       //
-      let orig = structuredClone($Kanban.boards[$boardCursor]);
-      $Kanban.boards[$boardCursor] = structuredClone(
-        $Kanban.boards[newboardindex],
-      );
-      $Kanban.boards[newboardindex] = structuredClone(orig);
+      let orig = myClone($Kanban.boards[$boardCursor]);
+      $Kanban.boards[$boardCursor] = myClone($Kanban.boards[newboardindex]);
+      $Kanban.boards[newboardindex] = myClone(orig);
       $boardCursor = newboardindex;
       await $Kanban.SaveKanbanBoards();
     }
@@ -596,6 +594,9 @@
 
   async function moveItemCommand(dir) {
     if ($listCursor >= 0 && $itemCursor >= 0) {
+      //
+      // It is a move for an item. See if it is an up or down direction.
+      //
       let newitemindex = $itemCursor;
       switch (dir) {
         case "u":
@@ -606,26 +607,27 @@
           newitemindex++;
           break;
       }
+
+      //
+      // Check to make sure it's in the boundaries.
+      //
       if (newitemindex < 0) newitemindex = 0;
-      if (
-        $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1 <
-        newitemindex
-      )
-        newitemindex =
-          $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
+      let newIndex =
+        $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
+      if (newIndex < newitemindex) newitemindex = newIndex;
       if (newitemindex !== $itemCursor) {
         //
         // We have a valid move.
         //
-        let orig = structuredClone(
+        let orig = myClone(
           $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
         );
         $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor] =
-          structuredClone(
+          myClone(
             $Kanban.boards[$boardCursor].lists[$listCursor].items[newitemindex],
           );
         $Kanban.boards[$boardCursor].lists[$listCursor].items[newitemindex] =
-          structuredClone(orig);
+          myClone(orig);
         $itemCursor = newitemindex;
       } else {
         //
@@ -641,6 +643,10 @@
             newlistindex++;
             break;
         }
+
+        //
+        // Make sure it's in the boundaries.
+        //
         if (newlistindex < 0) newlistindex = 0;
         if ($Kanban.boards[$boardCursor].lists.length - 1 < newlistindex)
           newlistindex = $Kanban.boards[$boardCursor].lists.length - 1;
@@ -648,7 +654,7 @@
           //
           // Move to the new list index.
           //
-          let item = structuredClone(
+          let item = myClone(
             $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
           );
           $Kanban.boards[$boardCursor].lists[$listCursor].items.splice(
@@ -671,6 +677,10 @@
     moveListCommand(direction);
   }
 
+  function myClone(a) {
+    return JSON.parse(JSON.stringify(a));
+  }
+
   async function moveListCommand(dir) {
     if ($listCursor >= 0) {
       let newlistindex = $listCursor;
@@ -690,14 +700,11 @@
         //
         // We have a valid move.
         //
-        let orig = structuredClone(
-          $Kanban.boards[$boardCursor].lists[$listCursor],
-        );
-        $Kanban.boards[$boardCursor].lists[$listCursor] = structuredClone(
+        let orig = myClone($Kanban.boards[$boardCursor].lists[$listCursor]);
+        $Kanban.boards[$boardCursor].lists[$listCursor] = myClone(
           $Kanban.boards[$boardCursor].lists[newlistindex],
         );
-        $Kanban.boards[$boardCursor].lists[newlistindex] =
-          structuredClone(orig);
+        $Kanban.boards[$boardCursor].lists[newlistindex] = myClone(orig);
         $listCursor = newlistindex;
       }
       await $Kanban.SaveKanbanBoards();

@@ -54,9 +54,10 @@ const DefaultKanban = {
       //
       // The directory exist, so read the config file.
       //
-      this.boards = JSON.parse(
-        await App.ReadFile(mtboard.metaboards[mtboard.cursor].loc),
+      let rawboards = await App.ReadFile(
+        mtboard.metaboards[mtboard.cursor].loc,
       );
+      this.boards = JSON.parse(rawboards);
     } else {
       //
       // Clear the boards.

@@ -168,16 +168,15 @@
       // The file is there. Therefore, read it an apply it.
       //
       await $Kanban.LoadCurrentKanbanBoards();
-      $metaboard.clearShowing();
     } else {
       //
       // The file hasn't been created yet. Create it and set it.
       //
       $Kanban.boards = [];
       let cmd = $commandBar.getCommand("Add a New Board");
-      cmd.command();
-      $metaboard.clearShowing();
+      await cmd.command();
     }
+    $metaboard.clearShowing();
     $Kanban = $Kanban;
     $boardCursor = 0;
     $listCursor = -1;
@@ -285,7 +284,7 @@
               class="anchorStyle"
               bind:this={itemDiv}
               onclick={async () => {
-                gotoMetaBoard(index);
+                await gotoMetaBoard(index);
               }}
               style="background-color: {$metaboard.cursor === index
                 ? $Kanban.boards[$boardCursor].styles.cursorColor
@@ -300,7 +299,7 @@
             <a
               class="anchorStyle"
               onclick={async () => {
-                gotoMetaBoard(index);
+                await gotoMetaBoard(index);
               }}
               style="background-color: {$metaboard.cursor === index
                 ? $Kanban.boards[$boardCursor].styles.cursorColor
