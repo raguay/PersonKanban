@@ -129,10 +129,6 @@
         default:
           break;
       }
-    } else {
-      if (e.key === "Enter") {
-        close();
-      }
     }
   }
 
@@ -265,17 +261,37 @@
           <button
             class="brbutton"
             type="button"
-            onclick={() => {
+            onclick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addedit = false;
               handlekey = true;
+            }}
+            onkeyup={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.key === "Enter") {
+                addedit = false;
+                handlekey = true;
+              }
             }}>Cancel</button
           >
           <button
             type="button"
             class="brbutton"
-            onclick={saveMetaBoard}
-            onenter={saveMetaBoard}>Save</button
+            onclick={() => {
+              e.preventDefault();
+              e.stopPropagation();
+              saveMetaBoard();
+            }}
+            onkeyup={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.key === "Enter") saveMetaBoard();
+            }}
           >
+            Add
+          </button>
         </div>
       {:else}
         {#each $metaboard.metaboards as board, index}
@@ -318,21 +334,41 @@
       <div id="buttonrow">
         <button
           class="brbutton"
-          on
-          onclick={() => {
+          onclick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             newMetaBoard();
+          }}
+          onkeyup={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.key === "Enter") newMetaBoard();
           }}>Add</button
         >
         <button
           class="brbutton"
-          onclick={() => {
+          onclick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             deleteCurrentMetaboard();
+          }}
+          onkeyup={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.key === "Enter") deleteCurrentMetaboard();
           }}>Delete</button
         >
         <button
           class="brbutton"
-          onclick={() => {
+          onclick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             close();
+          }}
+          onkeyup={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.key === "Enter") close();
           }}>Cancel</button
         >
       </div>

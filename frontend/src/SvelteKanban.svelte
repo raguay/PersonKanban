@@ -340,6 +340,7 @@
             break;
 
           case "h":
+          case "ArrowLeft":
             if ($listCursor === -1) {
               command = moveBoardCursorLeft;
               $lastCommand = "Move Board Cursor Left";
@@ -350,16 +351,19 @@
             break;
 
           case "k":
+          case "ArrowUp":
             command = moveItemCursorUp;
             $lastCommand = "Move Item Cursor Up";
             break;
 
           case "j":
+          case "ArrowDown":
             command = moveItemCursorDown;
             $lastCommand = "Move Item Cursor Down";
             break;
 
           case "l":
+          case "ArrowRight":
             if ($listCursor === -1) {
               command = moveBoardCursorRight;
               $lastCommand = "Move Board Cursor Right";
@@ -461,21 +465,25 @@
         //
         switch ($key) {
           case "h":
+          case "ArrowLeft":
             keystate = 0;
             direction = "l";
             break;
 
           case "k":
+          case "ArrowUp":
             keystate = 0;
             direction = "u";
             break;
 
           case "j":
+          case "ArrowDown":
             direction = "d";
             keystate = 0;
             break;
 
           case "l":
+          case "ArrowRight":
             direction = "r";
             keystate = 0;
             break;
