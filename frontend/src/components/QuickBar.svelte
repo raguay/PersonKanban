@@ -52,6 +52,7 @@
     onkeydown={async (e) => {
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation();
         //
         // Close the quickBar.
         //

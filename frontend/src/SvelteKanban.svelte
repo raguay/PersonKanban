@@ -922,11 +922,7 @@
 {/if}
 
 {#if quickBarOpen}
-  <QuickBar
-    on:close={() => {
-      quickBarOpen = false;
-    }}
-  />
+  <QuickBar bind:show={quickBarOpen} />
 {/if}
 
 <style>
