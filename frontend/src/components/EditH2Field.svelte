@@ -63,6 +63,9 @@
 </div>
 
 <style>
+  h2 {
+    margin: 5px;
+  }
   .eListName {
     background-color: rgba(255, 255, 255, 0.3);
     margin: 10px;

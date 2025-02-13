@@ -65,70 +65,87 @@
       >❌</span
     >
   </div>
-  <input
-    class="todoInput"
-    type="text"
-    bind:value={newToDo}
-    bind:this={todoInputEl}
-    onfocusin={() => {
-      oldkbhdl = $keyHandler;
-      $keyHandler = null;
+  <div
+    class="todobottom"
+    onmouseover={() => {
+      todoInputEl.focus();
     }}
-    onfocusout={() => {
-      $keyHandler = oldkbhdl;
-      oldkbhdl = null;
+    onfocus={() => {
+      todoInputEl.focus();
     }}
-    onkeydown={(e) => {
-      if (e.code === "Enter") {
-        e.preventDefault();
-        e.stopPropagation();
-        createNewTodo();
-        todoInputEl.focus();
-      }
-    }}
-  />
-  <div class="todoContainer">
-    {#each app.todos as todo, index}
-      {#if !todo.done}
-        <div class="tododiv">
-          <span
-            class="todographicfront"
-            onclick={() => {
-              todo.done = false;
-              setDone(todo);
-            }}>🔲</span
-          >
-          <p class="todotext">{todo.description}</p>
-          <span class="todographicback" onclick={() => deleteTodo(index)}
-            >❌</span
-          >
-          <span class="todographiclast" onclick={() => editTodo(index)}>
-            ✏️</span
-          >
-        </div>
-      {/if}
-    {/each}
-    {#each app.todos as todo, index}
-      {#if todo.done}
-        <div class="tododiv">
-          <span
-            class="todographicfront"
-            onclick={() => {
-              todo.done = false;
-              setNotDone(todo);
-            }}>✅</span
-          >
-          <p class="todotext">{todo.description}</p>
-          <span class="todographicback" onclick={() => deleteTodo(index)}
-            >❌</span
-          >
-        </div>
-      {/if}
-    {/each}
+  >
+    <input
+      class="todoInput"
+      type="text"
+      bind:value={newToDo}
+      bind:this={todoInputEl}
+      onfocus={() => {
+        oldkbhdl = $keyHandler;
+        $keyHandler = null;
+      }}
+      onfocusout={() => {
+        $keyHandler = oldkbhdl;
+        oldkbhdl = null;
+      }}
+      onkeydown={(e) => {
+        if (e.code === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          createNewTodo();
+          todoInputEl.focus();
+        }
+      }}
+    />
+    <div class="todoContainer">
+      {#each app.todos as todo, index}
+        {#if !todo.done}
+          <div class="tododiv">
+            <span
+              class="todographicfront"
+              onclick={() => {
+                todo.done = false;
+                setDone(todo);
+              }}>🔲</span
+            >
+            <p class="todotext">{todo.description}</p>
+            <span class="todographicback" onclick={() => deleteTodo(index)}
+              >❌</span
+            >
+            <span class="todographiclast" onclick={() => editTodo(index)}>
+              ✏️</span
+            >
+          </div>
+        {/if}
+      {/each}
+      {#each app.todos as todo, index}
+        {#if todo.done}
+          <div class="tododiv">
+            <span
+              class="todographicfront"
+              onclick={() => {
+                todo.done = false;
+                setNotDone(todo);
+              }}>✅</span
+            >
+            <p class="todotext">{todo.description}</p>
+            <span class="todographicback" onclick={() => deleteTodo(index)}
+              >❌</span
+            >
+          </div>
+        {/if}
+      {/each}
+    </div>
   </div>
 </div>
 
 <style>
+  .todobottom {
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+  }
+
   .ToDoList {
     display: flex;
     flex-direction: column;
@@ -146,25 +163,30 @@
   .todographicfront {
     height: 10px;
     margin: 0px 5px 5px 5px;
+    cursor: pointer;
   }
 
   .todographicbackheader {
     height: 10px;
-    margin: 25px 5px 5px auto;
+    margin: 12px 5px 5px auto;
+    cursor: pointer;
   }
 
   .todographicback {
     height: 10px;
     margin: 0px 5px 5px auto;
+    cursor: pointer;
   }
 
   .todographiclast {
     height: 10px;
     margin: 5px;
+    cursor: pointer;
   }
 
   .todotext {
     margin: 5px auto 5px 5px;
+    cursor: pointer;
   }
 
   .tododiv {
@@ -183,5 +205,6 @@
     border-radius: 10px;
     color: inherit;
     padding: 5px;
+    cursor: pointer;
   }
 </style>
