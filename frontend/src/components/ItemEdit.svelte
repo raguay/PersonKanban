@@ -357,9 +357,16 @@
         {#each itemInfo.notes as note}
           <div class="note">
             <div class="noteHeader">
-              <div class="noteDate">
-                {note.date}
-              </div>
+              <p class="noteDate">{note.date}</p>
+              <!-- svelte-ignore a11y_mouse_events_have_key_events a11y_no_static_element_interactions -->
+              <span
+                class="noteAction"
+                onclick={() => {
+                  navigator.clipboard.writeText(note.info);
+                }}
+              >
+                📋️
+              </span>
             </div>
             {#if note.type === "text"}
               <p class="noteText">{note.info}</p>
@@ -417,7 +424,7 @@
 
   .note {
     margin: 5px;
-    padding: 10px;
+    padding: 5px;
     background-color: rgba(255, 255, 255, 0.6);
     border: 3px solid transparent;
     border-radius: 10px;
@@ -426,17 +433,26 @@
   .noteHeader {
     display: flex;
     flex-direction: row;
-    margin: 5px 0px 10px 0px;
+    margin: 0px;
     font-size: 10px;
   }
 
   .noteDate {
     flex: 1;
     font-size: 10px;
+    margin: 0px 5px 0px 0px;
+  }
+
+  .noteAction {
+    margin: 0px 5px 5px auto;
+    height: 14px;
+    max-height: 14px;
+    cursor: pointer;
   }
 
   .noteText {
     flex: 1;
+    user-select: text;
   }
 
   .buttonRow {

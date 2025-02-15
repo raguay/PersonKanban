@@ -49,6 +49,15 @@
     type="text"
     bind:this={inputDiv}
     bind:value={inputVal}
+    autocomplete="off"
+    spellcheck="false"
+    autocorrect="off"
+    onfocusout={() => {
+      //
+      // Close the quickBar.
+      //
+      show = false;
+    }}
     onkeydown={async (e) => {
       if (e.key === "Escape") {
         e.preventDefault();

@@ -783,7 +783,7 @@
 </script>
 
 <svelte:window
-  on:keydown={(e) => {
+  onkeydown={(e) => {
     if ($keyHandler !== null) $keyHandler(e);
   }}
 />
@@ -800,7 +800,7 @@
                 .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
                 .selectTabTextColor}"
               data-key={index}
-              on:dblclick={(e) => {
+              ondblclick={(e) => {
                 editName(index);
               }}
             >
@@ -815,7 +815,7 @@
                     type="text"
                     bind:value={board.name}
                     bind:this={editField}
-                    on:keydown={async (e) => {
+                    onkeydown={async (e) => {
                       if (e.code === "Enter") {
                         editNameFlag = false;
                         $keyHandler = origKH;
@@ -823,7 +823,7 @@
                         await $Kanban.SaveKanbanBoards();
                       }
                     }}
-                    on:blur={async () => {
+                    onblur={async () => {
                       $keyHandler = origKH;
                       origKH = null;
                       editNameFlag = false;
@@ -842,7 +842,7 @@
                 .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
                 .unselectTabTextColor}"
               data-key={index}
-              on:click={() => {
+              onclick={() => {
                 setBoard(index);
               }}
             >
@@ -864,7 +864,7 @@
           .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
           .unselectTabTextColor}"
         data-key={-1}
-        on:click={(e) => {
+        onclick={(e) => {
           addNewBoard();
         }}
       >
@@ -898,7 +898,7 @@
         {/if}
         <div
           id="addList"
-          on:click={() => {
+          onclick={() => {
             addNewList();
           }}
         >
