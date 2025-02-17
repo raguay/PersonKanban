@@ -1,5 +1,5 @@
 <script>
-  import EditH2Field from "./EditH2Field.svelte";
+  import EditField from "./EditField.svelte";
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { boardCursor } from "../stores/boardCursor.js";
@@ -98,11 +98,12 @@
 >
   {#if $Kanban.boards[boardcur].lists[listcur] !== null}
     <div class="listheader">
-      <EditH2Field
+      <EditField
         size={"110px"}
         bind:name={$Kanban.boards[boardcur].lists[listcur].name}
         edit={localNameEdit}
         {editoff}
+        type={"h2"}
       />
       <span
         class="remove"

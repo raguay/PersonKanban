@@ -168,19 +168,16 @@
 
   function editoff() {
     editItem = false;
-    $Kanban = $Kanban;
   }
 
   function openPreferences() {
     $preferences.showing = true;
     $preferences.keyboardHandler = listKeyHandler;
     $preferences = $preferences;
-    $Kanban = $Kanban;
   }
 
   function editListTitle() {
     editItem = true;
-    $Kanban = $Kanban;
   }
 
   async function editBoardName() {

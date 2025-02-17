@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import EditH2Field from "./EditH2Field.svelte";
-  import EditPField from "./EditPField.svelte";
+  import EditField from "./EditField.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { keyHandler } from "../stores/keyHandler.js";
@@ -297,15 +296,17 @@
       .styles.dialogTextColor};"
     bind:this={editDialogDiv}
   >
-    <EditH2Field
+    <EditField
       bind:name={itemInfo.name}
       bind:edit={editTitle}
       editoff={() => {}}
+      type={"h2"}
     />
-    <EditPField
+    <EditField
       bind:name={itemInfo.description}
       bind:edit={editDesc}
       editoff={() => {}}
+      type={"p"}
     />
     <div class="itemContainer">
       {#each itemInfo.apps as app, appindex}

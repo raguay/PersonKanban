@@ -132,7 +132,7 @@
       bind:value
       {style}
       onblur={() => {
-        show = false;
+        //show = false;
       }}
       onkeydown={async (e) => {
         switch (mode) {
@@ -311,6 +311,7 @@
     outline: none;
     margin: 0px;
     padding: 0px 0px 0px 5px;
+    border-radius: 0px 5px 5px 0px;
   }
 
   #container input:focus {

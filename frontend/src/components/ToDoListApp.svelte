@@ -1,5 +1,5 @@
 <script>
-  import EditH2Field from "./EditH2Field.svelte";
+  import EditField from "./EditField.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
   let { app = $bindable(), appindex, update, deleteApp } = $props();
@@ -60,7 +60,7 @@
 
 <div class="ToDoList">
   <div class="header">
-    <EditH2Field bind:name={app.name} {nameChanged} {editoff} />
+    <EditField bind:name={app.name} {nameChanged} {editoff} type={"h2"} />
     <span class="todographicbackheader" onclick={() => deleteApp(appindex)}
       >❌</span
     >
