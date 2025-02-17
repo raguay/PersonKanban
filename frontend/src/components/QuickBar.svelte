@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import VimInput from "./VimInput.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
@@ -8,15 +9,34 @@
 
   let { show = $bindable() } = $props();
 
-  let inputDiv = $state(null);
-  let inputVal = $state("");
+  let value = $state("");
+  let focus = $state(() => {});
   let oldKeyHandler = null;
+  let theme = {
+    modes: [
+      {
+        name: "normal",
+        color: "blue",
+        text: "white",
+      },
+      {
+        name: "insert",
+        color: "yellow",
+        text: "black",
+      },
+      {
+        name: "visual",
+        color: "green",
+        text: "purple",
+      },
+    ],
+  };
 
   onMount(() => {
     //
     // Focus the input first.
     //
-    if (inputDiv !== null) inputDiv.focus();
+    focus();
 
     //
     // Store the key handler.
@@ -34,6 +54,10 @@
       }
     };
   });
+
+  $effect(() => {
+    focus();
+  });
 </script>
 
 <div
@@ -42,70 +66,53 @@
     .commandbarbgcolor};
          color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
          font-family: {$Kanban.boards[$boardCursor].styles.font};
-         font-size: {$Kanban.boards[$boardCursor].styles.fontsize}px;"
+         font-size: {$Kanban.boards[$boardCursor].styles.fontsize};"
 >
-  <input
-    id="quickBarInput"
-    type="text"
-    bind:this={inputDiv}
-    bind:value={inputVal}
-    autocomplete="off"
-    spellcheck="false"
-    autocorrect="off"
-    onfocusout={() => {
+  <VimInput
+    {value}
+    {theme}
+    bind:focus
+    short={false}
+    bind:show
+    style="background-color: {$Kanban.boards[$boardCursor].styles
+      .commandbarbgcolor};
+         color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
+         font-family: {$Kanban.boards[$boardCursor].styles.font};
+         font-size: {$Kanban.boards[$boardCursor].styles.fontsize};"
+    oneline={true}
+    oninput={async (inputVal) => {
+      inputVal = inputVal.trim();
+      if (inputVal !== "") {
+        //
+        // Split the input to a name and description. There will not always be a description.
+        //
+        let parts = inputVal.split("|");
+        let newName = parts[0];
+        let newDes = "";
+        if (parts.length > 1) {
+          newDes = parts[1];
+        }
+
+        if ($listCursor < 0 && $itemCursor < 0) {
+          await $Kanban.addBoardNamed(newName, newDes);
+        } else if ($listCursor >= 0) {
+          if ($itemCursor >= 0) {
+            //
+            // Add an item.
+            //
+            await $Kanban.addItemNamed(newName, newDes);
+          } else {
+            //
+            // Add a list.
+            //
+            await $Kanban.addListNamed(newName);
+          }
+        }
+      }
       //
       // Close the quickBar.
       //
       show = false;
-    }}
-    onkeydown={async (e) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        //
-        // Close the quickBar.
-        //
-        show = false;
-      } else if (e.key === "Enter") {
-        //
-        // Add the contents of the input to the current focused item.
-        //
-        e.preventDefault();
-        e.stopPropagation();
-
-        inputVal = inputVal.trim();
-        if (inputVal !== "") {
-          //
-          // Split the input to a name and description. There will not always be a description.
-          //
-          let parts = inputVal.split("|");
-          let newName = parts[0];
-          let newDes = "";
-          if (parts.length > 1) {
-            newDes = parts[1];
-          }
-
-          if ($listCursor < 0 && $itemCursor < 0) {
-            await $Kanban.addBoardNamed(newName, newDes);
-          } else if ($listCursor >= 0) {
-            if ($itemCursor >= 0) {
-              //
-              // Add an item.
-              //
-              await $Kanban.addItemNamed(newName, newDes);
-            } else {
-              //
-              // Add a list.
-              //
-              await $Kanban.addListNamed(newName);
-            }
-          }
-        }
-        //
-        // Close the quickBar.
-        //
-        show = false;
-      }
     }}
   />
 </div>
@@ -118,19 +125,11 @@
     display: flex;
     flex-direction: column;
     width: 80%;
-    height: 55px;
     margin: auto;
     padding: 10px;
     border: 5px;
     border-radius: 10px;
     box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
     z-index: 200;
-  }
-
-  #quickBarInput {
-    background-color: rgba(255, 255, 255, 0.3);
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
   }
 </style>

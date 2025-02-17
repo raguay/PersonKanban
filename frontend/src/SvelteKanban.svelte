@@ -207,7 +207,7 @@
     await $Kanban.deleteBoard();
     $boardCursor = $boardCursor - 1;
     if ($boardCursor < 0) $boardCursor = 0;
-    $listCursor = 0;
+    $listCursor = -1;
     $itemCursor = -1;
     $Kanban = $Kanban;
   }
