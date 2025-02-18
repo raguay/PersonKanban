@@ -52,6 +52,7 @@
     // Setup the keyboard handler.
     //
     $keyHandler = listKeyHandler;
+    window.keyHandler = $keyHandler;
 
     //
     // Add Commands for the CommandBar.

@@ -1,4 +1,5 @@
 <script>
+  import VimInput from "./VimInput.svelte";
   import EditField from "./EditField.svelte";
   import { keyHandler } from "../stores/keyHandler.js";
 
@@ -6,7 +7,8 @@
 
   let newToDo = $state("");
   let oldkbhdl = $state(null);
-  let todoInputEl = $state(null);
+  let focus = $state(() => {});
+  let setFocus = $state(false);
 
   function createNewTodo() {
     app.todos.push({
@@ -15,6 +17,7 @@
     });
     newToDo = "";
     update();
+    focus();
   }
 
   function nameChanged() {
@@ -53,47 +56,44 @@
   async function editTodo(todoindex) {
     let desc = app.todos[todoindex].description;
     newToDo = desc;
-    todoInputEl.focus();
     await deleteTodo(todoindex);
   }
 </script>
 
-<div class="ToDoList">
+<div
+  class="ToDoList"
+  onmouseover={() => {
+    setFocus = true;
+    focus();
+  }}
+>
   <div class="header">
     <EditField bind:name={app.name} {nameChanged} {editoff} type={"h2"} />
     <span class="todographicbackheader" onclick={() => deleteApp(appindex)}
       >❌</span
     >
   </div>
-  <div
-    class="todobottom"
-    onmouseover={() => {
-      todoInputEl.focus();
-    }}
-    onfocus={() => {
-      todoInputEl.focus();
-    }}
-  >
-    <input
-      class="todoInput"
-      type="text"
+  <div class="todobottom">
+    <VimInput
       bind:value={newToDo}
-      bind:this={todoInputEl}
-      onfocus={() => {
-        oldkbhdl = $keyHandler;
+      show={true}
+      short={true}
+      {focus}
+      {setFocus}
+      onfocusin={() => {
+        if (oldkbhdl === null && $keyHandler !== null) {
+          oldkbhdl = $keyHandler;
+        }
         $keyHandler = null;
       }}
       onfocusout={() => {
-        $keyHandler = oldkbhdl;
-        oldkbhdl = null;
-      }}
-      onkeydown={(e) => {
-        if (e.code === "Enter") {
-          e.preventDefault();
-          e.stopPropagation();
-          createNewTodo();
-          todoInputEl.focus();
+        if (oldkbhdl !== null && $keyHandler === null) {
+          $keyHandler = oldkbhdl;
+          oldkbhdl = null;
         }
+      }}
+      oninput={() => {
+        createNewTodo();
       }}
     />
     <div class="todoContainer">
@@ -168,7 +168,7 @@
 
   .todographicbackheader {
     height: 10px;
-    margin: 12px 5px 5px auto;
+    margin: 4px 5px 5px auto;
     cursor: pointer;
   }
 

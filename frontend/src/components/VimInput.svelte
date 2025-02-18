@@ -25,10 +25,13 @@
     oneline = true,
     oninput,
     style,
+    setFocus = true,
     focus = $bindable(),
     theme = basetheme,
     show = $bindable(),
     short = false,
+    onfocusin = () => {},
+    onfocusout = () => {},
   } = $props();
 
   let inp = $state(null);
@@ -41,7 +44,7 @@
     // Setup the focus function.
     //
     focus = () => {
-      if (inp !== null) inp.focus();
+      if (inp !== null && setFocus) inp.focus();
     };
 
     //
@@ -111,7 +114,7 @@
   <div
     id="container"
     onmouseover={() => {
-      if (inp !== null) inp.focus();
+      focus();
     }}
     style="flex-direction: {oneline ? 'row' : 'column'}; {style}"
   >
@@ -131,8 +134,10 @@
       bind:this={inp}
       bind:value
       {style}
+      {onfocusin}
+      {onfocusout}
       onblur={() => {
-        //show = false;
+        show = false;
       }}
       onkeydown={async (e) => {
         switch (mode) {
