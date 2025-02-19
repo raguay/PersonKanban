@@ -21,6 +21,7 @@
   import { skipKey } from "./stores/skipKey.js";
   import { preferences } from "./stores/preferences.js";
   import * as App from "../wailsjs/go/main/App.js";
+  import EditField from "./components/EditField.svelte";
 
   let editNameFlag = $state(false);
   let editField = $state(null);
@@ -52,7 +53,9 @@
     // Setup the keyboard handler.
     //
     $keyHandler = listKeyHandler;
-    window.keyHandler = $keyHandler;
+    window.getData = function () {
+      console.log("keyHander: ", $keyHandler);
+    };
 
     //
     // Add Commands for the CommandBar.
@@ -798,40 +801,38 @@
                 .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
                 .selectTabTextColor}"
               data-key={index}
-              ondblclick={(e) => {
+              ondblclick={() => {
                 editName(index);
               }}
             >
-              <span
+              <div
                 style="background-color: {$Kanban.boards[$boardCursor].styles
                   .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
                   .selectTabTextColor}"
                 class="tabName"
               >
-                {#if editNameFlag}
-                  <input
-                    type="text"
-                    bind:value={board.name}
-                    bind:this={editField}
-                    onkeydown={async (e) => {
-                      if (e.code === "Enter") {
-                        editNameFlag = false;
-                        $keyHandler = origKH;
-                        origKH = null;
-                        await $Kanban.SaveKanbanBoards();
-                      }
-                    }}
-                    onblur={async () => {
-                      $keyHandler = origKH;
-                      origKH = null;
-                      editNameFlag = false;
-                      await $Kanban.SaveKanbanBoards();
-                    }}
-                  />
-                {:else}
-                  {board.name}
-                {/if}
-              </span>
+                <EditField
+                  bind:name={board.name}
+                  bind:edit={editNameFlag}
+                  editoff={() => {}}
+                  type={"p"}
+                  style="background-color: {$Kanban.boards[$boardCursor].styles
+                    .selectTabColor}; color: {$Kanban.boards[$boardCursor]
+                    .styles.selectTabTextColor}"
+                  oninput={async () => {
+                    editNameFlag = false;
+                    $keyHandler = origKH;
+                    origKH = null;
+                    await $Kanban.SaveKanbanBoards();
+                  }}
+                  onblur={async () => {
+                    $keyHandler = origKH;
+                    origKH = null;
+                    editNameFlag = false;
+                    await $Kanban.SaveKanbanBoards();
+                  }}
+                />
+              </div>
             </div>
           {:else}
             <div
@@ -1004,6 +1005,7 @@
     background-color: white;
     color: black;
     margin: 5px;
+    padding: 0px;
     white-space: nowrap;
   }
 

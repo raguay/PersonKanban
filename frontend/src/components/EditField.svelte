@@ -78,8 +78,16 @@
 
   .editField {
     cursor: pointer;
-    margin: 5px 10px 10px 0px;
+    margin: 0px 10px 10px 0px;
     user-select: none;
     width: 100%;
+  }
+
+  .editField p {
+    margin: 0px;
+  }
+
+  .editField h2 {
+    margin: 0px;
   }
 </style>
