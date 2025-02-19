@@ -98,13 +98,15 @@
 >
   {#if $Kanban.boards[boardcur].lists[listcur] !== null}
     <div class="listheader">
-      <EditField
-        size={"110px"}
-        bind:name={$Kanban.boards[boardcur].lists[listcur].name}
-        edit={localNameEdit}
-        {editoff}
-        type={"h2"}
-      />
+      <div class="editfieldcover">
+        <EditField
+          size={"110px"}
+          bind:name={$Kanban.boards[boardcur].lists[listcur].name}
+          edit={localNameEdit}
+          {editoff}
+          type={"h2"}
+        />
+      </div>
       <span
         class="remove"
         onkeydown={() => {}}
@@ -155,6 +157,12 @@
     flex-direction: row;
     margin: 5px;
     align-content: center;
+  }
+
+  .editfieldcover {
+    display: flex;
+    flex-direction: row;
+    margin: 13px 0px 0px 0px;
   }
 
   .listheader .remove {

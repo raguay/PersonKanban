@@ -72,10 +72,6 @@
 </div>
 
 <style>
-  h2 {
-    margin: 5px;
-  }
-
   .editField {
     cursor: pointer;
     margin: 0px 10px 10px 0px;

@@ -1004,7 +1004,7 @@
   .tabName {
     background-color: white;
     color: black;
-    margin: 5px;
+    margin: 0px 5px 5px 5px;
     padding: 0px;
     white-space: nowrap;
   }
