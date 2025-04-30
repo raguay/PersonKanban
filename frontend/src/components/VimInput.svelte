@@ -40,19 +40,34 @@
   let pos = $state(value !== null ? value.length : 0);
   let posvb = $state(0);
 
-  onMount(() => {
+  onMount(async () => {
     //
     // Setup the focus function.
     //
-    focus = () => {
-      if (inp !== null && setFocus) inp.focus();
-    };
+    focus = inpFocus;
+
+    //
+    // Wait for the elements to be added.
+    //
+    do {
+      await tick();
+    } while (inp === null);
 
     //
     // Focus the input.
     //
-    focus();
+    inpFocus();
   });
+
+  function inpFocus() {
+    if (inp !== null) {
+      if (setFocus) {
+        inp.focus();
+      } else {
+        inp.blur();
+      }
+    }
+  }
 
   function getModeColor() {
     return theme.modes.find((nm) => nm.name === mode).color;
@@ -115,7 +130,7 @@
   <div
     id="container"
     onmouseover={() => {
-      focus();
+      inpFocus();
     }}
     style="flex-direction: {oneline ? 'row' : 'column'}; {style}"
   >
@@ -142,7 +157,6 @@
         onblur();
       }}
       onkeydown={async (e) => {
-        console.log("VimInput: a keydown: ", e);
         switch (mode) {
           case "insert":
             switch (e.key) {

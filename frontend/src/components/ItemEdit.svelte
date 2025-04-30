@@ -1,6 +1,7 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import EditField from "./EditField.svelte";
+  import VimInput from "./VimInput.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { keyHandler } from "../stores/keyHandler.js";
@@ -20,12 +21,13 @@
   let acc = "";
   let direction = "";
   let command = null;
-  let msgInputDiv = null;
   let editDialogDiv = null;
+  let msgfocus = $state(() => {});
   let editTitle = $state(false);
   let editDesc = $state(false);
+  let editMessage = $state(false);
 
-  onMount(() => {
+  onMount(async () => {
     //
     // Save the original handler and install our new one.
     //
@@ -41,6 +43,12 @@
     //
     clearState();
 
+    //
+    // Focus the dialog and not a particular input.
+    //
+    await tick();
+    editDialogDiv.focus();
+
     return () => {};
   });
 
@@ -53,7 +61,7 @@
     closeEdit();
   }
 
-  function KeyboardHandler(e) {
+  async function KeyboardHandler(e) {
     $ctrlKey = e.ctrlKey;
     $shiftKey = e.shiftKey;
     $metaKey = e.metaKey;
@@ -82,7 +90,7 @@
               break;
 
             case "m":
-              msgInputDiv.focus();
+              command = editCardMessage;
               break;
 
             case "s":
@@ -188,7 +196,7 @@
           // Execute the command the correct number of times.
           //
           for (var i = 0; i < times; i++) {
-            command();
+            await command();
           }
 
           //
@@ -230,6 +238,12 @@
 
   function editCardDiscription() {
     editDesc = true;
+  }
+
+  async function editCardMessage() {
+    editMessage = true;
+    await tick();
+    msgfocus();
   }
 
   async function createNewTextMsg() {
@@ -314,39 +328,12 @@
       onfocusout={() => {
         $keyHandler = KeyboardHandler;
       }}
+      setFocus={false}
     />
     <div class="itemContainer">
       {#each itemInfo.apps as app, appindex}
         <ToDoListApp {app} {appindex} update={appUpdate} {deleteApp} />
       {/each}
-      <input
-        class="newMsg"
-        type="text"
-        bind:this={msgInputDiv}
-        bind:value={newMsg}
-        autocomplete="off"
-        spellcheck="false"
-        autocorrect="off"
-        onkeydown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            e.stopPropagation();
-            createNewTextMsg();
-          }
-        }}
-        onfocus={() => {
-          if (inputKeyboardStore === null && $keyHandler !== null) {
-            inputKeyboardStore = $keyHandler;
-            $keyHandler = null;
-          }
-        }}
-        onfocusout={() => {
-          if (inputKeyboardStore !== null && $keyHandler === null) {
-            $keyHandler = inputKeyboardStore;
-            inputKeyboardStore = null;
-          }
-        }}
-      />
       <div class="appButtons">
         <button
           onclick={async () => {
@@ -354,6 +341,31 @@
           }}>Todo List</button
         >
       </div>
+      <div class="newMsg">
+        <h2 style="margin: 5px;">Create a Message:</h2>
+        <VimInput
+          bind:value={newMsg}
+          show={true}
+          short={true}
+          setFocus={editMessage}
+          bind:focus={msgfocus}
+          onfocusin={() => {
+            $keyHandler = null;
+            editMessage = true;
+            msgfocus();
+          }}
+          onfocusout={() => {
+            $keyHandler = KeyboardHandler;
+            editMessage = false;
+          }}
+          oninput={() => {
+            createNewTextMsg();
+            $keyHandler = KeyboardHandler;
+            editMessage = false;
+          }}
+        />
+      </div>
+
       <div class="buttonRow">
         <button
           onclick={() => {
@@ -402,8 +414,7 @@
 
   .newMsg {
     margin: 5px 0px 10px 0px;
-    padding: 5px;
-    width: 373px;
+    padding: 10px;
     background-color: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     color: inherit;
