@@ -2,7 +2,12 @@
   import ItemEdit from "./ItemEdit.svelte";
   import { itemCursor } from "../stores/itemCursor.js";
 
-  let { itemInfo = $bindable(), index, editItem, editoff } = $props();
+  let {
+    itemInfo = $bindable(),
+    index,
+    editItem = $bindable(),
+    editoff,
+  } = $props();
 
   let itemDiv = $state(null);
   let localedit = $state(false);
@@ -55,9 +60,9 @@
     {#if localedit}
       <ItemEdit
         {itemInfo}
-        editoff={() => {
-          editItem = false;
+        closeEdit={() => {
           localedit = false;
+          editItem = false;
           editoff();
         }}
       />

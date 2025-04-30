@@ -6,37 +6,26 @@
   let {
     name = $bindable(),
     edit = $bindable(),
-    editoff = false,
     type = "h2",
+    onfocusout = () => {},
+    oninput = () => {},
+    onblur = () => {},
   } = $props();
-
-  let origKeyHandler = null;
 
   $effect.pre(async () => {
     if (edit) await editName();
-    if (!edit && $keyHandler === null && origKeyHandler !== null) {
-      $keyHandler = origKeyHandler;
-      origKeyHandler = null;
-      editoff();
-    }
   });
 
   async function editName() {
     edit = true;
+    $keyHandler = null;
     await tick();
-    if ($keyHandler !== null) {
-      origKeyHandler = $keyHandler;
-      $keyHandler = null;
-    }
   }
 
-  function nameChanged() {
+  function nameChanged(val) {
+    name = val;
     edit = false;
-    if (origKeyHandler !== null) {
-      $keyHandler = origKeyHandler;
-      origKeyHandler = null;
-    }
-    editoff();
+    oninput(val);
   }
 </script>
 
@@ -48,9 +37,10 @@
       short={true}
       bind:show={edit}
       oninput={(val) => {
-        name = val;
-        nameChanged();
+        nameChanged(val);
       }}
+      {onfocusout}
+      {onblur}
     />
   {:else if type === "h2"}
     <h2

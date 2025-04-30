@@ -4,18 +4,17 @@
   import ToDoListApp from "./ToDoListApp.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { keyHandler } from "../stores/keyHandler.js";
+  import { defaultKeyHandler } from "../stores/defaultKeyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
   import { metaKey } from "../stores/metaKey.js";
   import { altKey } from "../stores/altKey.js";
   import { key } from "../stores/key.js";
 
-  let { itemInfo = $bindable(), editoff } = $props();
+  let { itemInfo = $bindable(), closeEdit } = $props();
 
   let newMsg = $state("");
   let applications = [];
-  let origKeyboardHandler = null;
-  let inputKeyboardStore = null;
   let handlekey = true;
   let keystate = 0;
   let acc = "";
@@ -30,7 +29,6 @@
     //
     // Save the original handler and install our new one.
     //
-    origKeyboardHandler = $keyHandler;
     $keyHandler = KeyboardHandler;
 
     //
@@ -50,16 +48,9 @@
     //
     // Put in the original handler.
     //
-    if (inputKeyboardStore !== null) {
-      $keyHandler = inputKeyboardStore;
-      inputKeyboardStore = null;
-    }
-    if (origKeyboardHandler !== null) {
-      $keyHandler = origKeyboardHandler;
-      origKeyboardHandler = null;
-    }
+    $keyHandler = $defaultKeyHandler;
     await $Kanban.SaveKanbanBoards();
-    editoff();
+    closeEdit();
   }
 
   function KeyboardHandler(e) {
@@ -299,14 +290,30 @@
     <EditField
       bind:name={itemInfo.name}
       bind:edit={editTitle}
-      editoff={() => {}}
       type={"h2"}
+      oninput={() => {
+        $keyHandler = KeyboardHandler;
+      }}
+      onblur={() => {
+        $keyHandler = KeyboardHandler;
+      }}
+      onfocusout={() => {
+        $keyHandler = KeyboardHandler;
+      }}
     />
     <EditField
       bind:name={itemInfo.description}
       bind:edit={editDesc}
-      editoff={() => {}}
       type={"p"}
+      oninput={() => {
+        $keyHandler = KeyboardHandler;
+      }}
+      onblur={() => {
+        $keyHandler = KeyboardHandler;
+      }}
+      onfocusout={() => {
+        $keyHandler = KeyboardHandler;
+      }}
     />
     <div class="itemContainer">
       {#each itemInfo.apps as app, appindex}

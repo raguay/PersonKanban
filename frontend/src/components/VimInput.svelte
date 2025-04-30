@@ -32,6 +32,7 @@
     short = false,
     onfocusin = () => {},
     onfocusout = () => {},
+    onblur = () => {},
   } = $props();
 
   let inp = $state(null);
@@ -138,8 +139,10 @@
       {onfocusout}
       onblur={() => {
         show = false;
+        onblur();
       }}
       onkeydown={async (e) => {
+        console.log("VimInput: a keydown: ", e);
         switch (mode) {
           case "insert":
             switch (e.key) {
@@ -192,6 +195,7 @@
                 break;
               case "Escape":
                 show = false;
+                onblur();
                 break;
               case "v":
                 mode = "visual";

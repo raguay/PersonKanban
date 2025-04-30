@@ -3,6 +3,8 @@
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { boardCursor } from "../stores/boardCursor.js";
+  import { defaultKeyHandler } from "../stores/defaultKeyHandler.js";
+  import { keyHandler } from "../stores/keyHandler.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
 
@@ -23,7 +25,7 @@
       if (editing) {
         editing = false;
         $Kanban.SaveKanbanBoards();
-        editoff();
+        localeditoff();
       }
     } else {
       editing = true;
@@ -65,6 +67,11 @@
     }
   });
 
+  function localeditoff() {
+    $keyHandler = $defaultKeyHandler;
+    editoff();
+  }
+
   async function deleteList() {
     $boardCursor = boardcur;
     $listCursor = listcur;
@@ -103,8 +110,11 @@
           size={"110px"}
           bind:name={$Kanban.boards[boardcur].lists[listcur].name}
           edit={localNameEdit}
-          {editoff}
+          editoff={localeditoff}
           type={"h2"}
+          onblur={localeditoff}
+          onfocusout={localeditoff}
+          oninput={localeditoff}
         />
       </div>
       <span
@@ -130,7 +140,7 @@
               itemInfo={item}
               {editItem}
               index={$listCursor === listcur ? itemindex : -2}
-              {editoff}
+              editoff={localeditoff}
             />
           {/if}
         {/each}

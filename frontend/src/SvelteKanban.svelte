@@ -7,6 +7,7 @@
   import Preferences from "./components/Preferences.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { lastCommand } from "./stores/lastCommand.js";
+  import { defaultKeyHandler } from "./stores/defaultKeyHandler.js";
   import { keyHandler } from "./stores/keyHandler.js";
   import { boardCursor } from "./stores/boardCursor.js";
   import { commandBar } from "./stores/commandBar.js";
@@ -24,8 +25,6 @@
   import EditField from "./components/EditField.svelte";
 
   let editNameFlag = $state(false);
-  let editField = $state(null);
-  let origKH = null;
   let acc = "";
   let keystate = 0;
   let command = null;
@@ -53,9 +52,7 @@
     // Setup the keyboard handler.
     //
     $keyHandler = listKeyHandler;
-    window.getData = function () {
-      console.log("keyHander: ", $keyHandler);
-    };
+    $defaultKeyHandler = listKeyHandler;
 
     //
     // Add Commands for the CommandBar.
@@ -171,7 +168,9 @@
   }
 
   function editoff() {
+    editNameFlag = false;
     editItem = false;
+    $keyHandler = listKeyHandler;
   }
 
   function openPreferences() {
@@ -237,14 +236,10 @@
   }
 
   async function editName(num) {
-    if (origKH === null) {
-      origKH = $keyHandler;
-      $keyHandler = null;
-    }
     $boardCursor = num;
     editNameFlag = true;
     await tick();
-    editField.focus();
+    $keyHandler = null;
   }
 
   function setBoard(ind) {
@@ -814,22 +809,20 @@
                 <EditField
                   bind:name={board.name}
                   bind:edit={editNameFlag}
-                  editoff={() => {}}
                   type={"p"}
                   style="background-color: {$Kanban.boards[$boardCursor].styles
                     .selectTabColor}; color: {$Kanban.boards[$boardCursor]
                     .styles.selectTabTextColor}"
                   oninput={async () => {
-                    editNameFlag = false;
-                    $keyHandler = origKH;
-                    origKH = null;
+                    editoff();
                     await $Kanban.SaveKanbanBoards();
                   }}
                   onblur={async () => {
-                    $keyHandler = origKH;
-                    origKH = null;
-                    editNameFlag = false;
+                    editoff();
                     await $Kanban.SaveKanbanBoards();
+                  }}
+                  onfocusout={() => {
+                    editoff();
                   }}
                 />
               </div>
