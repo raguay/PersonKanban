@@ -123,6 +123,21 @@
     }
     field.focus();
   }
+
+  function nextWord() {
+    while (pos < value.length && value[pos] === " ") pos++;
+    while (pos < value.length && value[pos] !== " ") pos++;
+    while (pos < value.length && value[pos] === " ") pos++;
+  }
+
+  function lastWord() {
+    while (pos > 0 && value[pos] === " ") pos--;
+    while (pos > 0 && value[pos] !== " ") pos--;
+    while (pos > 0 && value[pos] === " ") pos--;
+    while (pos > 0 && value[pos] !== " ") pos--;
+    pos++;
+    while (pos < value.length && value[pos] === " ") pos++;
+  }
 </script>
 
 <!-- svelte-ignore a11y_mouse_events_have_key_events, a11y_no_static_element_interactions -->
@@ -201,6 +216,22 @@
             switch (e.key) {
               case "x":
                 removeChar();
+                await tick();
+                moveCursorTo(pos);
+                break;
+              case "w":
+                //
+                // Forward to next word (after space)
+                //
+                nextWord();
+                await tick();
+                moveCursorTo(pos);
+                break;
+              case "b":
+                //
+                // Backwards to previous word (after space)
+                //
+                lastWord();
                 await tick();
                 moveCursorTo(pos);
                 break;
