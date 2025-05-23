@@ -21,6 +21,7 @@
   import { key } from "./stores/key.js";
   import { skipKey } from "./stores/skipKey.js";
   import { preferences } from "./stores/preferences.js";
+  import { registers } from "./stores/registers.js";
   import * as App from "../wailsjs/go/main/App.js";
   import EditField from "./components/EditField.svelte";
 
@@ -160,6 +161,11 @@
       "### Edit Board Name\n\nEdit the name of the current board.",
       "md",
     );
+
+    //
+    // Load the quickbar registers.
+    //
+    $registers.loadRegisters();
   });
 
   function showMetaboards() {

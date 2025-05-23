@@ -73,13 +73,11 @@
   });
 
   async function saveToRegister(vimcmd, nextkey) {
-    $registers.save(nextkey, vimcmd.getValue());
-    console.log("saveToRegister: ", $registers.get(nextkey), nextkey);
+    await $registers.store(nextkey, vimcmd.getValue());
   }
 
   async function getFromRegister(vimcmd, nextkey) {
-    vimcmd.setValue($registers.get(nextkey));
-    console.log("getFromRegister: ", nextkey);
+    await vimcmd.setValue(await $registers.get(nextkey));
   }
 </script>
 

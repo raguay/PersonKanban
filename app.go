@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	github "github.com/google/go-github/v49/github"
-	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 	"io/fs"
 	"os"
 	"path/filepath"
 	goruntime "runtime"
+
+	github "github.com/google/go-github/v49/github"
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // The data structures used in the program.
@@ -80,6 +81,7 @@ func (b *App) GetHomeDir() string {
 }
 
 func (b *App) WriteFile(path string, data string) {
+	b.err = ""
 	err := os.WriteFile(path, []byte(data), 0666)
 	if err != nil {
 		b.err = err.Error()
