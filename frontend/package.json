@@ -11,11 +11,11 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "svelte": "5.18.00",
-    "vite": "^6.2.1"
+    "vite": "^6.3.5"
   },
   "dependencies": {
     "showdown": "^2.1.0",
-    "svelte-awesome-color-picker": "^4.0.0-beta.1",
-    "svelte-dnd-action": "^0.9.60"
+    "svelte-awesome-color-picker": "^4.0.2",
+    "svelte-dnd-action": "^0.9.61"
   }
 }

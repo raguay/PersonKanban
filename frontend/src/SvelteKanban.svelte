@@ -856,7 +856,7 @@
           .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
           .unselectTabTextColor}"
         data-key={-1}
-        onclick={(e) => {
+        onclick={() => {
           addNewBoard();
         }}
       >

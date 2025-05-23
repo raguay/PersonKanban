@@ -33,14 +33,39 @@
     onfocusin = () => {},
     onfocusout = () => {},
     onblur = () => {},
+    actions = [],
   } = $props();
 
   let inp = $state(null);
   let mode = $state("insert");
   let pos = $state(value !== null ? value.length : 0);
   let posvb = $state(0);
+  let keystate = $state(0);
+  let accu = "";
+  let commandToRun = null;
+  let vimCommand = {
+    insertEndCmd,
+    backwardsCharCmd,
+    forwardCharCmd,
+    replaceCharCmd,
+    gotoBeginingCmd,
+    gotoEndCmd,
+    backwardsWordCmd,
+    forwardWordCmd,
+    deleteCharCmd,
+    lastWord,
+    nextWord,
+    createSelection,
+    moveCursorTo,
+    getValue,
+    setValue,
+    getPos,
+    setPos,
+  };
+  let savedKey = "";
 
   onMount(async () => {
+    //
     //
     // Setup the focus function.
     //
@@ -93,7 +118,7 @@
     //
     let seltextlength = inp.selectionStart - inp.selectionEnd;
     if (seltextlength === 0) {
-      //
+//
       // No selection. Just remove the character at the cursor.
       //
       value = value.slice(0, pos - 1) + value.slice(pos);
@@ -134,9 +159,77 @@
     while (pos > 0 && value[pos] === " ") pos--;
     while (pos > 0 && value[pos] !== " ") pos--;
     while (pos > 0 && value[pos] === " ") pos--;
-    while (pos > 0 && value[pos] !== " ") pos--;
-    pos++;
     while (pos < value.length && value[pos] === " ") pos++;
+  }
+
+async function deleteCharCmd(vimCmd, nchar) {
+    removeChar();
+    await tick();
+    moveCursorTo(pos);
+  }
+
+  async function forwardWordCmd(vimCmd, nchar) {
+    nextWord();
+    await tick();
+    moveCursorTo(pos);
+  }
+  
+  async function backwardsWordCmd(vimCmd, nchar) {
+    lastWord();
+    await tick();
+    moveCursorTo(pos);
+  }
+
+  async function gotoEndCmd(vimCmd, nchr) {
+    pos = value.length;
+    moveCursorTo(pos);
+  }
+
+  async function gotoBeginingCmd(vimCmd, nchr) {
+    pos = 0;
+    moveCursorTo(pos);
+  }
+
+  async function replaceCharCmd(vimCmd, nchr) {
+    removeChar();
+    await tick();
+    moveCursorTo(pos);
+    mode = "insert";
+    accu = "";
+  }
+
+  async function forwardCharCmd(vimCmd, nchr) {
+    pos++;
+    if (pos > value.length) pos = value.length;
+    moveCursorTo(pos);
+  }
+
+  async function backwardsCharCmd(vimCmd, nchr) {
+    pos--;
+    if (pos < 0) pos = 0;
+    moveCursorTo(pos);
+  }
+
+  async function insertEndCmd(vimCmd, nchr) {
+    pos = value.length;
+    moveCursorTo(pos);
+    mode = "insert";
+  }
+
+  function getValue() {
+    return(value);
+  }
+
+  function setValue(val) {
+    value = val;
+  }
+
+  function getPos() {
+    return(pos);
+  }
+
+  function setPos(newPos) {
+    pos = newPos;
   }
 </script>
 
@@ -213,73 +306,119 @@
           case "normal":
             e.preventDefault();
             e.stopPropagation();
-            switch (e.key) {
-              case "x":
-                removeChar();
-                await tick();
-                moveCursorTo(pos);
+            switch (keystate) {
+              case 0:
+                switch (e.key) {
+                  case "x":
+                    commandToRun = deleteCharCmd;
+                    break;
+                  case "w":
+                    //
+                    // Forward to next word (after space)
+                    //
+                    commandToRun = forwardWordCmd;
+                    break;
+                  case "b":
+                    //
+                    // Backwards to previous word (after space)
+                    //
+                    commandToRun = backwardsWordCmd;
+                    break;
+                  case "Enter":
+                    sendValue();
+                    accu = "";
+                    commandToRun = null;
+                    break;
+                  case "Escape":
+                    accu = "";
+                    commandToRun = null;
+                    show = false;
+                    onblur();
+                    break;
+                  case "v":
+                    mode = "visual";
+                    posvb = pos;
+                    accu = "";
+                    commandToRun = null;
+                    break;
+                  case "i":
+                    accu = "";
+                    commandToRun = null;
+                    mode = "insert";
+                    break;
+                  case "G":
+                  case "$":
+                    commandToRun = gotoEndCmd;
+                    break;
+                  case "g":
+                  case "0":
+                  case "^":
+                    commandToRun = gotoBeginingCmd;
+                    break;
+                  case "r":
+                    commandToRun = replaceCharCmd;
+                    break;
+                  case "h":
+                    commandToRun = backwardsCharCmd;
+                    break;
+                  case "l":
+                    commandToRun = forwardCharCmd;
+                    break;
+                  case "A":
+                    commandToRun = insertEndCmd;
+                    break;
+                  case "0":
+                  case "1":
+                  case "2":
+                  case "3":
+                  case "4":
+                  case "5":
+                  case "6":
+                  case "7":
+                  case "8":
+                  case "9":
+                    accu += e.key;
+                    break;
+                  default:
+                    //
+                    // See if an action passed is being executed.
+                    //
+                    if (actions.length > 0) {
+                      for (let i = 0; i < actions.length; i++) {
+                        if (e.key === actions[i].key) {
+                          //
+                          // This action was selected. Run it.
+                          //
+                          commandToRun = actions[i].command;
+                          keystate = actions[i].keystate;
+                        }
+                      }
+                    }
+                    break;
+                }
                 break;
-              case "w":
+              case 1:
                 //
-                // Forward to next word (after space)
+                // Save the key for giving to the command.
                 //
-                nextWord();
-                await tick();
-                moveCursorTo(pos);
+                keystate = 0;
+                savedKey = e.key;
                 break;
-              case "b":
-                //
-                // Backwards to previous word (after space)
-                //
-                lastWord();
-                await tick();
-                moveCursorTo(pos);
-                break;
-              case "Enter":
-                sendValue();
-                break;
-              case "Escape":
-                show = false;
-                onblur();
-                break;
-              case "v":
-                mode = "visual";
-                posvb = pos;
-                break;
-              case "i":
-                mode = "insert";
-                break;
-              case "G":
-              case "$":
-                pos = value.length;
-                moveCursorTo(pos);
-                break;
-              case "g":
-              case "0":
-              case "^":
-                pos = 0;
-                moveCursorTo(pos);
-                break;
-              case "r":
-                removeChar();
-                await tick();
-                moveCursorTo(pos);
-                mode = "insert";
-                break;
-              case "h":
-                pos--;
-                if (pos < 0) pos = 0;
-                moveCursorTo(pos);
-                break;
-              case "l":
-                pos++;
-                if (pos > value.length) pos = value.length;
-                moveCursorTo(pos);
-                break;
-              case "A":
-                pos = value.length;
-                moveCursorTo(pos);
-                mode = "insert";
+            }
+            if (keystate === 0) {
+              //
+              // Run the command the number of times asked for.
+              //
+              if (commandToRun !== null) {
+                let runNum = 1;
+                if (accu.length > 0) runNum = parseInt(accu);
+                do {
+                  await commandToRun(vimCommand, savedKey);
+                  runNum--;
+                } while (runNum > 0);
+                commandToRun = null;
+                accu = "";
+              }
             }
             break;
 
@@ -315,6 +454,42 @@
                 else createSelection(inp, posvb, pos);
                 break;
               case "g":
+              case "0":
+              case "^":
+                pos = 0;
+                if (posvb >= pos) createSelection(inp, pos, posvb);
+                else createSelection(inp, posvb, pos);
+                break;
+              case "x":
+                removeChar();
+                await tick();
+                moveCursorTo(pos);
+                break;
+              case "g":
+              case "0":
+              case "^":
+                pos = 0;
+                if (posvb >= pos) createSelection(inp, pos, posvb);
+                else createSelection(inp, posvb, pos);
+                break;
+              case "x":
+                removeChar();
+                await tick();
+                moveCursorTo(pos);
+                mode = "normal";
+              case "g":
+              case "0":
+              case "^":
+                pos = 0;
+                if (posvb >= pos) createSelection(inp, pos, posvb);
+                else createSelection(inp, posvb, pos);
+                break;
+              case "x":
+                removeChar();
+                await tick();
+                moveCursorTo(pos);
+                mode = "normal";
+                break;
               case "0":
               case "^":
                 pos = 0;

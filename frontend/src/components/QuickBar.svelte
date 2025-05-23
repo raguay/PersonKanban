@@ -5,6 +5,7 @@
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
+  import { registers } from "../stores/registers.js";
   import { Kanban } from "../stores/Kanban.js";
 
   let { show = $bindable() } = $props();
@@ -31,6 +32,18 @@
       },
     ],
   };
+  let actions = [
+    {
+      key: "s",
+      command: saveToRegister,
+      keystate: 1,
+    },
+    {
+      key: "p",
+      command: getFromRegister,
+      keystate: 1,
+    },
+  ];
 
   onMount(() => {
     //
@@ -58,6 +71,16 @@
   $effect(() => {
     focus();
   });
+
+  async function saveToRegister(vimcmd, nextkey) {
+    $registers.save(nextkey, vimcmd.getValue());
+    console.log("saveToRegister: ", $registers.get(nextkey), nextkey);
+  }
+
+  async function getFromRegister(vimcmd, nextkey) {
+    vimcmd.setValue($registers.get(nextkey));
+    console.log("getFromRegister: ", nextkey);
+  }
 </script>
 
 <div
@@ -71,6 +94,7 @@
   <VimInput
     {value}
     {theme}
+    {actions}
     bind:focus
     short={false}
     bind:show
@@ -84,28 +108,34 @@
       inputVal = inputVal.trim();
       if (inputVal !== "") {
         //
-        // Split the input to a name and description. There will not always be a description.
+        // See if it is more than one item to add.
         //
-        let parts = inputVal.split("|");
-        let newName = parts[0];
-        let newDes = "";
-        if (parts.length > 1) {
-          newDes = parts[1];
-        }
+        const items = inputVal.split(";;");
+        for (let itemNum = 0; itemNum < items.length; itemNum++) {
+          //
+          // Split the input to a name and description. There will not always be a description.
+          //
+          let parts = items[itemNum].split("|");
+          let newName = parts[0];
+          let newDes = "";
+          if (parts.length > 1) {
+            newDes = parts[1];
+          }
 
-        if ($listCursor < 0 && $itemCursor < 0) {
-          await $Kanban.addBoardNamed(newName, newDes);
-        } else if ($listCursor >= 0) {
-          if ($itemCursor >= 0) {
-            //
-            // Add an item.
-            //
-            await $Kanban.addItemNamed(newName, newDes);
-          } else {
-            //
-            // Add a list.
-            //
-            await $Kanban.addListNamed(newName);
+          if ($listCursor < 0 && $itemCursor < 0) {
+            await $Kanban.addBoardNamed(newName, newDes);
+          } else if ($listCursor >= 0) {
+            if ($itemCursor >= 0) {
+              //
+              // Add an item.
+              //
+              await $Kanban.addItemNamed(newName, newDes);
+            } else {
+              //
+              // Add a list.
+              //
+              await $Kanban.addListNamed(newName);
+            }
           }
         }
       }
