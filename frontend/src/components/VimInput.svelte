@@ -118,7 +118,7 @@
     //
     let seltextlength = inp.selectionStart - inp.selectionEnd;
     if (seltextlength === 0) {
-//
+      //
       // No selection. Just remove the character at the cursor.
       //
       value = value.slice(0, pos - 1) + value.slice(pos);
@@ -162,7 +162,7 @@
     while (pos < value.length && value[pos] === " ") pos++;
   }
 
-async function deleteCharCmd(vimCmd, nchar) {
+  async function deleteCharCmd(vimCmd, nchar) {
     removeChar();
     await tick();
     moveCursorTo(pos);
@@ -173,7 +173,7 @@ async function deleteCharCmd(vimCmd, nchar) {
     await tick();
     moveCursorTo(pos);
   }
-  
+
   async function backwardsWordCmd(vimCmd, nchar) {
     lastWord();
     await tick();
@@ -217,7 +217,7 @@ async function deleteCharCmd(vimCmd, nchar) {
   }
 
   function getValue() {
-    return(value);
+    return value;
   }
 
   function setValue(val) {
@@ -225,7 +225,7 @@ async function deleteCharCmd(vimCmd, nchar) {
   }
 
   function getPos() {
-    return(pos);
+    return pos;
   }
 
   function setPos(newPos) {
@@ -309,6 +309,9 @@ async function deleteCharCmd(vimCmd, nchar) {
             switch (keystate) {
               case 0:
                 switch (e.key) {
+                  case "Tab":
+                    inp.blur();
+                    break;
                   case "x":
                     commandToRun = deleteCharCmd;
                     break;
