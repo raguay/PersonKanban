@@ -26,6 +26,7 @@
   let editTitle = $state(false);
   let editDesc = $state(false);
   let editMessage = $state(false);
+  let itemCon = $state(null);
 
   onMount(async () => {
     //
@@ -87,6 +88,14 @@
               // Get the item that needs edited.
               //
               keystate = 2;
+              break;
+
+            case "j":
+              itemCon.scroll(0, itemCon.scrollTop + 100);
+              break;
+
+            case "k":
+              itemCon.scroll(0, itemCon.scrollTop - 100);
               break;
 
             case "m":
@@ -330,7 +339,7 @@
       }}
       setFocus={false}
     />
-    <div class="itemContainer">
+    <div class="itemContainer" bind:this={itemCon}>
       {#each itemInfo.apps as app, appindex}
         <ToDoListApp {app} {appindex} update={appUpdate} {deleteApp} />
       {/each}
