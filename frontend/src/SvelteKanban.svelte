@@ -32,6 +32,25 @@
   let direction = "";
   let editItem = $state(false);
   let quickBarOpen = $state(false);
+  let copyPref = {
+    type: "board",
+    pref: {
+      unselectTabColor: "lightgray",
+      unselectTabTextColor: "black",
+      selectTabColor: "lightblue",
+      selectTabTextColor: "black",
+      listcontainercolor: "lightblue",
+      font: '"Fira Code"',
+      fontsize: 16,
+      dialogBGColor: "lightblue",
+      dialogTextColor: "black",
+      cursorColor: "blue",
+      cursorText: "white",
+      cursorWidth: "10px",
+      commandbarbgcolor: "#9AC2FA",
+      commandbartextcolor: "white",
+    },
+  };
 
   onMount(async () => {
     //
@@ -396,6 +415,42 @@
             keystate = 1;
             break;
 
+          case "y":
+          case "c":
+            if ($listCursor === -1) {
+              command = copyBoardPref;
+              $lastCommand = "Copy Current Board Preferences";
+            } else if ($itemCursor <= -1) {
+              command = copyListPref;
+              $lastCommand = "Copy Current List Preferences";
+            } else {
+              command = copyItemPref;
+              $lastCommand = "Copy Current Item Preferences";
+            }
+            //
+            // Goto the zero state to run the command.
+            //
+            keystate = 0;
+            break;
+
+          case "p":
+          case "v":
+            if ($listCursor === -1) {
+              command = pasteBoardPref;
+              $lastCommand = "Paste Current Board Preferences";
+            } else if ($itemCursor <= -1) {
+              command = pasteListPref;
+              $lastCommand = "Paste Current List Preferences";
+            } else {
+              command = pasteItemPref;
+              $lastCommand = "Paste Current Item Preferences";
+            }
+            //
+            // Goto the zero state to run the command.
+            //
+            keystate = 0;
+            break;
+
           case "t":
             //
             // Go to the metaboards dialog.
@@ -405,7 +460,7 @@
             $lastCommand = "Show Metaboards";
             break;
 
-          case "p":
+          case "o":
             //
             // Open Preferences.
             //
@@ -539,6 +594,48 @@
 
   function openItem() {
     if ($itemCursor >= 0) editItem = true;
+  }
+
+  async function copyBoardPref() {
+    copyPref.type = "board";
+    copyPref.pref = $Kanban.boards[$boardCursor].styles;
+    await $Kanban.SaveKanbanBoards();
+  }
+
+  async function copyListPref() {
+    copyPref.type = "list";
+    copyPref.pref = $Kanban.boards[$boardCursor].lists[$listCursor].styles;
+    await $Kanban.SaveKanbanBoards();
+  }
+
+  async function copyItemPref() {
+    copyPref.type = "item";
+    copyPref.pref =
+      $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles;
+    await $Kanban.SaveKanbanBoards();
+  }
+
+  async function pasteBoardPref() {
+    if (copyPref.type === "board") {
+      $Kanban.boards[$boardCursor].styles = copyPref.pref;
+      await $Kanban.SaveKanbanBoards();
+    }
+  }
+
+  async function pasteListPref() {
+    if (copyPref.type === "list") {
+      $Kanban.boards[$boardCursor].lists[$listCursor].styles = copyPref.pref;
+      await $Kanban.SaveKanbanBoards();
+    }
+  }
+
+  async function pasteItemPref() {
+    if (copyPref.type === "item") {
+      $Kanban.boards[$boardCursor].lists[$listCursor].items[
+        $itemCursor
+      ].styles = copyPref.pref;
+      await $Kanban.SaveKanbanBoards();
+    }
   }
 
   function moveBoardCursorLeft() {

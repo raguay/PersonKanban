@@ -107,7 +107,10 @@
   }
 
   function moveCursorTo(loc) {
-    if (inp !== null) inp.setSelectionRange(loc, loc);
+    if (inp !== null) {
+      inp.setSelectionRange(loc, loc + 1);
+      inp.setSelectionRange(loc, loc);
+    }
   }
 
   function removeChar() {
