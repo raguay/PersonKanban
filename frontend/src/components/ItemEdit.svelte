@@ -92,16 +92,14 @@
 
             case "j":
               //
-              // Scroll down the Div by a defined amount. TODO: make this
-              // a configurable item.
+              // Scroll down the Div by a defined amount. TODO: make this a configurable item.
               //
               itemCon.scroll(0, itemCon.scrollTop + 100);
               break;
 
             case "k":
               //
-              // Scroll up the Div by a defined amount. TODO: make this
-              // a configurable item.
+              // Scroll up the Div by a defined amount. TODO: make this a configurable item.
               //
               itemCon.scroll(0, itemCon.scrollTop - 100);
               break;

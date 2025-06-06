@@ -18,9 +18,11 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "Personal Kanban",
-		Width:  1024,
-		Height: 768,
+		Title:     "Personal Kanban",
+		Width:     1024,
+		Height:    768,
+		MinHeight: 500,
+		MinWidth:  300,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -29,21 +31,20 @@ func main() {
 		Bind: []interface{}{
 			app,
 		},
-		Frameless:						 true,
-    CSSDragProperty:   "--wails-draggable",
-    CSSDragValue:      "drag",
-    Mac: &mac.Options{
-             TitleBar:             mac.TitleBarHiddenInset(),
-             Appearance:           mac.NSAppearanceNameDarkAqua,
-             WebviewIsTransparent: true,
-             WindowIsTranslucent:  false,
-             About: &mac.AboutInfo{
-                    Title:   "Personal Kanban",
-                    Message: "© 2022 Richard Guay <raguay@customct.com>",
-             },
-    },
+		Frameless:       true,
+		CSSDragProperty: "--wails-draggable",
+		CSSDragValue:    "drag",
+		Mac: &mac.Options{
+			TitleBar:             mac.TitleBarHiddenInset(),
+			Appearance:           mac.NSAppearanceNameDarkAqua,
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  false,
+			About: &mac.AboutInfo{
+				Title:   "Personal Kanban",
+				Message: "© 2022 Richard Guay <raguay@customct.com>",
+			},
+		},
 	})
-
 	if err != nil {
 		println("Error:", err.Error())
 	}

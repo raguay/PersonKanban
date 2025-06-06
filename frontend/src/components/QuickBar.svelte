@@ -12,9 +12,9 @@
 
   let value = $state("");
   let focus = $state(() => {});
+  let scrollDiv = $state(null);
   let oldKeyHandler = null;
   let showRegs = $state(false);
-  let reginput = $state(null);
   let theme = {
     modes: [
       {
@@ -55,6 +55,16 @@
       command: deleteRegister,
       keystate: 1,
     },
+    {
+      key: "j",
+      command: scrollDown,
+      keystate: 0,
+    },
+    {
+      key: "k",
+      command: scrollUp,
+      keystate: 0,
+    },
   ];
 
   onMount(() => {
@@ -81,11 +91,7 @@
   });
 
   $effect(() => {
-    if (focuson) {
-      focus();
-    } else {
-      if (reginput !== null) reginput.focus();
-    }
+    focus();
   });
 
   async function saveToRegister(vimcmd, nextkey) {
@@ -105,6 +111,14 @@
     $registers.regs = $registers.regs;
     $registers.delete(nextkey);
   }
+
+  async function scrollUp(vimcmd, nextkey) {
+    if (scrollDiv !== null) scrollDiv.scroll(0, scrollDiv.scrollTop - 100);
+  }
+
+  async function scrollDown(vimcmd, nextkey) {
+    if (scrollDiv !== null) scrollDiv.scroll(0, scrollDiv.scrollTop + 100);
+  }
 </script>
 
 {#if showRegs}
@@ -116,22 +130,32 @@
          font-family: {$Kanban.boards[$boardCursor].styles.font};
          font-size: {$Kanban.boards[$boardCursor].styles.fontsize};"
   >
-    <table style="border: 0px; overflow-y: scroll;">
-      <thead>
-        <tr>
-          <th style="text-align: left;">Register</th>
-          <th style="text-align: left;">Contents</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each $registers.regs as reg}
+    <div bind:this={scrollDiv} style="overflow-y: scroll; overflow-x: hidden;">
+      <table id="regtable">
+        <thead>
           <tr>
-            <td>{reg.key}</td>
-            <td>{reg.value}</td>
+            <th
+              style="text-align: left; background-color: {$Kanban.boards[
+                $boardCursor
+              ].styles.commandbarbgcolor}; width: 100px;">Register</th
+            >
+            <th
+              style="text-align: left; background-color: {$Kanban.boards[
+                $boardCursor
+              ].styles.commandbarbgcolor};">Contents</th
+            >
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {#each $registers.regs as reg}
+            <tr>
+              <td>{reg.key}</td>
+              <td>{reg.value}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
   </div>
 {/if}
 
@@ -219,7 +243,8 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    top: 100px;
+    max-height: 60%;
+    top: 70px;
     left: 10%;
     width: 80%;
     margin: auto;
@@ -227,6 +252,15 @@
     border: 5px;
     border-radius: 10px;
     box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
-    max-height: 70%;
+  }
+
+  #regtable {
+    border-collapse: collapse; /* make the table borders collapse to each other */
+    border: 0px;
+  }
+
+  #regtable thead tr {
+    position: sticky; /* make the table heads sticky */
+    top: 0px; /* table head will be placed from the top of the table and sticks to it */
   }
 </style>

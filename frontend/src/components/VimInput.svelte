@@ -185,11 +185,13 @@
 
   async function gotoEndCmd(vimCmd, nchr) {
     pos = value.length;
+    await tick();
     moveCursorTo(pos);
   }
 
   async function gotoBeginingCmd(vimCmd, nchr) {
     pos = 0;
+    await tick();
     moveCursorTo(pos);
   }
 
@@ -204,17 +206,20 @@
   async function forwardCharCmd(vimCmd, nchr) {
     pos++;
     if (pos > value.length) pos = value.length;
+    await tick();
     moveCursorTo(pos);
   }
 
   async function backwardsCharCmd(vimCmd, nchr) {
     pos--;
     if (pos < 0) pos = 0;
+    await tick();
     moveCursorTo(pos);
   }
 
   async function insertEndCmd(vimCmd, nchr) {
     pos = value.length;
+    await tick();
     moveCursorTo(pos);
     mode = "insert";
   }
@@ -231,8 +236,10 @@
     return pos;
   }
 
-  function setPos(newPos) {
+  async function setPos(newPos) {
     pos = newPos;
+    await tick();
+    moveCursorTo(pos);
   }
 </script>
 
