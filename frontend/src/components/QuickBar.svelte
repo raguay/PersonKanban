@@ -13,6 +13,8 @@
   let value = $state("");
   let focus = $state(() => {});
   let oldKeyHandler = null;
+  let showRegs = $state(false);
+  let reginput = $state(null);
   let theme = {
     modes: [
       {
@@ -34,13 +36,23 @@
   };
   let actions = [
     {
-      key: "s",
+      key: "y",
       command: saveToRegister,
       keystate: 1,
     },
     {
       key: "p",
       command: getFromRegister,
+      keystate: 1,
+    },
+    {
+      key: "s",
+      command: toggleRegisters,
+      keystate: 0,
+    },
+    {
+      key: "d",
+      command: deleteRegister,
       keystate: 1,
     },
   ];
@@ -69,17 +81,59 @@
   });
 
   $effect(() => {
-    focus();
+    if (focuson) {
+      focus();
+    } else {
+      if (reginput !== null) reginput.focus();
+    }
   });
 
   async function saveToRegister(vimcmd, nextkey) {
+    $registers.regs = $registers.regs;
     await $registers.store(nextkey, vimcmd.getValue());
   }
 
   async function getFromRegister(vimcmd, nextkey) {
     await vimcmd.setValue(await $registers.get(nextkey));
   }
+
+  async function toggleRegisters(vimcmd, nextkey) {
+    showRegs = ~showRegs;
+  }
+
+  async function deleteRegister(vimcmd, nextkey) {
+    $registers.regs = $registers.regs;
+    $registers.delete(nextkey);
+  }
 </script>
+
+{#if showRegs}
+  <div
+    id="registers"
+    style="background-color: {$Kanban.boards[$boardCursor].styles
+      .commandbarbgcolor};
+         color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
+         font-family: {$Kanban.boards[$boardCursor].styles.font};
+         font-size: {$Kanban.boards[$boardCursor].styles.fontsize};"
+  >
+    <table style="border: 0px; overflow-y: scroll;">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Register</th>
+          <th style="text-align: left;">Contents</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each $registers.regs as reg}
+          <tr>
+            <td>{reg.key}</td>
+            <td>{reg.value}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
+{/if}
 
 <div
   id="QuickBarDiv"
@@ -159,5 +213,20 @@
     border-radius: 10px;
     box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
     z-index: 200;
+  }
+
+  #registers {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 100px;
+    left: 10%;
+    width: 80%;
+    margin: auto;
+    padding: 10px;
+    border: 5px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
+    max-height: 70%;
   }
 </style>
