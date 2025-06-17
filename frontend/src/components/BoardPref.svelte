@@ -60,6 +60,25 @@
       case "commandbartextcolor":
         prefs.commandbartextcolor = value;
         break;
+      case "VimInputNormal":
+        prefs.VimInputNormal = value;
+        break;
+      case "VimInputNormalText":
+        prefs.VimInputNormalText = value;
+        break;
+      case "VimInputVisual":
+        prefs.VimInputVisual = value;
+        break;
+      case "VimInputVisualText":
+        prefs.VimInputVisualText = value;
+        break;
+      case "VimInputInsert":
+        prefs.VimInputInsert = value;
+        break;
+      case "VimInputInsertText":
+        prefs.VimInputInsertText = value;
+        break;
+
       default:
         break;
     }
@@ -224,7 +243,6 @@
         isDialog={false}
         position="responsive"
         onInput={(color) => {
-          console.log("colorpicker: ", color.hex);
           setColor(colorID, color.hex);
         }}
       />
@@ -238,14 +256,14 @@
   }
 
   .variousPickerLabel1 {
-    font-size: 25px;
+    font-size: 16px;
     margin: 0px 10px 0px 10px;
     grid-column: 1;
     text-align: right;
   }
 
   .variousPickerLabel2 {
-    font-size: 25px;
+    font-size: 16px;
     margin: 0px 10px 0px 10px;
     user-select: text;
     grid-column: 3;

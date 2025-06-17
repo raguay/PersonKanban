@@ -15,7 +15,7 @@
   let scrollDiv = $state(null);
   let oldKeyHandler = null;
   let showRegs = $state(false);
-  let theme = {
+  let theme = $state({
     modes: [
       {
         name: "normal",
@@ -33,7 +33,7 @@
         text: "purple",
       },
     ],
-  };
+  });
   let actions = [
     {
       key: "y",
@@ -79,6 +79,14 @@
     oldKeyHandler = $keyHandler;
     $keyHandler = null;
 
+    //
+    // Get the VimInput Theme:
+    //
+    theme = $Kanban.GetVimInputTheme();
+
+    //
+    // Return the function to close down the QuickBar.
+    //
     return () => {
       //
       // If the oldKeyHanger isn't null, set it back to the $keyHandler.

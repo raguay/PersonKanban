@@ -14,11 +14,12 @@
   let original = null;
   let prefs = $state(null);
 
-  onMount(async () => {
+  onMount(() => {
     //
     // Clear the keyboardHandler.
     //
     $keyHandler = null;
+    console.log("Preferences: Remove keyHandler: ", $keyHandler);
 
     //
     // Figure the state for displaying preferences.
@@ -45,12 +46,10 @@
     // Make a copy for the preferences to use in the dialog.
     //
     prefs = { ...original };
-    return () => {
-      //
-      // Restore the keyboardHandler.
-      //
-      $keyHandler = $preferences.keyboardHandler;
-    };
+  });
+
+  $effect(() => {
+    console.log("Preferences: effect: ", $keyHandler);
   });
 
   async function revertChanges() {

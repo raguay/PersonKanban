@@ -22,6 +22,12 @@ const DefaultKanban = {
     cursorWidth: "10px",
     commandbarbgcolor: "#9AC2FA",
     commandbartextcolor: "white",
+    VimInputNormal: "blue",
+    VimInputNormalText: "white",
+    VimInputVisual: "green",
+    VimInputVisualText: "purple",
+    VimInputInsert: "yellow",
+    VimInputInsertText: "brown",
   },
   defaultListStyle: {
     listbgcolor: "#9AC2FA",
@@ -40,6 +46,29 @@ const DefaultKanban = {
     dialogBGColor: "lightblue",
     dialogTextColor: "black",
     itemtextcolor: "black",
+  },
+  GetVimInputTheme: function () {
+    const bcur = get(boardCursor);
+    console.log("GetVimInputTheme: ", bcur, this.boards[bcur]);
+    return {
+      modes: [
+        {
+          name: "normal",
+          color: this.boards[bcur].styles.VimInputNormal,
+          text: this.boards[bcur].styles.VimInputNormalText,
+        },
+        {
+          name: "insert",
+          color: this.boards[bcur].styles.VimInputInsert,
+          text: this.boards[bcur].styles.VimInputInsertText,
+        },
+        {
+          name: "visual",
+          color: this.boards[bcur].styles.VimInputVisual,
+          text: this.boards[bcur].styles.VimInputVisualText,
+        },
+      ],
+    }
   },
   SaveKanbanBoards: async function () {
     const mtboard = get(metaboard);

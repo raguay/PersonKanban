@@ -1,6 +1,7 @@
 <script>
-  import { tick } from "svelte";
+  import { onMount, tick } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
+  import { Kanban } from "../stores/Kanban.js";
   import VimInput from "./VimInput.svelte";
 
   let {
@@ -11,6 +12,11 @@
     oninput = () => {},
     onblur = () => {},
   } = $props();
+  let VimInputTheme = $state(null);
+
+  onMount(() => {
+    VimInputTheme = $Kanban.GetVimInputTheme();
+  });
 
   $effect.pre(async () => {
     if (edit) await editName();
@@ -36,6 +42,7 @@
       bind:value={name}
       short={true}
       bind:show={edit}
+      theme={VimInputTheme}
       oninput={(val) => {
         nameChanged(val);
       }}
