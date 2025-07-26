@@ -278,6 +278,9 @@
         switch (mode) {
           case "insert":
             switch (e.key) {
+              case "Tab":
+                inp.blur();
+                break;
               case "Enter":
                 e.preventDefault();
                 e.stopPropagation();
@@ -439,6 +442,9 @@
             e.preventDefault();
             e.stopPropagation();
             switch (e.key) {
+              case "Tab":
+                inp.blur();
+                break;
               case "Escape":
                 mode = "normal";
                 break;

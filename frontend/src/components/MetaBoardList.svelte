@@ -206,6 +206,7 @@
 
   async function saveMetaBoard() {
     if (add) {
+      console.log("saveMetaBoard: ", boardName);
       $metaboard.addmetaboard(boardName, boardDesc, boardDescType, boardLoc);
     } else {
       //
@@ -279,7 +280,7 @@
           <button
             type="button"
             class="brbutton"
-            onclick={() => {
+            onclick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               saveMetaBoard();
