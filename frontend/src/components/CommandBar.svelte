@@ -224,7 +224,7 @@
       <div
         id="commandList"
         style="background-color: {$Kanban.boards[$boardCursor].styles
-          .commandbarbgcolor}; 
+          .commandbarbgcolor};
                color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
                border-width: {listdis === 'list' ? 2 : 0}px;"
         bind:this={commandListDiv}
@@ -249,16 +249,18 @@
         id="commandDescription"
         bind:this={commandDescriptionDiv}
         style="background-color: {$Kanban.boards[$boardCursor].styles
-          .commandbarbgcolor}; 
+          .commandbarbgcolor};
                color: {$Kanban.boards[$boardCursor].styles.commandbartextcolor};
                border-width: {listdis === 'dis' ? 2 : 0}px;"
       >
-        {#if $commandBar.commands[cursor].type === "text"}
-          <p>{$commandBar.commands[cursor].description}</p>
-        {:else if $commandBar.commands[cursor].type === "html"}
-          {@html $commandBar.commands[cursor].description}
-        {:else if $commandBar.commands[cursor].type === "md"}
-          {@html mdToHtml($commandBar.commands[cursor].description)}
+        {#if commandlist.length > 0}
+          {#if commandlist[cursor].type === "text"}
+            <p>{commandlist[cursor].description}</p>
+          {:else if commandlist[cursor].type === "html"}
+            {@html commandlist[cursor].description}
+          {:else if commandlist[cursor].type === "md"}
+            {@html mdToHtml(commandlist[cursor].description)}
+          {/if}
         {/if}
       </div>
     </div>

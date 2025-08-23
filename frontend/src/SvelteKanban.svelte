@@ -183,13 +183,13 @@
     $commandBar.addCommand(
       "Go To Top",
       gotoTop,
-      "### Go To Top\n\nGo to the top element of boards, list, or items.",
+      "### Go To Top\n\nGo to the top element of boards, list, or items. The top most item in a horizantal list is to the left most position. On a vertical list, it is the top most item.",
       "md",
     );
     $commandBar.addCommand(
       "Go To Bottom",
       gotoBottom,
-      "### Go To Bottom\n\nGo to the last element of boards, list, or items.",
+      "### Go To Bottom\n\nGo to the last element of boards, list, or items. The bottom most item in a horizontal list is to the right most position. On a vertical list, it is the bottom most item.",
       "md",
     );
 
