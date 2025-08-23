@@ -180,6 +180,18 @@
       "### Edit Board Name\n\nEdit the name of the current board.",
       "md",
     );
+    $commandBar.addCommand(
+      "Go To Top",
+      gotoTop,
+      "### Go To Top\n\nGo to the top element of boards, list, or items.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Go To Bottom",
+      gotoBottom,
+      "### Go To Bottom\n\nGo to the last element of boards, list, or items.",
+      "md",
+    );
 
     //
     // Load the quickbar registers.
@@ -468,6 +480,22 @@
             $lastCommand = "Open Preferences";
             break;
 
+          case "g":
+            //
+            // Goto the Bottom of the list.
+            //
+            command = gotoTop;
+            $lastCommand = "Go To Top";
+            break;
+
+          case "G":
+            //
+            // Goto the top of the list.
+            //
+            command = gotoBottom;
+            $lastCommand = "Go To Bottom";
+            break;
+
           case ".":
             command = $commandBar.getCommand($lastCommand).command;
             break;
@@ -593,7 +621,31 @@
   }
 
   function openItem() {
-    if ($itemCursor >= 0) editItem = true;
+    if ($itemCursor >= 0) {
+      editItem = true;
+    }
+  }
+
+  function gotoTop() {
+    if ($itemCursor >= 0) {
+      $itemCursor = 0;
+    } else if ($listCursor >= 0) {
+      $listCursor = 0;
+    } else {
+      $boardCursor = 0;
+    }
+  }
+
+  async function gotoBottom() {
+    if ($itemCursor >= 0) {
+      let list = $Kanban.boards[$boardCursor].lists[$listCursor];
+      $itemCursor = list.items.length - 1;
+    } else if ($listCursor >= 0) {
+      let list = $Kanban.boards[$boardCursor].lists;
+      $listCursor = list.length - 1;
+    } else {
+      $boardCursor = $Kanban.boards.length - 1;
+    }
   }
 
   async function copyBoardPref() {

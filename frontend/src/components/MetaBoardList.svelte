@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { keyHandler } from "../stores/keyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
@@ -139,7 +139,9 @@
   }
 
   async function deleteCurrentMetaboard() {
+    await tick();
     await deleteMetaboard($metaboard.cursor);
+    await tick();
   }
 
   async function deleteMetaboard(cur) {
@@ -153,6 +155,7 @@
     if ($metaboard.cursor == cur) {
       $metaboard.cursor = $metaboard.cursor - 1;
       if ($metaboard.cursor < 0) $metaboard.cursor = 0;
+      await gotoMetaBoard($metaboard.cursor);
     }
     $metaboard = $metaboard;
   }
