@@ -136,12 +136,7 @@
       {#if $Kanban.boards[boardcur].lists[listcur].items.length !== 0}
         {#each $Kanban.boards[boardcur].lists[listcur].items as item, itemindex}
           {#if item !== null}
-            <Item
-              itemInfo={item}
-              {editItem}
-              index={$listCursor === listcur ? itemindex : -2}
-              editoff={localeditoff}
-            />
+            <Item itemInfo={item} listindex={listcur} {itemindex} {editoff} />
           {/if}
         {/each}
       {/if}

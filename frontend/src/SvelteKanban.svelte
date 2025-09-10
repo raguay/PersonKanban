@@ -22,6 +22,7 @@
   import { skipKey } from "./stores/skipKey.js";
   import { preferences } from "./stores/preferences.js";
   import { registers } from "./stores/registers.js";
+  import { editItem } from "./stores/editItem.js";
   import * as App from "../wailsjs/go/main/App.js";
   import EditField from "./components/EditField.svelte";
 
@@ -30,7 +31,6 @@
   let keystate = 0;
   let command = null;
   let direction = "";
-  let editItem = $state(false);
   let quickBarOpen = $state(false);
   let copyPref = {
     type: "board",
@@ -65,6 +65,7 @@
     $boardCursor = 0;
     $listCursor = -1;
     $itemCursor = -1;
+    $editItem = false;
     await $Kanban.LoadCurrentKanbanBoards();
     $Kanban = $Kanban;
 
@@ -206,7 +207,7 @@
 
   function editoff() {
     editNameFlag = false;
-    editItem = false;
+    $editItem = false;
     $keyHandler = listKeyHandler;
   }
 
@@ -217,7 +218,7 @@
   }
 
   function editListTitle() {
-    editItem = true;
+    editNameFlag = true;
   }
 
   async function editBoardName() {
@@ -622,7 +623,7 @@
 
   function openItem() {
     if ($itemCursor >= 0) {
-      editItem = true;
+      $editItem = true;
     }
   }
 
@@ -1038,7 +1039,7 @@
             <List
               boardcur={$boardCursor}
               listcur={index}
-              edit={$listCursor === index ? editItem : false}
+              edit={$listCursor === index ? $editItem : false}
               {editoff}
             />
           {/each}

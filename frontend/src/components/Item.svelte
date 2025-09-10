@@ -1,24 +1,20 @@
 <script>
   import ItemEdit from "./ItemEdit.svelte";
   import { itemCursor } from "../stores/itemCursor.js";
+  import { listCursor } from "../stores/listCursor.js";
+  import { editItem } from "../stores/editItem.js";
 
-  let {
-    itemInfo = $bindable(),
-    index,
-    editItem = $bindable(),
-    editoff,
-  } = $props();
+  let { itemInfo = $bindable(), itemindex, listindex, editoff } = $props();
 
   let itemDiv = $state(null);
-  let localedit = $state(false);
 
   $effect.pre(() => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
-    localedit = index === $itemCursor ? editItem : false;
     if (
-      $itemCursor === index &&
+      $itemCursor === itemindex &&
+      $listCursor === listindex &&
       typeof itemDiv !== "undefined" &&
       itemDiv !== null
     ) {
@@ -34,9 +30,9 @@
   });
 
   function editItemCommand() {
-    editItem = true;
-    localedit = true;
-    $itemCursor = index;
+    $itemCursor = itemindex;
+    $listCursor = listindex;
+    $editItem = true;
   }
 </script>
 
@@ -44,25 +40,24 @@
   <div
     class="item"
     style="background-color: {itemInfo.styles.itembgcolor}; color: {itemInfo
-      .styles.itemtextcolor}; border-width: {$itemCursor === index
+      .styles.itemtextcolor}; border-width: {$itemCursor === itemindex
       ? itemInfo.styles.cursorWidth
-      : '5px'}; border-color: {$itemCursor === index
+      : '5px'}; border-color: {$itemCursor === itemindex
       ? itemInfo.styles.cursorColor
       : itemInfo.styles.itembgcolor};"
     ondblclick={editItemCommand}
     bind:this={itemDiv}
     onclick={() => {
-      $itemCursor = index;
+      $itemCursor = itemindex;
+      $listCursor = listindex;
     }}
   >
     <h2>{itemInfo.name}</h2>
     <p>{itemInfo.description}</p>
-    {#if localedit}
+    {#if $itemCursor === itemindex && $listCursor === listindex && $editItem}
       <ItemEdit
         {itemInfo}
         closeEdit={() => {
-          localedit = false;
-          editItem = false;
           editoff();
         }}
       />
