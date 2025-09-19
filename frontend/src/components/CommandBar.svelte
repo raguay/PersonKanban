@@ -2,7 +2,6 @@
   import { onMount, tick } from "svelte";
   import showdown from "showdown";
   import { commandBar } from "../stores/commandBar.js";
-  import { keyHandler } from "../stores/keyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
   import { metaKey } from "../stores/metaKey.js";
@@ -11,6 +10,8 @@
   import { skipKey } from "../stores/skipKey.js";
   import { lastCommand } from "../stores/lastCommand.js";
   import { boardCursor } from "../stores/boardCursor.js";
+  import { commandbarkb } from "../stores/commandbarkb.js";
+  import { kbstate } from "../stores/kbstate.js";
   import { Kanban } from "../stores/Kanban.js";
 
   let inputDiv = null;
@@ -19,7 +20,6 @@
   let currentCommandDiv = $state(null);
   let commandDescriptionDiv = null;
   let commandlist = $state([]);
-  let oldKeyHandler = null;
   let handlekey = true;
   let cursor = $state(0);
   let listdis = $state("");
@@ -33,8 +33,8 @@
     //
     // Set our keyboard handler and save the previous one.
     //
-    oldKeyHandler = $keyHandler;
-    $keyHandler = KeyboardHandler;
+    $commandbarkb = KeyboardHandler;
+    $kbstate = 4;
 
     //
     // Focus the input first.
@@ -43,12 +43,9 @@
 
     return () => {
       //
-      // If the oldKeyHanger isn't null, set it back to the $keyHandler.
+      // Set to the default keyboard state.
       //
-      if (oldKeyHandler !== null) {
-        $keyHandler = oldKeyHandler;
-        oldKeyHandler = null;
-      }
+      $kbstate = 0;
     };
   });
 
@@ -185,7 +182,7 @@
       type="text"
       bind:this={inputDiv}
       bind:value={inputVal}
-      on:keydown={async (e) => {
+      onkeydown={async (e) => {
         if (e.key === "Escape") {
           e.preventDefault();
           $commandBar.clearShowing();
@@ -210,12 +207,12 @@
           $skipKey = true;
         }
       }}
-      on:input={searchCommands}
-      on:focusin={() => {
+      oninput={searchCommands}
+      onfocusin={() => {
         handlekey = false;
         listdis = "";
       }}
-      on:focusout={() => {
+      onfocusout={() => {
         handlekey = true;
         listdis = "list";
       }}

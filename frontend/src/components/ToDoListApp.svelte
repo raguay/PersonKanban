@@ -1,7 +1,6 @@
 <script>
   import VimInput from "./VimInput.svelte";
   import EditField from "./EditField.svelte";
-  import { keyHandler } from "../stores/keyHandler.js";
 
   let { app = $bindable(), appindex, update, deleteApp } = $props();
 
@@ -80,18 +79,8 @@
       short={true}
       {focus}
       {setFocus}
-      onfocusin={() => {
-        if (oldkbhdl === null && $keyHandler !== null) {
-          oldkbhdl = $keyHandler;
-        }
-        $keyHandler = null;
-      }}
-      onfocusout={() => {
-        if (oldkbhdl !== null && $keyHandler === null) {
-          $keyHandler = oldkbhdl;
-          oldkbhdl = null;
-        }
-      }}
+      onfocusin={() => {}}
+      onfocusout={() => {}}
       oninput={() => {
         createNewTodo();
       }}

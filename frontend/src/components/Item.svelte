@@ -40,9 +40,11 @@
   <div
     class="item"
     style="background-color: {itemInfo.styles.itembgcolor}; color: {itemInfo
-      .styles.itemtextcolor}; border-width: {$itemCursor === itemindex
+      .styles.itemtextcolor}; border-width: {$itemCursor === itemindex &&
+    $listCursor === listindex
       ? itemInfo.styles.cursorWidth
-      : '5px'}; border-color: {$itemCursor === itemindex
+      : '5px'}; border-color: {$itemCursor === itemindex &&
+    $listCursor === listindex
       ? itemInfo.styles.cursorColor
       : itemInfo.styles.itembgcolor};"
     ondblclick={editItemCommand}

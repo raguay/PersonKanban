@@ -49,7 +49,6 @@ const DefaultKanban = {
   },
   GetVimInputTheme: function () {
     const bcur = get(boardCursor);
-    console.log("GetVimInputTheme: ", bcur, this.boards[bcur]);
     return {
       modes: [
         {
@@ -189,7 +188,6 @@ const DefaultKanban = {
     const bcur = get(boardCursor);
     const lcur = get(listCursor);
     const icur = get(itemCursor);
-    console.log("deleteApp: ", this.boards[bcur].lists[lcur].items[icur].apps);
     this.boards[bcur].lists[lcur].items[icur].apps.splice(ind, 1);
     await this.SaveKanbanBoards();
   },

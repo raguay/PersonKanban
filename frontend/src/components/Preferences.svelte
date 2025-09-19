@@ -3,7 +3,6 @@
   import BoardPref from "./BoardPref.svelte";
   import ListPref from "./ListPref.svelte";
   import ItemPref from "./ItemPref.svelte";
-  import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
@@ -18,8 +17,6 @@
     //
     // Clear the keyboardHandler.
     //
-    $keyHandler = null;
-    console.log("Preferences: Remove keyHandler: ", $keyHandler);
 
     //
     // Figure the state for displaying preferences.
@@ -46,10 +43,6 @@
     // Make a copy for the preferences to use in the dialog.
     //
     prefs = { ...original };
-  });
-
-  $effect(() => {
-    console.log("Preferences: effect: ", $keyHandler);
   });
 
   async function revertChanges() {
@@ -84,7 +77,6 @@
   }
 
   async function Quit() {
-    $keyHandler = $preferences.keyboardHandler;
     $preferences.showing = false;
     $preferences = $preferences;
   }

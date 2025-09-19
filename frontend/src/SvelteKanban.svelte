@@ -7,8 +7,6 @@
   import Preferences from "./components/Preferences.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { lastCommand } from "./stores/lastCommand.js";
-  import { defaultKeyHandler } from "./stores/defaultKeyHandler.js";
-  import { keyHandler } from "./stores/keyHandler.js";
   import { boardCursor } from "./stores/boardCursor.js";
   import { commandBar } from "./stores/commandBar.js";
   import { itemCursor } from "./stores/itemCursor";
@@ -23,10 +21,18 @@
   import { preferences } from "./stores/preferences.js";
   import { registers } from "./stores/registers.js";
   import { editItem } from "./stores/editItem.js";
+  import { kbstate } from "./stores/kbstate.js";
+  import { defaultkb } from "./stores/defaultkb.js";
+  import { itemEditkb } from "./stores/itemEditkb.js";
+  import { quickbarkb } from "./stores/quickbarkb.js";
+  import { metaboardkb } from "./stores/metaboardkb.js";
+  import { commandbarkb } from "./stores/commandbarkb.js";
+  import { listkb } from "./stores/listkb.js";
   import * as App from "../wailsjs/go/main/App.js";
   import EditField from "./components/EditField.svelte";
 
   let editNameFlag = $state(false);
+  let editListName = $state(false);
   let acc = "";
   let keystate = 0;
   let command = null;
@@ -72,8 +78,8 @@
     //
     // Setup the keyboard handler.
     //
-    $keyHandler = listKeyHandler;
-    $defaultKeyHandler = listKeyHandler;
+    $kbstate = 0;
+    $defaultkb = listKeyHandler;
 
     //
     // Add Commands for the CommandBar.
@@ -208,22 +214,21 @@
   function editoff() {
     editNameFlag = false;
     $editItem = false;
-    $keyHandler = listKeyHandler;
+    editListName = false;
+    $kbstate = 0;
   }
 
   function openPreferences() {
     $preferences.showing = true;
-    $preferences.keyboardHandler = listKeyHandler;
     $preferences = $preferences;
   }
 
   function editListTitle() {
-    editNameFlag = true;
+    editListName = true;
   }
 
   async function editBoardName() {
-    let num = $boardCursor;
-    await editName(num);
+    await editName($boardCursor);
   }
 
   async function addNewBoard() {
@@ -276,8 +281,8 @@
   async function editName(num) {
     $boardCursor = num;
     editNameFlag = true;
-    await tick();
-    $keyHandler = null;
+    $kbstate = 10;
+    $kbstate = await tick();
   }
 
   function setBoard(ind) {
@@ -512,7 +517,6 @@
               $itemCursor = -1;
             } else if ($itemCursor < 0) $listCursor = -1;
             clearState();
-            $keyHandler = listKeyHandler;
             break;
 
           case ":":
@@ -936,7 +940,57 @@
 
 <svelte:window
   onkeydown={(e) => {
-    if ($keyHandler !== null) $keyHandler(e);
+    switch ($kbstate) {
+      case 0:
+        //
+        // The default keyboard handler.
+        //
+        if ($defaultkb !== null) $defaultkb(e);
+        break;
+      case 1:
+        //
+        // ItemEdit keyboard handler.
+        //
+        if ($itemEditkb !== null) $itemEditkb(e);
+        break;
+      case 2:
+        //
+        // QuickBar keyboard handler.
+        //
+        if ($quickbarkb !== null) $quickbarkb(e);
+        break;
+      case 3:
+        //
+        // Metaboard keyboard handler.
+        //
+        if ($metaboardkb !== null) $metaboardkb(e);
+        break;
+      case 4:
+        //
+        // Commandbar handler.
+        //
+        if ($commandbarkb !== null) $commandbarkb(e);
+        break;
+      case 5:
+        //
+        // List handler.
+        //
+        if ($listkb !== null) $listkb(e);
+        break;
+      case 6:
+        //
+        // Preferences handler.
+        //
+        break;
+      case 10:
+        //
+        // Don't handle keys.
+        //
+        break;
+      default:
+        console.log("ERROR: No keyboard handler set for the state: ", $kbstate);
+        break;
+    }
   }}
 />
 
@@ -1039,7 +1093,8 @@
             <List
               boardcur={$boardCursor}
               listcur={index}
-              edit={$listCursor === index ? $editItem : false}
+              editListItem={$listCursor === index ? $editItem : false}
+              editListName={$listCursor === index ? editListName : false}
               {editoff}
             />
           {/each}

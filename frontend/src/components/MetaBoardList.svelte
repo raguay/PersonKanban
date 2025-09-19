@@ -1,6 +1,5 @@
 <script>
   import { onMount, tick } from "svelte";
-  import { keyHandler } from "../stores/keyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
   import { metaKey } from "../stores/metaKey.js";
@@ -12,9 +11,10 @@
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
   import { commandBar } from "../stores/commandBar.js";
+  import { metaboardkb } from "../stores/metaboardkb.js";
+  import { kbstate } from "../stores/kbstate.js";
   import * as App from "../../wailsjs/go/main/App.js";
 
-  let origKeyboardHandler = $state(null);
   let handlekey = $state(true);
   let addedit = $state(false);
   let add = $state(true);
@@ -28,19 +28,13 @@
     //
     // Save the original handler and install our new one.
     //
-    if ($keyHandler !== null && $keyHandler != KeyboardHandler) {
-      origKeyboardHandler = $keyHandler;
-      $keyHandler = KeyboardHandler;
-    }
-
+    $metaboardkb = KeyboardHandler;
+    $kbstate = 3;
     return () => {
       //
       // Restore the original keyboard handler.
       //
-      if (origKeyboardHandler !== null) {
-        $keyHandler = origKeyboardHandler;
-        origKeyboardHandler = null;
-      }
+      $kbstate = 0;
     };
   });
 
@@ -136,6 +130,7 @@
     $metaboard.clearShowing();
     addedit = false;
     $metaboard = $metaboard;
+    $kbstate = 0;
   }
 
   async function deleteCurrentMetaboard() {
@@ -209,7 +204,6 @@
 
   async function saveMetaBoard() {
     if (add) {
-      console.log("saveMetaBoard: ", boardName);
       $metaboard.addmetaboard(boardName, boardDesc, boardDescType, boardLoc);
     } else {
       //

@@ -1,11 +1,12 @@
 <script>
   import { onMount } from "svelte";
   import VimInput from "./VimInput.svelte";
-  import { keyHandler } from "../stores/keyHandler.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
   import { registers } from "../stores/registers.js";
+  import { quickbarkb } from "../stores/quickbarkb.js";
+  import { kbstate } from "../stores/kbstate.js";
   import { Kanban } from "../stores/Kanban.js";
 
   let { show = $bindable() } = $props();
@@ -13,7 +14,6 @@
   let value = $state("");
   let focus = $state(() => {});
   let scrollDiv = $state(null);
-  let oldKeyHandler = null;
   let showRegs = $state(false);
   let theme = $state({
     modes: [
@@ -74,10 +74,10 @@
     focus();
 
     //
-    // Store the key handler.
+    // Set the keyboard handler. Right now it is a dummy.
     //
-    oldKeyHandler = $keyHandler;
-    $keyHandler = null;
+    $quickbarkb = null;
+    $kbstate = 2;
 
     //
     // Get the VimInput Theme:
@@ -88,13 +88,7 @@
     // Return the function to close down the QuickBar.
     //
     return () => {
-      //
-      // If the oldKeyHanger isn't null, set it back to the $keyHandler.
-      //
-      if (oldKeyHandler !== null) {
-        $keyHandler = oldKeyHandler;
-        oldKeyHandler = null;
-      }
+      $kbstate = 0;
     };
   });
 

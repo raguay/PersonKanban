@@ -1,34 +1,49 @@
 <script>
+  import { onMount } from "svelte";
   import EditField from "./EditField.svelte";
   import Item from "./Item.svelte";
   import { Kanban } from "../stores/Kanban.js";
   import { boardCursor } from "../stores/boardCursor.js";
-  import { defaultKeyHandler } from "../stores/defaultKeyHandler.js";
-  import { keyHandler } from "../stores/keyHandler.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
+  import { kbstate } from "../stores/kbstate.js";
+  import { listkb } from "../stores/listkb.js";
 
-  let { boardcur, listcur, edit, editoff } = $props();
+  let { boardcur, listcur, editListItem, editListName, editoff } = $props();
 
   let listDiv = $state(null);
   let localNameEdit = $state(false);
   let editItem = $state(false);
   let editing = false;
 
+  onMount(() => {
+    //
+    // Set the list keyboard handler. But, there isn't one. This is a dummy
+    // to help in editing the list title.
+    //
+    $listkb = null;
+  });
+
   $effect(() => {
     //
     // If edit has been turned off, make sure it's upward progated.
     //
-    localNameEdit = $listCursor === listcur && $itemCursor < 0 ? edit : false;
-    editItem = $listCursor === listcur && $itemCursor >= 0 ? edit : false;
+    localNameEdit =
+      $listCursor === listcur && $itemCursor < 0 ? editListName : false;
+    editItem =
+      $listCursor === listcur && $itemCursor >= 0 ? editListItem : false;
     if (!editItem && !localNameEdit) {
       if (editing) {
         editing = false;
+        $kbstate = 0;
         $Kanban.SaveKanbanBoards();
         localeditoff();
       }
     } else {
       editing = true;
+    }
+    if (localNameEdit) {
+      $kbstate = 5;
     }
 
     //
@@ -68,7 +83,7 @@
   });
 
   function localeditoff() {
-    $keyHandler = $defaultKeyHandler;
+    $kbstate = 0;
     editoff();
   }
 

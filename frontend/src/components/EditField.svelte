@@ -1,6 +1,5 @@
 <script>
   import { onMount, tick } from "svelte";
-  import { keyHandler } from "../stores/keyHandler.js";
   import { Kanban } from "../stores/Kanban.js";
   import VimInput from "./VimInput.svelte";
 
@@ -24,7 +23,6 @@
 
   async function editName() {
     edit = true;
-    $keyHandler = null;
     await tick();
   }
 

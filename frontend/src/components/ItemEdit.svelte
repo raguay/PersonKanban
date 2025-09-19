@@ -4,13 +4,13 @@
   import VimInput from "./VimInput.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
   import { Kanban } from "../stores/Kanban.js";
-  import { keyHandler } from "../stores/keyHandler.js";
-  import { defaultKeyHandler } from "../stores/defaultKeyHandler.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
   import { metaKey } from "../stores/metaKey.js";
   import { altKey } from "../stores/altKey.js";
   import { key } from "../stores/key.js";
+  import { itemEditkb } from "../stores/itemEditkb.js";
+  import { kbstate } from "../stores/kbstate.js";
 
   let { itemInfo = $bindable(), closeEdit } = $props();
 
@@ -23,6 +23,7 @@
   let command = null;
   let editDialogDiv = null;
   let msgfocus = $state(() => {});
+  let blurMsg = $state(() => {});
   let editTitle = $state(false);
   let editDesc = $state(false);
   let editMessage = $state(false);
@@ -30,9 +31,10 @@
 
   onMount(async () => {
     //
-    // Save the original handler and install our new one.
+    // Set the itemEditkb handler.
     //
-    $keyHandler = KeyboardHandler;
+    $itemEditkb = KeyboardHandler;
+    $kbstate = 1;
 
     //
     // Load applications.
@@ -50,15 +52,20 @@
     await tick();
     editDialogDiv.focus();
 
-    return () => {};
+    return () => {
+      //
+      // Set the kbstate to the default state.
+      //
+      $kbstate = 0;
+    };
   });
 
   async function closeItemEdit() {
     //
     // Put in the original handler.
     //
-    $keyHandler = $defaultKeyHandler;
     await $Kanban.SaveKanbanBoards();
+    $kbstate = 0;
     closeEdit();
   }
 
@@ -249,14 +256,17 @@
 
   function editCardTitle() {
     editTitle = true;
+    $itemEditkb = null;
   }
 
   function editCardDiscription() {
     editDesc = true;
+    $itemEditkb = null;
   }
 
   async function editCardMessage() {
     editMessage = true;
+    $itemEditkb = null;
     await tick();
     msgfocus();
   }
@@ -286,6 +296,7 @@
     );
     newMsg = "";
     $Kanban = $Kanban;
+    blurMsg();
   }
 
   async function createToDoList() {
@@ -307,6 +318,13 @@
   async function appUpdate(appindex, app) {
     await $Kanban.appUpdate(appindex, app);
   }
+
+  function exitEF() {
+    $kbstate = 1;
+    $itemEditkb = KeyboardHandler;
+    editTitle = false;
+    editDesc = false;
+  }
 </script>
 
 <div class="editDialogBG">
@@ -321,13 +339,13 @@
       bind:edit={editTitle}
       type={"h2"}
       oninput={() => {
-        $keyHandler = KeyboardHandler;
+        exitEF();
       }}
       onblur={() => {
-        $keyHandler = KeyboardHandler;
+        exitEF();
       }}
       onfocusout={() => {
-        $keyHandler = KeyboardHandler;
+        exitEF();
       }}
     />
     <EditField
@@ -335,13 +353,13 @@
       bind:edit={editDesc}
       type={"p"}
       oninput={() => {
-        $keyHandler = KeyboardHandler;
+        exitEF();
       }}
       onblur={() => {
-        $keyHandler = KeyboardHandler;
+        exitEF();
       }}
       onfocusout={() => {
-        $keyHandler = KeyboardHandler;
+        exitEF();
       }}
       setFocus={false}
     />
@@ -363,20 +381,23 @@
           show={true}
           short={true}
           setFocus={editMessage}
+          bind:blur={blurMsg}
           bind:focus={msgfocus}
           onfocusin={() => {
-            $keyHandler = null;
             editMessage = true;
+            editTitle = false;
+            editDesc = false;
+            $itemEditkb = null;
             msgfocus();
           }}
           onfocusout={() => {
-            $keyHandler = KeyboardHandler;
             editMessage = false;
+            exitEF();
           }}
           oninput={() => {
             createNewTextMsg();
-            $keyHandler = KeyboardHandler;
             editMessage = false;
+            exitEF();
           }}
         />
       </div>

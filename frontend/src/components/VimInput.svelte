@@ -27,6 +27,7 @@
     style,
     setFocus = true,
     focus = $bindable(),
+    blur = $bindable(),
     theme = basetheme,
     show = $bindable(),
     short = false,
@@ -70,6 +71,7 @@
     // Setup the focus function.
     //
     focus = inpFocus;
+    blur = inpBlur;
 
     //
     // Wait for the elements to be added.
@@ -83,6 +85,12 @@
     //
     inpFocus();
   });
+
+  function inpBlur() {
+    if (inp !== null) {
+      inp.blur();
+    }
+  }
 
   function inpFocus() {
     if (inp !== null) {
