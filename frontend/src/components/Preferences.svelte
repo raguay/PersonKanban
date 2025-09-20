@@ -7,6 +7,7 @@
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
   import { preferences } from "../stores/preferences.js";
+  import { kbstate } from "../stores/kbstate.js";
   import { Kanban } from "../stores/Kanban.js";
 
   let prefstate = $state(0);
@@ -40,9 +41,21 @@
     }
 
     //
+    // Set the proper keyboard handler.
+    //
+    $kbstate = 6;
+
+    //
     // Make a copy for the preferences to use in the dialog.
     //
     prefs = { ...original };
+
+    return () => {
+      //
+      // Set to the default keyboard state.
+      //
+      $kbstate = 0;
+    };
   });
 
   async function revertChanges() {

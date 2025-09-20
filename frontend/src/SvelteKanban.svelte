@@ -221,6 +221,11 @@
   function openPreferences() {
     $preferences.showing = true;
     $preferences = $preferences;
+
+    //
+    // Set the preferences keyboard state.
+    //
+    $kbstate = 6;
   }
 
   function editListTitle() {
@@ -940,6 +945,7 @@
 
 <svelte:window
   onkeydown={(e) => {
+    console.log("Window: kbstate: ", $kbstate);
     switch ($kbstate) {
       case 0:
         //
@@ -981,6 +987,7 @@
         //
         // Preferences handler.
         //
+        console.log("Window: keyboard state: ");
         break;
       case 10:
         //

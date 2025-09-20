@@ -164,7 +164,6 @@ const DefaultKanban = {
   deleteBoard: async function () {
     const bcur = get(boardCursor);
     this.boards = this.boards.filter((_, index) => index !== bcur);
-    set(boardCursor, bcur > 0 ? bcur - 1 : 0);
     await this.SaveKanbanBoards();
   },
   deleteList: async function () {

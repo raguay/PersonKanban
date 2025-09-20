@@ -35,7 +35,6 @@
     if (!editItem && !localNameEdit) {
       if (editing) {
         editing = false;
-        $kbstate = 0;
         $Kanban.SaveKanbanBoards();
         localeditoff();
       }
@@ -83,7 +82,6 @@
   });
 
   function localeditoff() {
-    $kbstate = 0;
     editoff();
   }
 

@@ -7,7 +7,6 @@
   import { metaKey } from "../stores/metaKey.js";
   import { altKey } from "../stores/altKey.js";
   import { key } from "../stores/key.js";
-  import { skipKey } from "../stores/skipKey.js";
   import { lastCommand } from "../stores/lastCommand.js";
   import { boardCursor } from "../stores/boardCursor.js";
   import { commandbarkb } from "../stores/commandbarkb.js";
@@ -20,9 +19,9 @@
   let currentCommandDiv = $state(null);
   let commandDescriptionDiv = null;
   let commandlist = $state([]);
-  let handlekey = true;
   let cursor = $state(0);
   let listdis = $state("");
+  let cmd = null;
 
   onMount(() => {
     //
@@ -31,10 +30,10 @@
     commandlist = $commandBar.commands;
 
     //
-    // Set our keyboard handler and save the previous one.
+    // Set our keyboard handler.
     //
     $commandbarkb = KeyboardHandler;
-    $kbstate = 4;
+    $kbstate = 10;
 
     //
     // Focus the input first.
@@ -46,6 +45,14 @@
       // Set to the default keyboard state.
       //
       $kbstate = 0;
+
+      //
+      // Run the command selected.
+      //
+      if (cmd !== null) {
+        cmd.command();
+        $lastCommand = cmd.name;
+      }
     };
   });
 
@@ -66,6 +73,7 @@
   });
 
   function KeyboardHandler(e) {
+    console.log("Commandbar Keyhandler: ", $kbstate);
     $ctrlKey = e.ctrlKey;
     $shiftKey = e.shiftKey;
     $metaKey = e.metaKey;
@@ -75,77 +83,80 @@
     //
     // Handle the keyboard if not in an input.
     //
-    if (handlekey) {
-      //
-      // Take over the keyboard!
-      //
-      e.preventDefault();
+    //
+    // Take over the keyboard!
+    //
+    e.preventDefault();
+    e.stopPropagation();
 
-      //
-      // State 0 is the main entry state. Get the command and accumulator values.
-      //
-      switch ($key) {
-        case "h":
-          commandListDiv.focus();
-          listdis = "list";
-          break;
+    //
+    // State 0 is the main entry state. Get the command and accumulator values.
+    //
+    switch ($key) {
+      case "h":
+        commandListDiv.focus();
+        listdis = "list";
+        $kbstate = 4;
+        break;
 
-        case "g":
-          if (listdis === "list") {
-            cursor = commandlist.length - 1;
-          }
-          break;
+      case "g":
+        if (listdis === "list") {
+          cursor = commandlist.length - 1;
+        }
+        break;
 
-        case "G":
-          if (listdis === "list") {
-            cursor = 0;
-          }
-          break;
+      case "G":
+        if (listdis === "list") {
+          cursor = 0;
+        }
+        break;
 
-        case "j":
-          if (listdis === "list") {
-            cursor++;
-            if (cursor >= commandlist.length) cursor = commandlist.length - 1;
-          }
-          break;
+      case "j":
+        if (listdis === "list") {
+          cursor++;
+          if (cursor >= commandlist.length) cursor = commandlist.length - 1;
+        }
+        break;
 
-        case "k":
-          if (listdis === "list") {
-            cursor--;
-            if (cursor < 0) cursor = 0;
-          }
-          break;
+      case "k":
+        if (listdis === "list") {
+          cursor--;
+          if (cursor < 0) cursor = 0;
+        }
+        break;
 
-        case "l":
-          commandDescriptionDiv.focus();
-          listdis = "dis";
-          break;
+      case "l":
+        commandDescriptionDiv.focus();
+        $kbstate = 4;
+        listdis = "dis";
+        break;
 
-        case "i":
-          //
-          // Clear the state and focus the input.
-          //
-          inputDiv.focus();
-          break;
+      case "i":
+        //
+        // Clear the state and focus the input.
+        //
+        inputDiv.focus();
+        $kbstate = 10;
+        break;
 
-        case ":":
-          $commandBar.clearShowing();
-          $commandBar = $commandBar;
-          break;
+      case ":":
+        $commandBar.clearShowing();
+        $commandBar = $commandBar;
+        break;
 
-        case "Tab":
-          inputVal = commandlist[cursor].name;
-          inputDiv.focus();
-          break;
+      case "Tab":
+        inputVal = commandlist[cursor].name;
+        inputDiv.focus();
+        $kbstate = 4;
+        break;
 
-        case "Escape":
-          $commandBar.clearShowing();
-          $commandBar = $commandBar;
-          break;
+      case "Escape":
+        $commandBar.clearShowing();
+        $commandBar = $commandBar;
+        break;
 
-        default:
-          break;
-      }
+      default:
+        break;
     }
   }
 
@@ -185,6 +196,7 @@
       onkeydown={async (e) => {
         if (e.key === "Escape") {
           e.preventDefault();
+          e.stopPropagation();
           $commandBar.clearShowing();
           $commandBar = $commandBar;
         } else if (e.key === "Enter") {
@@ -192,11 +204,8 @@
           // If a valid command is in the commandBar, then run it.
           //
           e.preventDefault();
-          const cmd = $commandBar.getCommand(inputVal);
-          if (cmd !== null) {
-            cmd.command();
-            $lastCommand = cmd.name;
-          }
+          e.stopPropagation();
+          cmd = $commandBar.getCommand(inputVal);
 
           //
           // Close the commandBar.
@@ -204,17 +213,15 @@
           await tick();
           $commandBar.clearShowing();
           $commandBar = $commandBar;
-          $skipKey = true;
         }
       }}
       oninput={searchCommands}
       onfocusin={() => {
-        handlekey = false;
         listdis = "";
       }}
       onfocusout={() => {
-        handlekey = true;
         listdis = "list";
+        $kbstate = 4;
       }}
     />
     <div id="ListContainer">
