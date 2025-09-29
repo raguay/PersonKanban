@@ -72,11 +72,11 @@ Just remember, this is beta quality software at the moment. Use at your own risk
 
 # Installing from Releases
 
-You can also download the latest release on the release page. I currently only have a macOS M1/M2/M3 build. It will say that it is from a unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. If you do or have any suggestions, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
+You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from a unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. If you do or have any suggestions, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
 
 # How to Use
 
-Working on it.
+When you first open the program, it will create a default board ready to create lists and items in the lists. The hotkeys list below will guide you to using the program.
 
 # Hot Keys
 

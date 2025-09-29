@@ -28,6 +28,7 @@
   import { metaboardkb } from "./stores/metaboardkb.js";
   import { commandbarkb } from "./stores/commandbarkb.js";
   import { listkb } from "./stores/listkb.js";
+  import { preferencekb } from "./stores/preferencekb.js";
   import * as App from "../wailsjs/go/main/App.js";
   import EditField from "./components/EditField.svelte";
 
@@ -992,7 +993,7 @@
         //
         // Preferences handler.
         //
-        console.log("Window: keyboard state: ");
+        if ($preferencekb !== null) $preferencekb(e);
         break;
       case 10:
         //
