@@ -239,15 +239,20 @@
   async function addNewBoard() {
     await $Kanban.addBoard();
     $Kanban = $Kanban;
+    $boardCursor = $Kanban.boards.length - 1;
   }
+
   async function addNewList() {
     await $Kanban.addList();
     $Kanban = $Kanban;
+    $listCursor = $Kanban.boards[$boardCursor].lists.length - 1;
   }
 
   async function addNewItem() {
     await $Kanban.addItem();
     $Kanban = $Kanban;
+    $itemCursor =
+      $Kanban.boards[$boardCursor].lists[$listCursor].items.length - 1;
   }
 
   async function deleteCurrentBoard() {

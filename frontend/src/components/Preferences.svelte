@@ -16,16 +16,13 @@
 
   onMount(() => {
     //
-    // Clear the keyboardHandler.
-    //
-
-    //
     // Figure the state for displaying preferences.
     //
     // State      Meaning
     // 0          Edit board preferences
     // 1          Edit list preferences
     // 2          Edit item preferences
+    // 3          Edit system preferences
     //
     if ($itemCursor >= 0) {
       prefstate = 2;
@@ -115,10 +112,20 @@
       <ListPref {prefs} {onchange} />
     {:else if prefstate === 2}
       <ItemPref {prefs} {onchange} />
+    {:else if prefstate === 3}
+      <h1>System Preferences</h1>
+      <p>Comming soon...</p>
     {/if}
   {/if}
   <div id="buttonbar">
     <div id="buttons">
+      <button
+        onclick={async () => {
+          prefstate = 3;
+        }}
+      >
+        System
+      </button>
       <button
         onclick={async () => {
           await savePreference();
