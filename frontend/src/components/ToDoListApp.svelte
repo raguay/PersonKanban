@@ -1,13 +1,18 @@
 <script>
   import VimInput from "./VimInput.svelte";
   import EditField from "./EditField.svelte";
+  import { DateTime } from "luxon";
+  import { kbstate } from "../stores/kbstate.js";
+  import { preferences } from "../stores/preferences.js";
 
   let { app = $bindable(), appindex, update, deleteApp } = $props();
 
   let newToDo = $state("");
-  let oldkbhdl = $state(null);
   let focus = $state(() => {});
   let setFocus = $state(false);
+  let originalKBS = 0;
+
+  const dtReg = /\s+\@done\s+\d+\/\d+\/\d+/;
 
   function createNewTodo() {
     app.todos.push({
@@ -25,20 +30,13 @@
 
   function setDone(todo) {
     todo.done = true;
-    var td = new Date();
     todo.description +=
-      " @done " +
-      (td.getMonth() + 1) +
-      "/" +
-      td.getDay() +
-      "/" +
-      td.getFullYear();
+      " @done " + DateTime.now().toFormat($preferences.dateformat);
     update(appindex, app);
   }
 
   function setNotDone(todo) {
     todo.done = false;
-    var dtReg = /\s+\@done\s+\d+\/\d+\/\d+/;
     todo.description = todo.description.replace(dtReg, "");
     update(appindex, app);
   }
@@ -79,8 +77,14 @@
       short={true}
       {focus}
       {setFocus}
-      onfocusin={() => {}}
-      onfocusout={() => {}}
+      onfocusin={() => {
+        originalKBS = $kbstate;
+        $kbstate = 10;
+      }}
+      onfocusout={() => {
+        $kbstate = originalKBS;
+        originalKBS = 0;
+      }}
       oninput={() => {
         createNewTodo();
       }}

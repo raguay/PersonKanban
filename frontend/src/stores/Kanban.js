@@ -13,7 +13,7 @@ const DefaultKanban = {
     selectTabColor: "lightblue",
     selectTabTextColor: "black",
     listcontainercolor: "lightblue",
-    font: '"Fira Code"',
+    font: "Fira Code",
     fontsize: 16,
     dialogBGColor: "lightblue",
     dialogTextColor: "black",

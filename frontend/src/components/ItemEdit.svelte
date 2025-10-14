@@ -3,6 +3,7 @@
   import EditField from "./EditField.svelte";
   import VimInput from "./VimInput.svelte";
   import ToDoListApp from "./ToDoListApp.svelte";
+  import { preferences } from "../stores/preferences.js";
   import { Kanban } from "../stores/Kanban.js";
   import { ctrlKey } from "../stores/ctrlKey.js";
   import { shiftKey } from "../stores/shiftKey.js";
@@ -11,6 +12,8 @@
   import { key } from "../stores/key.js";
   import { itemEditkb } from "../stores/itemEditkb.js";
   import { kbstate } from "../stores/kbstate.js";
+
+  import { DateTime } from "luxon";
 
   let { itemInfo = $bindable(), closeEdit } = $props();
 
@@ -272,23 +275,9 @@
   }
 
   async function createNewTextMsg() {
-    var td = new Date();
-    var tdate =
-      td.getDate() +
-      "/" +
-      (td.getDay().toString().length === 1 ? "0" + td.getDay() : td.getDay()) +
-      "/" +
-      td.getFullYear() +
-      " " +
-      td.getHours() +
-      ":" +
-      (td.getMinutes().toString().length === 1
-        ? "0" + td.getMinutes()
-        : td.getMinutes()) +
-      ":" +
-      (td.getSeconds().toString().length === 1
-        ? "0" + td.getSeconds()
-        : td.getSeconds());
+    var tdate = DateTime.now().toFormat(
+      $preferences.dateformat + " " + $preferences.timeformat,
+    );
     await $Kanban.newItemMsg(
       tdate,
       "text",

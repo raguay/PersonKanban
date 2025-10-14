@@ -41,22 +41,7 @@
   let quickBarOpen = $state(false);
   let copyPref = {
     type: "board",
-    pref: {
-      unselectTabColor: "lightgray",
-      unselectTabTextColor: "black",
-      selectTabColor: "lightblue",
-      selectTabTextColor: "black",
-      listcontainercolor: "lightblue",
-      font: '"Fira Code"',
-      fontsize: 16,
-      dialogBGColor: "lightblue",
-      dialogTextColor: "black",
-      cursorColor: "blue",
-      cursorText: "white",
-      cursorWidth: "10px",
-      commandbarbgcolor: "#9AC2FA",
-      commandbartextcolor: "white",
-    },
+    pref: {},
   };
 
   onMount(async () => {
@@ -75,7 +60,10 @@
     $editItem = false;
     await $Kanban.LoadCurrentKanbanBoards();
     $Kanban = $Kanban;
-
+    copyPref = {
+      type: "board",
+      pref: $Kanban.defaultStyles,
+    };
     //
     // Setup the keyboard handler.
     //
@@ -198,6 +186,42 @@
       "Go To Bottom",
       gotoBottom,
       "### Go To Bottom\n\nGo to the last element of boards, list, or items. The bottom most item in a horizontal list is to the right most position. On a vertical list, it is the bottom most item.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Copy Board Preferences",
+      copyBoardPref,
+      "### Copy Board Preferences\n\nThe board preferences is copied to the buffer.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Copy List Preferences",
+      copyListPref,
+      "### Copy List Preferences\n\nThe list preferences is copied to the buffer.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Copy Item Preferences",
+      copyItemPref,
+      "### Copy Item Preferences\n\nThe item preferences is copied to the buffer.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Paste Board Preferences",
+      pasteBoardPref,
+      "### Paste Board Preferences\n\nThe board preferences that was copied is then pasted into the current board.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Paste List Preferences",
+      pasteListPref,
+      "### Paste List Preferences\n\nThe list preferences that was copied is then pasted into the current list.",
+      "md",
+    );
+    $commandBar.addCommand(
+      "Paste Item Preferences",
+      pasteItemPref,
+      "### Paste Item Preferences\n\nThe item preferences that was copied is then pasted into the current item.",
       "md",
     );
 
@@ -667,20 +691,17 @@
   async function copyBoardPref() {
     copyPref.type = "board";
     copyPref.pref = $Kanban.boards[$boardCursor].styles;
-    await $Kanban.SaveKanbanBoards();
   }
 
   async function copyListPref() {
     copyPref.type = "list";
     copyPref.pref = $Kanban.boards[$boardCursor].lists[$listCursor].styles;
-    await $Kanban.SaveKanbanBoards();
   }
 
   async function copyItemPref() {
     copyPref.type = "item";
     copyPref.pref =
       $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles;
-    await $Kanban.SaveKanbanBoards();
   }
 
   async function pasteBoardPref() {
@@ -1008,7 +1029,11 @@
 />
 
 {#if $Kanban.boards.length > 0}
-  <div id="MainBoard">
+  <div
+    id="MainBoard"
+    style="font-size: {$Kanban.boards[$boardCursor].styles
+      .fontsize}px; font-family: {$Kanban.boards[$boardCursor].styles.font};"
+  >
     <div id="tabs">
       {#if $Kanban.boards.length > 0}
         {#each $Kanban.boards as board, index}
@@ -1088,8 +1113,7 @@
           style="background-color: {$Kanban.boards[$boardCursor].styles
             .unselectTabColor};
                    color: {$Kanban.boards[$boardCursor].styles
-            .unselectTabTextColor};
-                   font-size: 30px; line-height: 20px;"
+            .unselectTabTextColor}; line-height: 20px;"
         >
           +
         </span>

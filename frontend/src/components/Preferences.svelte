@@ -3,6 +3,7 @@
   import BoardPref from "./BoardPref.svelte";
   import ListPref from "./ListPref.svelte";
   import ItemPref from "./ItemPref.svelte";
+  import SystemPref from "./SystemPref.svelte";
   import { boardCursor } from "../stores/boardCursor.js";
   import { listCursor } from "../stores/listCursor.js";
   import { itemCursor } from "../stores/itemCursor.js";
@@ -113,8 +114,7 @@
     {:else if prefstate === 2}
       <ItemPref {prefs} {onchange} />
     {:else if prefstate === 3}
-      <h1>System Preferences</h1>
-      <p>Comming soon...</p>
+      <SystemPref {prefs} {onchange} />
     {/if}
   {/if}
   <div id="buttonbar">

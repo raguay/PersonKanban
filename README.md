@@ -125,8 +125,8 @@ The following is a list of the features I plan to add in no particular order. If
 
 ## My Different Open Source Projects
 
-[EmailIt](https://GitHub.com/raguay/EmailIt)
+[EmailIt](https://github.com/raguay/EmailIt)
 [BullitenBoard](https://github.com/raguay/BulletinBoard)
-[ScriptBar](https://GitHub.com/raguay/scriptbarapp)
+[ScriptBar](https://github.com/raguay/scriptbarapp)
 [Modal File Manager](https://github.com/raguay/ModalFileManager)
 [Personal Kanban](https://github.com/raguay/PersonKanban)
