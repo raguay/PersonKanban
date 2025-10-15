@@ -3,20 +3,24 @@
   import VimInput from "../components/VimInput.svelte";
   import { preferences } from "../stores/preferences.js";
 
-  let { prefs = $bindable(), onchange } = $props();
-  let original = {};
+  let dateformat = "";
+  let timeformat = "";
 
   onMount(() => {
     //
     // Make a copy of the preferences.
     //
-    original = $preferences;
+    dateformat = $preferences.prefs.dateformat;
+    timeformat = $preferences.prefs.timeformat;
 
-    return () => {
+    return async () => {
       //
       // Tell Preferences has been changed.
       //
-      onchange(prefs);
+      $preferences.prefs.dateformat = dateformat;
+      $preferences.prefs.timeformat = timeformat;
+
+      await $preferences.SavePrefs();
     };
   });
 </script>
@@ -26,18 +30,24 @@
   <form>
     <label for="dateformat">Date Format:</label>
     <VimInput
-      bind:value={$preferences.dateformat}
+      bind:value={dateformat}
       show={true}
       short={true}
       setFocus={true}
+      onblur={() => {}}
+      onfocusin={() => {}}
+      onfocusout={() => {}}
     />
     <br />
     <label for="timeformat">Time Format:</label>
     <VimInput
-      bind:value={$preferences.timeformat}
+      bind:value={timeformat}
       show={true}
       short={true}
       setFocus={false}
+      onblur={() => {}}
+      onfocusin={() => {}}
+      onfocusout={() => {}}
     />
   </form>
 </div>
@@ -50,5 +60,8 @@
   form {
     display: flex;
     flex-direction: column;
+  }
+  label {
+    margin-bottom: 10px;
   }
 </style>

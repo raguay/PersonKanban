@@ -276,7 +276,7 @@
 
   async function createNewTextMsg() {
     var tdate = DateTime.now().toFormat(
-      $preferences.dateformat + " " + $preferences.timeformat,
+      $preferences.prefs.dateformat + " " + $preferences.prefs.timeformat,
     );
     await $Kanban.newItemMsg(
       tdate,

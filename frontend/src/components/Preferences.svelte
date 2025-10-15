@@ -14,6 +14,7 @@
   let prefstate = $state(0);
   let original = null;
   let prefs = $state(null);
+  let origssystem = null;
 
   onMount(() => {
     //
@@ -25,7 +26,13 @@
     // 2          Edit item preferences
     // 3          Edit system preferences
     //
-    if ($itemCursor >= 0) {
+    // If the $preferences.system is true, then show the system prefences.
+    //
+    if ($preferences.system) {
+      prefstate = 3;
+      origssystem = $preferences.prefs;
+      console.log("Saving original preferences: ", origssystem);
+    } else if ($itemCursor >= 0) {
       prefstate = 2;
       original =
         $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor]
@@ -60,7 +67,12 @@
     //
     // Undo the changes made.
     //
-    if ($itemCursor >= 0) {
+    if (prefstate === 3) {
+      console.log("Original System Preferences:  ", origssystem);
+      $preferences.prefs = origssystem;
+      $preferences = $preferences;
+      await $preferences.SavePrefs();
+    } else if ($itemCursor >= 0) {
       $Kanban.boards[$boardCursor].lists[$listCursor].items[
         $itemCursor
       ].styles = original;
@@ -74,14 +86,16 @@
   }
 
   async function savePreference() {
-    if ($itemCursor >= 0) {
-      $Kanban.boards[$boardCursor].lists[$listCursor].items[
-        $itemCursor
-      ].styles = prefs;
-    } else if ($listCursor >= 0) {
-      $Kanban.boards[$boardCursor].lists[$listCursor].styles = prefs;
-    } else if ($boardCursor >= 0) {
-      $Kanban.boards[$boardCursor].styles = prefs;
+    if (prefstate !== 3) {
+      if ($itemCursor >= 0) {
+        $Kanban.boards[$boardCursor].lists[$listCursor].items[
+          $itemCursor
+        ].styles = prefs;
+      } else if ($listCursor >= 0) {
+        $Kanban.boards[$boardCursor].lists[$listCursor].styles = prefs;
+      } else if ($boardCursor >= 0) {
+        $Kanban.boards[$boardCursor].styles = prefs;
+      }
     }
     $Kanban = $Kanban;
     await $Kanban.SaveKanbanBoards();
@@ -114,7 +128,7 @@
     {:else if prefstate === 2}
       <ItemPref {prefs} {onchange} />
     {:else if prefstate === 3}
-      <SystemPref {prefs} {onchange} />
+      <SystemPref />
     {/if}
   {/if}
   <div id="buttonbar">

@@ -72,7 +72,7 @@ Just remember, this is beta quality software at the moment. Use at your own risk
 
 # Installing from Releases
 
-You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from a unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. If you do or have any suggestions, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
+You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from a unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. It only save information to the harddrive in the user's home directory. It never deletes anything. If you have any issues or have a suggestion, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
 
 # How to Use
 
@@ -104,6 +104,37 @@ The following are the keyboard assignments and what they do for each mode:
 
 If a number key is pressed before a hot key is pressed, it is stored in the accumulator. When a hot key is pressed, then that action is performed the number of times that the accumulator has stored. For example, if you press '2l', you will move to the 2nd list to the right of the cursor or if no cursors are shown, then to the second board to the right of the current board. Be careful when using this combined with the 'x' or delete key! Pressing '99x' with just the list cursor highlighted will delete all your lists in the current board (Unless you have more than 99 lists)!
 
+# Command Bar Commands
+
+| Command                 | Description                                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Open Preferences        | Opens the preferences for the currently selected item.                                                            |
+| Add a New Board         | Adds a new board to the list of boards.                                                                           |
+| Delete Current Board    | Deletes the currently highlighted board.                                                                          |
+| Delete Current List     | Deletes the currently highlighted list.                                                                           |
+| Delete Current Item     | Deletes the currently highlighted item.                                                                           |
+| Add New List            | Adds a new list to the current board.                                                                             |
+| Add New Item            | Adds a new item to the currently selected list.                                                                   |
+| Open Current Item       | Opens the currently selected item for editing.                                                                    |
+| Move Board Cursor Left  | Moves the board cursor to the left if not on the left most board.                                                 |
+| Move Board Cursor Right | Moves the board cursor to the right if not on the right most board.                                               |
+| Move List Cursor Left   | Moves the list cursor to the left if not on the left most list.                                                   |
+| Move List Cursor Right  | Moves the list cursor to the right if not on the right most list.                                                 |
+| Move Item Cursor Up     | Moves the item cursor up if not on the top most item.                                                             |
+| Move Item Cursor Down   | Moves the item cursor down if not on the bottom most item.                                                        |
+| Quit                    | This command will exit the program.                                                                               |
+| Edit Board Name         | Edit the name of the current board.                                                                               |
+| Edit List Title         | Edit the title of the current list.                                                                               |
+| Go To Top               | Move cursor to the top most item, left most list, or left most board depending on what the cursor is on.          |
+| Go To Bottom            | Move the cursor to the bottom most item, right most list, or right most board depending on what the cursor is on. |
+| Copy Board Preferences  | Makes a copy of the current board's preferences.                                                                  |
+| Copy List Preferences   | Makes a copy of the current list's preferences.                                                                   |
+| Copy Item Preferences   | Makes a copy of the current item's preferences.                                                                   |
+| Paste Board Preferences | Pastes the board's preferences that was copied.                                                                   |
+| Paste List Preferences  | Paste the list's preferences that was copied.                                                                     |
+| Paste Item Preferences  | Paste the item's preferences that was copied.                                                                     |
+| Show System Preferences | Show the system preferences dialog.                                                                               |
+
 # Planned features
 
 The following is a list of the features I plan to add in no particular order. If you have a feature you would like to see, just let me know and I'll add it to the list.
@@ -122,6 +153,7 @@ The following is a list of the features I plan to add in no particular order. If
 - [ ] The ability to change themes and create new themes.
 - [ ] Create a way to do things with Personal Kanban from the command line.
 - [ ] Add documentation on how to use Personal Kanban.
+- [ ] Maybe a TUI
 
 ## My Different Open Source Projects
 

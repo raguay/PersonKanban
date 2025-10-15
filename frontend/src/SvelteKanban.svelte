@@ -64,6 +64,12 @@
       type: "board",
       pref: $Kanban.defaultStyles,
     };
+
+    //
+    // Load the system preferences.
+    //
+    $preferences.LoadPrefs();
+
     //
     // Setup the keyboard handler.
     //
@@ -224,11 +230,19 @@
       "### Paste Item Preferences\n\nThe item preferences that was copied is then pasted into the current item.",
       "md",
     );
+    $commandBar.addCommand(
+      "Show System Preferences",
+      showSystemPreferences,
+      "### Show System Preferences\n\nShow the system preferences dialog.",
+      "md",
+    );
 
     //
     // Load the quickbar registers.
     //
     $registers.loadRegisters();
+
+    return () => {};
   });
 
   function showMetaboards() {
@@ -873,6 +887,11 @@
     moveListCommand(direction);
   }
 
+  function showSystemPreferences() {
+    $preferences.showing = true;
+    $preferences.system = true;
+  }
+
   function myClone(a) {
     return JSON.parse(JSON.stringify(a));
   }
@@ -972,7 +991,6 @@
 
 <svelte:window
   onkeydown={(e) => {
-    console.log("Window: kbstate: ", $kbstate);
     switch ($kbstate) {
       case 0:
         //

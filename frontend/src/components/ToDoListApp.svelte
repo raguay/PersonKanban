@@ -11,6 +11,7 @@
   let focus = $state(() => {});
   let setFocus = $state(false);
   let originalKBS = 0;
+  let editflag = false;
 
   const dtReg = /\s+\@done\s+\d+\/\d+\/\d+/;
 
@@ -25,13 +26,15 @@
   }
 
   function nameChanged() {
+    $kbstate = originalKBS;
+    originalKBS = 0;
     update(appindex, app);
   }
 
   function setDone(todo) {
     todo.done = true;
     todo.description +=
-      " @done " + DateTime.now().toFormat($preferences.dateformat);
+      " @done " + DateTime.now().toFormat($preferences.prefs.dateformat);
     update(appindex, app);
   }
 
@@ -42,6 +45,8 @@
   }
 
   async function editoff() {
+    $kbstate = originalKBS;
+    originalKBS = 0;
     await update(appindex, app);
   }
 
@@ -65,7 +70,22 @@
   }}
 >
   <div class="header">
-    <EditField bind:name={app.name} {nameChanged} {editoff} type={"h2"} />
+    <EditField
+      bind:name={app.name}
+      oninput={nameChanged}
+      edit={editflag}
+      type={"h2"}
+      onfocusin={() => {
+        console.log("Focus in on changing Name");
+        originalKBS = $kbstate;
+        $kbstate = 10;
+      }}
+      onfocusout={() => {
+        console.log("Focus out on the changing name");
+        $kbstate = originalKBS;
+        originalKBS = 0;
+      }}
+    />
     <span class="todographicbackheader" onclick={() => deleteApp(appindex)}
       >❌</span
     >

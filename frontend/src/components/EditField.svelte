@@ -7,9 +7,10 @@
     name = $bindable(),
     edit = $bindable(),
     type = "h2",
-    onfocusout = () => {},
-    oninput = () => {},
-    onblur = () => {},
+    onfocusout,
+    onfocusin,
+    oninput,
+    onblur,
   } = $props();
   let VimInputTheme = $state(null);
 
@@ -44,6 +45,7 @@
       oninput={(val) => {
         nameChanged(val);
       }}
+      {onfocusin}
       {onfocusout}
       {onblur}
     />
