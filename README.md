@@ -28,6 +28,7 @@ It is currently a working Beta project with many of the planned features in plac
 - [How to Use](#how-to-use)
 - [Hot Keys](#hot-keys)
 - [Command Bar Commands](#command-bar-commands)
+- [Quick Bar Usage](#quick-bar-usage)
 - [Planned Features](#planned-features)
 - [My Different Open Source Projects](#my-different-open-source-projects)
 
@@ -137,6 +138,12 @@ These are the commands that can be used in the Command Bar:
 | Paste List Preferences  | Paste the list's preferences that was copied.                                                                     |
 | Paste Item Preferences  | Paste the item's preferences that was copied.                                                                     |
 | Show System Preferences | Show the system preferences dialog.                                                                               |
+
+# Quick Bar Usage
+
+By pressing the space bar, an input dialog is shown where you can add boards, lists, or items based on the cursor. If the cursor isn't shown, then the new items are applied as new boards. If just a list has a cursor, then the new items are added as lists to the current board. If an item is highlighted by a cursor, then new items are added as items to the current list.
+
+If more than one items are separated by ";;", then multiple items are created with the titles given. If items are being added, you can add descriptions by separating the title from the description with a "|".
 
 # Planned features
 
