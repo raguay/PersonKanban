@@ -27,6 +27,7 @@ It is currently a working Beta project with many of the planned features in plac
 - [Installing from Releases](#installing-from-releases)
 - [How to Use](#how-to-use)
 - [Hot Keys](#hot-keys)
+- [Command Bar Commands](#command-bar-commands)
 - [Planned Features](#planned-features)
 - [My Different Open Source Projects](#my-different-open-source-projects)
 
@@ -105,6 +106,8 @@ The following are the keyboard assignments and what they do for each mode:
 If a number key is pressed before a hot key is pressed, it is stored in the accumulator. When a hot key is pressed, then that action is performed the number of times that the accumulator has stored. For example, if you press '2l', you will move to the 2nd list to the right of the cursor or if no cursors are shown, then to the second board to the right of the current board. Be careful when using this combined with the 'x' or delete key! Pressing '99x' with just the list cursor highlighted will delete all your lists in the current board (Unless you have more than 99 lists)!
 
 # Command Bar Commands
+
+These are the commands that can be used in the Command Bar:
 
 | Command                 | Description                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
