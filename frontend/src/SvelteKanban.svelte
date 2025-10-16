@@ -5,6 +5,7 @@
   import QuickBar from "./components/QuickBar.svelte";
   import List from "./components/List.svelte";
   import Preferences from "./components/Preferences.svelte";
+  import EditField from "./components/EditField.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { lastCommand } from "./stores/lastCommand.js";
   import { boardCursor } from "./stores/boardCursor.js";
@@ -30,7 +31,6 @@
   import { listkb } from "./stores/listkb.js";
   import { preferencekb } from "./stores/preferencekb.js";
   import * as App from "../wailsjs/go/main/App.js";
-  import EditField from "./components/EditField.svelte";
 
   let editNameFlag = $state(false);
   let editListName = $state(false);
