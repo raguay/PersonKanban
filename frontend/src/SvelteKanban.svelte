@@ -30,6 +30,7 @@
   import { commandbarkb } from "./stores/commandbarkb.js";
   import { listkb } from "./stores/listkb.js";
   import { preferencekb } from "./stores/preferencekb.js";
+  import { copyBuffer } from "./stores/copyBuffer.js";
   import * as App from "../wailsjs/go/main/App.js";
 
   let editNameFlag = $state(false);
@@ -39,10 +40,6 @@
   let command = null;
   let direction = "";
   let quickBarOpen = $state(false);
-  let copyPref = {
-    type: "board",
-    pref: {},
-  };
 
   onMount(async () => {
     //
@@ -60,7 +57,7 @@
     $editItem = false;
     await $Kanban.LoadCurrentKanbanBoards();
     $Kanban = $Kanban;
-    copyPref = {
+    $copyBuffer = {
       type: "board",
       pref: $Kanban.defaultStyles,
     };
@@ -703,40 +700,40 @@
   }
 
   async function copyBoardPref() {
-    copyPref.type = "board";
-    copyPref.pref = $Kanban.boards[$boardCursor].styles;
+    $copyBuffer.type = "board";
+    $copyBuffer.pref = $Kanban.boards[$boardCursor].styles;
   }
 
   async function copyListPref() {
-    copyPref.type = "list";
-    copyPref.pref = $Kanban.boards[$boardCursor].lists[$listCursor].styles;
+    $copyBuffer.type = "list";
+    $copyBuffer.pref = $Kanban.boards[$boardCursor].lists[$listCursor].styles;
   }
 
   async function copyItemPref() {
-    copyPref.type = "item";
-    copyPref.pref =
+    $copyBuffer.type = "item";
+    $copyBuffer.pref =
       $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor].styles;
   }
 
   async function pasteBoardPref() {
-    if (copyPref.type === "board") {
-      $Kanban.boards[$boardCursor].styles = copyPref.pref;
+    if ($copyBuffer.type === "board") {
+      $Kanban.boards[$boardCursor].styles = $copyBuffer.pref;
       await $Kanban.SaveKanbanBoards();
     }
   }
 
   async function pasteListPref() {
-    if (copyPref.type === "list") {
-      $Kanban.boards[$boardCursor].lists[$listCursor].styles = copyPref.pref;
+    if ($copyBuffer.type === "list") {
+      $Kanban.boards[$boardCursor].lists[$listCursor].styles = $copyBuffer.pref;
       await $Kanban.SaveKanbanBoards();
     }
   }
 
   async function pasteItemPref() {
-    if (copyPref.type === "item") {
+    if ($copyBuffer.type === "item") {
       $Kanban.boards[$boardCursor].lists[$listCursor].items[
         $itemCursor
-      ].styles = copyPref.pref;
+      ].styles = $copyBuffer.pref;
       await $Kanban.SaveKanbanBoards();
     }
   }

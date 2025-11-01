@@ -12,6 +12,7 @@
   import { key } from "../stores/key.js";
   import { itemEditkb } from "../stores/itemEditkb.js";
   import { kbstate } from "../stores/kbstate.js";
+  import { copyBuffer } from "../stores/copyBuffer.js";
 
   import { DateTime } from "luxon";
 
@@ -93,6 +94,20 @@
           // State 0 is the main entry state. Get the command and accumulator values.
           //
           switch ($key) {
+            case "y":
+            case "c":
+              //
+              // Copy something that is here. Get the item with the next keystroke.
+              //
+              keystate = 3;
+              break;
+            case "p":
+            case "v":
+              //
+              // Paste something that is here. Get the item with the next keystroke.
+              //
+              command = pastePrefApp;
+              break;
             case "e":
               //
               // Get the item that needs edited.
@@ -206,6 +221,21 @@
               break;
           }
           break;
+        case 3:
+          //
+          // This case is for copying something in the item.
+          //
+          switch ($key) {
+            case "p":
+              command = copyPref;
+              keystate = 0;
+              break;
+            case "a":
+              command = copyApp;
+              keystate = 0;
+              break;
+          }
+          break;
       }
       if (keystate === 0) {
         //
@@ -255,6 +285,48 @@
     command = null;
     direction = "";
     acc = "";
+  }
+
+  async function pastePrefApp() {
+    //
+    // This will paste either preference or application copied.
+    //
+    if ($copyBuffer.type === "itemPref") {
+      //
+      // Paste the style.
+      //
+      itemInfo.styles = $copyBuffer.pref;
+    } else if ($copyBuffer.type === "itemApp") {
+      //
+      // Paste the app info. This will add an application and not replace information.
+      //
+      itemInfo.apps.push($copyBuffer.pref);
+    }
+    await $Kanban.SaveKanbanBoards();
+  }
+
+  function copyPref() {
+    //
+    // This will copy the preferences.
+    //
+    $copyBuffer.type = "itemPref";
+    $copyBuffer.pref = itemInfo.styles;
+  }
+
+  function copyApp() {
+    //
+    // This will copy the Application data.
+    //
+    let index = getAcc();
+    if (index < 1) {
+      index = 0;
+    } else if (index >= itemInfo.apps.length) {
+      index = itemInfo.apps.length - 1;
+    } else {
+      index--;
+    }
+    $copyBuffer.type = "itemApp";
+    $copyBuffer.pref = itemInfo.apps[index];
   }
 
   function editCardTitle() {
