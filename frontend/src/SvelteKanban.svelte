@@ -269,22 +269,36 @@
   }
 
   async function editBoardName() {
+    //
+    // Allow the user to edit the name
+    // of the current board.
+    //
     await editName($boardCursor);
   }
 
   async function addNewBoard() {
+    //
+    // Create a new board.
+    //
     await $Kanban.addBoard();
     $Kanban = $Kanban;
     $boardCursor = $Kanban.boards.length - 1;
   }
 
   async function addNewList() {
+    //
+    // Add a new list to the current
+    // board.
+    //
     await $Kanban.addList();
     $Kanban = $Kanban;
     $listCursor = $Kanban.boards[$boardCursor].lists.length - 1;
   }
 
   async function addNewItem() {
+    //
+    // Add a new item to the current list.
+    //
     await $Kanban.addItem();
     $Kanban = $Kanban;
     $itemCursor =
@@ -292,6 +306,10 @@
   }
 
   async function deleteCurrentBoard() {
+    //
+    // Wait for the user interface to settle and then perform
+    // the deletion of the current board.
+    //
     await tick();
     await $Kanban.deleteBoard();
     $boardCursor = $boardCursor - 1;
@@ -1248,13 +1266,6 @@
     cursor: pointer;
     user-select: none;
     --wails-draggable: drag;
-  }
-
-  .tab span input[type="text"] {
-    background-color: rgba(255, 255, 255, 0.3);
-    margin: 0px;
-    padding: 0px 8px;
-    border-radius: 10px;
   }
 
   .tabName {
