@@ -361,7 +361,7 @@
     $key = e.key;
 
     //
-    // If skpkey is true, don't process the key.
+    // If skpkey is true, do not process the key.
     //
     if (!$skipKey) {
       processKey(e);
@@ -498,7 +498,6 @@
             break;
 
           case "y":
-          case "c":
             if ($listCursor === -1) {
               command = copyBoardPref;
               $lastCommand = "Copy Current Board Preferences";
@@ -516,7 +515,6 @@
             break;
 
           case "p":
-          case "v":
             if ($listCursor === -1) {
               command = pasteBoardPref;
               $lastCommand = "Paste Current Board Preferences";
@@ -526,6 +524,46 @@
             } else {
               command = pasteItemPref;
               $lastCommand = "Paste Current Item Preferences";
+            }
+            //
+            // Goto the zero state to run the command.
+            //
+            keystate = 0;
+            break;
+
+          case "c":
+            //
+            // Copy the contents of boards, lists, items.
+            //
+            if ($listCursor === -1) {
+              command = copyBoard;
+              $lastCommand = "Copy Current Board";
+            } else if ($itemCursor <= -1) {
+              command = copyList;
+              $lastCommand = "Copy Current List";
+            } else {
+              command = copyItem;
+              $lastCommand = "Copy Current Item";
+            }
+            //
+            // Goto the zero state to run the command.
+            //
+            keystate = 0;
+            break;
+
+          case "v":
+            //
+            // Paste the contents of boards, lists, items.
+            //
+            if ($listCursor === -1) {
+              command = pasteBoard;
+              $lastCommand = "Paste Current Board";
+            } else if ($itemCursor <= -1) {
+              command = pasteList;
+              $lastCommand = "Paste Current List";
+            } else {
+              command = pasteItem;
+              $lastCommand = "Paste Current Item";
             }
             //
             // Goto the zero state to run the command.
@@ -644,7 +682,7 @@
 
           default:
             //
-            // A valid direction wasn't given. Abort the command.
+            // A valid direction was not given. Abort the command.
             //
             clearState();
             break;
@@ -752,6 +790,53 @@
       $Kanban.boards[$boardCursor].lists[$listCursor].items[
         $itemCursor
       ].styles = $copyBuffer.pref;
+      await $Kanban.SaveKanbanBoards();
+    }
+  }
+
+  async function copyBoard() {
+    $copyBuffer.type = "pboard";
+    $copyBuffer.pref = JSON.stringify($Kanban.boards[$boardCursor]);
+  }
+
+  async function copyList() {
+    $copyBuffer.type = "plist";
+    $copyBuffer.pref = JSON.stringify(
+      $Kanban.boards[$boardCursor].lists[$listCursor],
+    );
+  }
+
+  async function copyItem() {
+    console.log("copy an item...");
+    $copyBuffer.type = "pitem";
+    $copyBuffer.pref = JSON.stringify(
+      $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
+    );
+    console.log("copyBuffer: ", $copyBuffer);
+  }
+
+  async function pasteBoard() {
+    if ($copyBuffer.type === "pboard") {
+      $Kanban.boards = $Kanban.boards.concat(JSON.parse($copyBuffer.pref));
+      await $Kanban.SaveKanbanBoards();
+    }
+  }
+
+  async function pasteList() {
+    if ($copyBuffer.type === "plist") {
+      $Kanban.boards[$boardCursor].lists = $Kanban.boards[
+        $boardCursor
+      ].lists.concat(JSON.parse($copyBuffer.pref));
+      await $Kanban.SaveKanbanBoards();
+    }
+  }
+
+  async function pasteItem() {
+    if ($copyBuffer.type === "pitem") {
+      console.log("Pasting an item...");
+      $Kanban.boards[$boardCursor].lists[$listCursor].items = $Kanban.boards[
+        $boardCursor
+      ].lists[$listCursor].items.concat(JSON.parse($copyBuffer.pref));
       await $Kanban.SaveKanbanBoards();
     }
   }
@@ -870,7 +955,7 @@
         }
 
         //
-        // Make sure it's in the boundaries.
+        // Make sure its in the boundaries.
         //
         if (newlistindex < 0) newlistindex = 0;
         if ($Kanban.boards[$boardCursor].lists.length - 1 < newlistindex)
@@ -1001,6 +1086,12 @@
 
   async function quit() {
     await App.Quit();
+  }
+
+  async function saveboard() {
+    console.log("savebord: ", $Kanban);
+    $Kanban = $Kanban;
+    await $Kanban.SaveKanbanBoards();
   }
 </script>
 
@@ -1166,6 +1257,7 @@
               editListItem={$listCursor === index ? $editItem : false}
               editListName={$listCursor === index ? editListName : false}
               {editoff}
+              {saveboard}
             />
           {/each}
         {/if}

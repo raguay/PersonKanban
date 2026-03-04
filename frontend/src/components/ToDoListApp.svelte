@@ -15,33 +15,33 @@
 
   const dtReg = /\s+\@done\s+\d+\/\d+\/\d+/;
 
-  function createNewTodo() {
+  async function createNewTodo() {
     app.todos.push({
       description: newToDo,
       done: false,
     });
     newToDo = "";
-    update();
+    await update();
     focus();
   }
 
-  function nameChanged() {
+  async function nameChanged() {
     $kbstate = originalKBS;
     originalKBS = 0;
-    update(appindex, app);
+    await update(appindex, app);
   }
 
-  function setDone(todo) {
+  async function setDone(todo) {
     todo.done = true;
     todo.description +=
       " @done " + DateTime.now().toFormat($preferences.prefs.dateformat);
-    update(appindex, app);
+    await update(appindex, app);
   }
 
-  function setNotDone(todo) {
+  async function setNotDone(todo) {
     todo.done = false;
     todo.description = todo.description.replace(dtReg, "");
-    update(appindex, app);
+    await update(appindex, app);
   }
 
   async function editoff() {

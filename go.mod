@@ -1,12 +1,10 @@
 module changeme
 
-go 1.24.0
-
-toolchain go1.24.1
+go 1.25
 
 require (
 	github.com/google/go-github/v49 v49.1.0
-	github.com/wailsapp/wails/v2 v2.10.2
+	github.com/wailsapp/wails/v2 v2.11.0
 )
 
 require (

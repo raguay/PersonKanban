@@ -9,7 +9,8 @@
   import { kbstate } from "../stores/kbstate.js";
   import { listkb } from "../stores/listkb.js";
 
-  let { boardcur, listcur, editListItem, editListName, editoff } = $props();
+  let { boardcur, listcur, editListItem, editListName, editoff, saveboard } =
+    $props();
 
   let listDiv = $state(null);
   let localNameEdit = $state(false);
@@ -35,7 +36,7 @@
     if (!editItem && !localNameEdit) {
       if (editing) {
         editing = false;
-        $Kanban.SaveKanbanBoards();
+        saveboard();
         localeditoff();
       }
     } else {
@@ -147,9 +148,15 @@
     </div>
     <div class="itemcontainer">
       {#if $Kanban.boards[boardcur].lists[listcur].items.length !== 0}
-        {#each $Kanban.boards[boardcur].lists[listcur].items as item, itemindex}
+        {#each $Kanban.boards[boardcur].lists[listcur].items as item, itemindex (itemindex)}
           {#if item !== null}
-            <Item itemInfo={item} listindex={listcur} {itemindex} {editoff} />
+            <Item
+              items={$Kanban.boards[boardcur].lists[listcur].items}
+              listindex={listcur}
+              {itemindex}
+              {editoff}
+              {saveboard}
+            />
           {/if}
         {/each}
       {/if}

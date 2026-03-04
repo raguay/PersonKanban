@@ -4,11 +4,11 @@
   import { listCursor } from "../stores/listCursor.js";
   import { editItem } from "../stores/editItem.js";
 
-  let { itemInfo = $bindable(), itemindex, listindex, editoff } = $props();
+  let { items, itemindex, listindex, editoff, saveboard } = $props();
 
   let itemDiv = $state(null);
 
-  $effect.pre(() => {
+  $effect.pre(async () => {
     //
     // Make sure the cursor is fully visible by scrolling.
     //
@@ -36,17 +36,18 @@
   }
 </script>
 
-{#if itemInfo !== null}
+{#if items[itemindex] !== null}
   <div
     class="item"
-    style="background-color: {itemInfo.styles.itembgcolor}; color: {itemInfo
-      .styles.itemtextcolor}; border-width: {$itemCursor === itemindex &&
+    style="background-color: {items[itemindex].styles
+      .itembgcolor}; color: {items[itemindex].styles
+      .itemtextcolor}; border-width: {$itemCursor === itemindex &&
     $listCursor === listindex
-      ? itemInfo.styles.cursorWidth
+      ? items[itemindex].styles.cursorWidth
       : '5px'}; border-color: {$itemCursor === itemindex &&
     $listCursor === listindex
-      ? itemInfo.styles.cursorColor
-      : itemInfo.styles.itembgcolor};"
+      ? items[itemindex].styles.cursorColor
+      : items[itemindex].styles.itembgcolor};"
     ondblclick={editItemCommand}
     bind:this={itemDiv}
     onclick={() => {
@@ -54,14 +55,15 @@
       $listCursor = listindex;
     }}
   >
-    <h2>{itemInfo.name}</h2>
-    <p>{itemInfo.description}</p>
-    {#if $itemCursor === itemindex && $listCursor === listindex && $editItem}
+    <h2>{items[itemindex].name}</h2>
+    <p>{items[itemindex].description}</p>
+    {#if $itemCursor === itemindex && $listCursor === listindex && $editItem && items[itemindex] !== null}
       <ItemEdit
-        {itemInfo}
+        itemInfo={items[itemindex]}
         closeEdit={() => {
           editoff();
         }}
+        {saveboard}
       />
     {/if}
   </div>

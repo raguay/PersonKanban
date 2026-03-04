@@ -16,14 +16,13 @@
 
   import { DateTime } from "luxon";
 
-  let { itemInfo = $bindable(), closeEdit } = $props();
+  let { itemInfo = $bindable(), closeEdit, saveboard } = $props();
 
   let newMsg = $state("");
   let applications = [];
   let handlekey = true;
   let keystate = 0;
   let acc = "";
-  let direction = "";
   let command = null;
   let editDialogDiv = null;
   let msgfocus = $state(() => {});
@@ -34,6 +33,7 @@
   let itemCon = $state(null);
 
   onMount(async () => {
+    console.log("Mount: ", itemInfo);
     //
     // Set the itemEditkb handler.
     //
@@ -53,8 +53,10 @@
     //
     // Focus the dialog and not a particular input.
     //
-    await tick();
-    editDialogDiv.focus();
+    if (editDialogDiv !== null) {
+      await tick();
+      editDialogDiv.focus();
+    }
 
     return () => {
       //
@@ -68,7 +70,7 @@
     //
     // Put in the original handler.
     //
-    await $Kanban.SaveKanbanBoards();
+    await saveboard();
     $kbstate = 0;
     closeEdit();
   }
@@ -160,37 +162,6 @@
           }
           break;
         case 1:
-          //
-          // This case is for getting the direction for a command.
-          //
-          switch ($key) {
-            case "h":
-              keystate = 0;
-              direction = "l";
-              break;
-
-            case "k":
-              keystate = 0;
-              direction = "u";
-              break;
-
-            case "j":
-              direction = "d";
-              keystate = 0;
-              break;
-
-            case "l":
-              direction = "r";
-              keystate = 0;
-              break;
-
-            default:
-              //
-              // A valid direction wasn't given. Abort the command.
-              //
-              clearState();
-              break;
-          }
           break;
 
         case 2:
@@ -283,7 +254,6 @@
     //
     keystate = 0;
     command = null;
-    direction = "";
     acc = "";
   }
 
@@ -302,7 +272,7 @@
       //
       itemInfo.apps.push($copyBuffer.pref);
     }
-    await $Kanban.SaveKanbanBoards();
+    await saveboard();
   }
 
   function copyPref() {
@@ -346,18 +316,22 @@
     msgfocus();
   }
 
-  async function createNewTextMsg() {
+  async function createTextMsgString(msg) {
     var tdate = DateTime.now().toFormat(
       $preferences.prefs.dateformat + " " + $preferences.prefs.timeformat,
     );
     await $Kanban.newItemMsg(
       tdate,
       "text",
-      typeof newMsg !== "undefined" ? newMsg : "",
+      typeof msg !== "undefined" ? msg : "",
     );
+    await saveboard();
+    itemInfo = itemInfo;
+  }
+
+  async function createNewTextMsg() {
+    await createTextMsgString(newMsg);
     newMsg = "";
-    $Kanban = $Kanban;
-    blurMsg();
   }
 
   async function createToDoList() {
@@ -367,17 +341,22 @@
       styles: {},
       todos: [],
     });
+    await saveboard();
     $Kanban = $Kanban;
     itemInfo = itemInfo;
   }
 
   async function deleteApp(ind) {
     await $Kanban.deleteApp(ind);
+    await saveboard();
     $Kanban = $Kanban;
+    itemInfo = itemInfo;
   }
 
   async function appUpdate(appindex, app) {
     await $Kanban.appUpdate(appindex, app);
+    await saveboard();
+    itemInfo = itemInfo;
   }
 
   function exitEF() {
@@ -388,112 +367,114 @@
   }
 </script>
 
-<div class="editDialogBG">
-  <div
-    class="editDialog"
-    style="background-color: {itemInfo.styles.dialogBGColor}; color: {itemInfo
-      .styles.dialogTextColor};"
-    bind:this={editDialogDiv}
-  >
-    <EditField
-      bind:name={itemInfo.name}
-      bind:edit={editTitle}
-      type={"h2"}
-      oninput={() => {
-        exitEF();
-      }}
-      onblur={() => {
-        exitEF();
-      }}
-      onfocusout={() => {
-        exitEF();
-      }}
-    />
-    <EditField
-      bind:name={itemInfo.description}
-      bind:edit={editDesc}
-      type={"p"}
-      oninput={() => {
-        exitEF();
-      }}
-      onblur={() => {
-        exitEF();
-      }}
-      onfocusout={() => {
-        exitEF();
-      }}
-      setFocus={false}
-    />
-    <div class="itemContainer" bind:this={itemCon}>
-      {#each itemInfo.apps as app, appindex}
-        <ToDoListApp {app} {appindex} update={appUpdate} {deleteApp} />
-      {/each}
-      <div class="appButtons">
-        <button
-          onclick={async () => {
-            await createToDoList();
-          }}>Todo List</button
-        >
-      </div>
-      <div class="newMsg">
-        <h2 style="margin: 5px;">Create a Message:</h2>
-        <VimInput
-          bind:value={newMsg}
-          show={true}
-          short={true}
-          setFocus={editMessage}
-          bind:blur={blurMsg}
-          bind:focus={msgfocus}
-          onfocusin={() => {
-            editMessage = true;
-            editTitle = false;
-            editDesc = false;
-            $itemEditkb = null;
-            msgfocus();
-          }}
-          onfocusout={() => {
-            editMessage = false;
-            exitEF();
-          }}
-          oninput={() => {
-            createNewTextMsg();
-            editMessage = false;
-            exitEF();
-          }}
-        />
-      </div>
-
-      <div class="buttonRow">
-        <button
-          onclick={() => {
-            closeItemEdit();
-          }}>Save</button
-        >
-      </div>
-      {#if itemInfo.notes.length !== 0}
-        {#each itemInfo.notes as note}
-          <div class="note">
-            <div class="noteHeader">
-              <p class="noteDate">{note.date}</p>
-              <!-- svelte-ignore a11y_mouse_events_have_key_events a11y_no_static_element_interactions -->
-              <span
-                class="noteAction"
-                onclick={() => {
-                  navigator.clipboard.writeText(note.info);
-                }}
-              >
-                📋️
-              </span>
-            </div>
-            {#if note.type === "text"}
-              <p class="noteText">{note.info}</p>
-            {/if}
-          </div>
+{#if typeof itemInfo === "object"}
+  <div class="editDialogBG">
+    <div
+      class="editDialog"
+      style="background-color: {itemInfo.styles.dialogBGColor}; color: {itemInfo
+        .styles.dialogTextColor};"
+      bind:this={editDialogDiv}
+    >
+      <EditField
+        bind:name={itemInfo.name}
+        bind:edit={editTitle}
+        type={"h2"}
+        oninput={() => {
+          exitEF();
+        }}
+        onblur={() => {
+          exitEF();
+        }}
+        onfocusout={() => {
+          exitEF();
+        }}
+      />
+      <EditField
+        bind:name={itemInfo.description}
+        bind:edit={editDesc}
+        type={"p"}
+        oninput={() => {
+          exitEF();
+        }}
+        onblur={() => {
+          exitEF();
+        }}
+        onfocusout={() => {
+          exitEF();
+        }}
+        setFocus={false}
+      />
+      <div class="itemContainer" bind:this={itemCon}>
+        {#each itemInfo.apps as app, appindex}
+          <ToDoListApp {app} {appindex} update={appUpdate} {deleteApp} />
         {/each}
-      {/if}
+        <div class="appButtons">
+          <button
+            onclick={async () => {
+              await createToDoList();
+            }}>Todo List</button
+          >
+        </div>
+        <div class="newMsg">
+          <h2 style="margin: 5px;">Create a Message:</h2>
+          <VimInput
+            bind:value={newMsg}
+            show={true}
+            short={true}
+            setFocus={editMessage}
+            bind:blur={blurMsg}
+            bind:focus={msgfocus}
+            onfocusin={() => {
+              editMessage = true;
+              editTitle = false;
+              editDesc = false;
+              $itemEditkb = null;
+              msgfocus();
+            }}
+            onfocusout={() => {
+              editMessage = false;
+              exitEF();
+            }}
+            oninput={() => {
+              createNewTextMsg();
+              editMessage = false;
+              exitEF();
+            }}
+          />
+        </div>
+
+        <div class="buttonRow">
+          <button
+            onclick={() => {
+              closeItemEdit();
+            }}>Save</button
+          >
+        </div>
+        {#if itemInfo.notes.length !== 0}
+          {#each itemInfo.notes as note}
+            <div class="note">
+              <div class="noteHeader">
+                <p class="noteDate">{note.date}</p>
+                <!-- svelte-ignore a11y_mouse_events_have_key_events a11y_no_static_element_interactions -->
+                <span
+                  class="noteAction"
+                  onclick={() => {
+                    navigator.clipboard.writeText(note.info);
+                  }}
+                >
+                  📋️
+                </span>
+              </div>
+              {#if note.type === "text"}
+                <p class="noteText">{note.info}</p>
+              {/if}
+            </div>
+          {/each}
+        {/if}
+      </div>
     </div>
   </div>
-</div>
+{/if}
 
 <style>
   .appButtons {
