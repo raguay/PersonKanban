@@ -21,7 +21,7 @@
       done: false,
     });
     newToDo = "";
-    await update();
+    await update(appindex, app);
     focus();
   }
 
@@ -44,20 +44,13 @@
     await update(appindex, app);
   }
 
-  async function editoff() {
-    $kbstate = originalKBS;
-    originalKBS = 0;
-    await update(appindex, app);
-  }
-
   async function deleteTodo(todoindex) {
     app.todos.splice(todoindex, 1);
     await update(appindex, app);
   }
 
   async function editTodo(todoindex) {
-    let desc = app.todos[todoindex].description;
-    newToDo = desc;
+    newToDo = app.todos[todoindex].description;
     await deleteTodo(todoindex);
   }
 </script>
@@ -76,12 +69,10 @@
       edit={editflag}
       type={"h2"}
       onfocusin={() => {
-        console.log("Focus in on changing Name");
         originalKBS = $kbstate;
         $kbstate = 10;
       }}
       onfocusout={() => {
-        console.log("Focus out on the changing name");
         $kbstate = originalKBS;
         originalKBS = 0;
       }}
