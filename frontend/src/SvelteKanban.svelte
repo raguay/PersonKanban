@@ -47,6 +47,15 @@
     // Load the metaboards.
     //
     await $metaboard.loadMetaBoards();
+    await window.runtime.WindowSetPosition(
+      $metaboard.savedstate.x,
+      $metaboard.savedstate.y,
+    );
+    await window.runtime.WindowSetSize(
+      $metaboard.savedstate.width,
+      $metaboard.savedstate.height,
+    );
+    $metaboard.setCursor($metaboard.savedstate.mboard);
 
     //
     // Load the default board information from the harddrive.
@@ -807,12 +816,10 @@
   }
 
   async function copyItem() {
-    console.log("copy an item...");
     $copyBuffer.type = "pitem";
     $copyBuffer.pref = JSON.stringify(
       $Kanban.boards[$boardCursor].lists[$listCursor].items[$itemCursor],
     );
-    console.log("copyBuffer: ", $copyBuffer);
   }
 
   async function pasteBoard() {
@@ -833,7 +840,6 @@
 
   async function pasteItem() {
     if ($copyBuffer.type === "pitem") {
-      console.log("Pasting an item...");
       $Kanban.boards[$boardCursor].lists[$listCursor].items = $Kanban.boards[
         $boardCursor
       ].lists[$listCursor].items.concat(JSON.parse($copyBuffer.pref));
@@ -1089,7 +1095,6 @@
   }
 
   async function saveboard() {
-    console.log("savebord: ", $Kanban);
     $Kanban = $Kanban;
     await $Kanban.SaveKanbanBoards();
   }
@@ -1242,6 +1247,17 @@
           +
         </span>
       </div>
+      <div
+        class="boardName"
+        style="background-color: {$metaboard.styles.background};
+               color: {$metaboard.styles.textcolor}; 
+               border: {$metaboard.styles.bordercolor} solid {$metaboard.styles
+          .borderwidth};"
+      >
+        {#if $metaboard.loaded}
+          {$metaboard.metaboards[$metaboard.getCursor()].name}
+        {/if}
+      </div>
     </div>
     {#if $Kanban.boards.length > 0}
       <div
@@ -1304,7 +1320,7 @@
     height: 100vh;
     user-select: none;
     overflow: hidden;
-    background-color: argba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
     border-radius: 10px;
     border: solid 0px transparent;
   }
@@ -1366,6 +1382,18 @@
     margin: 0px 5px 5px 5px;
     padding: 0px;
     white-space: nowrap;
+  }
+
+  .boardName {
+    border: 10px solid black;
+    line-height: 20px;
+    border-radius: 20px;
+    height: 1em;
+    padding: 6px;
+    cursor: default;
+    user-select: none;
+    margin-left: auto;
+    margin-right: 0px;
   }
 
   #addList {

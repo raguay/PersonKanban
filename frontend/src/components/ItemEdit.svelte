@@ -364,6 +364,8 @@
     $itemEditkb = KeyboardHandler;
     editTitle = false;
     editDesc = false;
+    editMessage = false;
+    msgfocus();
   }
 </script>
 
@@ -437,7 +439,6 @@
             }}
             oninput={() => {
               createNewTextMsg();
-              editMessage = false;
               exitEF();
             }}
           />

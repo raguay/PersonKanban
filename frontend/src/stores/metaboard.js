@@ -5,17 +5,40 @@ export const metaboard = writable({
   showing: false,
   metaboards: [],
   cursor: 0,
+  loaded: false,
+  styles: {
+    background: "#9AC2FA",
+    textcolor: "blue",
+    bordercolor: "blue",
+    borderwidth: "3px",
+  },
+  savedstate: {
+    x: 0,
+    y: 0,
+    width: 400,
+    height: 400,
+    mboard: 0,
+  },
   getCursor: function () {
     return this.cursor;
   },
-  incCursor: function () {
+  setCursor: async function (ncursor) {
+    this.savedstate.mboard = ncursor;
+    this.cursor = ncursor;
+    await this.savemetaconfig();
+  },
+  incCursor: async function () {
     this.cursor = this.cursor + 1;
     if (this.cursor >= this.metaboards.length)
       this.cursor = this.metaboards.length - 1;
+    this.savedstate.mboard = this.cursor;
+    await this.savemetaconfig();
   },
-  decCursor: function () {
+  decCursor: async function () {
     this.cursor = this.cursor - 1;
     if (this.cursor < 0) this.cursor = 0;
+    this.savedstate.mboard = this.cursor;
+    await this.savemetaconfig();
   },
   setShowing: function () {
     this.showing = true;
@@ -38,6 +61,7 @@ export const metaboard = writable({
         loc: loc,
       });
       await this.saveMetaBoards();
+      await this.savemetaconfig();
     }
   },
   getmetaboard: function (name) {
@@ -60,6 +84,7 @@ export const metaboard = writable({
     //
     this.metaboards = this.metaboards.filter((item) => item.name !== name);
     await this.saveMetaBoards();
+    await this.savemetaconfig();
   },
   loadMetaBoards: async function () {
     const hdir = await App.GetHomeDir();
@@ -67,7 +92,7 @@ export const metaboard = writable({
     const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
     const kanbanfile = await App.AppendPath(kbcnfgdir, "kanban.json");
     const metafile = await App.AppendPath(kbcnfgdir, "metaboards.json");
-    this.cursor = 0;
+    const metaconfig = await App.AppendPath(kbcnfgdir, "config.json");
     if (!(await App.DirExists(kbcnfgdir))) {
       //
       // The directory exist, so read the config file.
@@ -92,7 +117,37 @@ export const metaboard = writable({
         },
       ];
     }
-    await this.saveMetaBoards();
+    //
+    // load the meta configuration.
+    //
+    if (await App.FileExists(metaconfig)) {
+      //
+      // The config file exits, read it in.
+      //
+      const metaconfigfile = JSON.parse(await App.ReadFile(metaconfig));
+      this.styles = metaconfigfile.styles;
+      this.savedstate = metaconfigfile.state;
+      this.cursor = metaconfigfile.state.mboard;
+    } else {
+      //
+      // File doesn't exist, create it.
+      //
+      await this.savemetaconfig();
+    }
+    this.loaded = true;
+  },
+  savemetaconfig: async function () {
+    const hdir = await App.GetHomeDir();
+    const configdir = await App.AppendPath(hdir, ".config");
+    const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
+    const metaconfig = await App.AppendPath(kbcnfgdir, "config.json");
+    await App.WriteFile(
+      metaconfig,
+      JSON.stringify({
+        styles: this.styles,
+        state: this.savedstate,
+      }),
+    );
   },
   saveMetaBoards: async function () {
     const hdir = await App.GetHomeDir();
@@ -100,5 +155,6 @@ export const metaboard = writable({
     const kbcnfgdir = await App.AppendPath(configdir, "PersonKanban");
     const metafile = await App.AppendPath(kbcnfgdir, "metaboards.json");
     await App.WriteFile(metafile, JSON.stringify(this.metaboards));
+    await this.savemetaconfig();
   },
 });

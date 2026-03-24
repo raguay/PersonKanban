@@ -95,13 +95,13 @@
 
         case "j":
         case "ArrowDown":
-          $metaboard.incCursor();
+          await $metaboard.incCursor();
           $metaboard = $metaboard;
           break;
 
         case "k":
         case "ArrowUp":
-          $metaboard.decCursor();
+          await $metaboard.decCursor();
           $metaboard = $metaboard;
           break;
 
@@ -146,17 +146,17 @@
     $metaboard.metaboards = $metaboard.metaboards.filter((item, key) => {
       if (key !== cur) return item;
     });
-    await $metaboard.saveMetaBoards();
     if ($metaboard.cursor == cur) {
       $metaboard.cursor = $metaboard.cursor - 1;
       if ($metaboard.cursor < 0) $metaboard.cursor = 0;
       await gotoMetaBoard($metaboard.cursor);
     }
+    await $metaboard.saveMetaBoards();
     $metaboard = $metaboard;
   }
 
   async function gotoMetaBoard(brdcursor) {
-    $metaboard.cursor = brdcursor;
+    await $metaboard.setCursor(brdcursor);
     if (await App.FileExists($metaboard.metaboards[brdcursor].loc)) {
       //
       // The file is there. Therefore, read it an apply it.
@@ -171,6 +171,7 @@
       await cmd.command();
     }
     $metaboard.clearShowing();
+    await $metaboard.saveMetaBoards();
     $Kanban = $Kanban;
     $boardCursor = 0;
     $listCursor = -1;

@@ -67,7 +67,7 @@ const DefaultKanban = {
           text: this.boards[bcur].styles.VimInputVisualText,
         },
       ],
-    }
+    };
   },
   SaveKanbanBoards: async function () {
     const mtboard = get(metaboard);

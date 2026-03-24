@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	goruntime "runtime"
@@ -29,6 +31,26 @@ type GitHubRepos struct {
 	Description string `json:"description"`
 }
 
+type Style struct {
+	Background  string `json:"background"`
+	Textcolor   string `json:"textcolor"`
+	Bordercolor string `json:"bordercolor"`
+	Borderwidth string `json:"borderwidth"`
+}
+
+type State struct {
+	X      int `json:"x"`
+	Y      int `json:"y"`
+	Width  int `json:"width"`
+	Height int `json:"height"`
+	Mboard int `json:"mboard"`
+}
+
+type Config struct {
+	Styles     Style `json:"styles"`
+	Savedstate State `json:"state"`
+}
+
 // App struct
 type App struct {
 	ctx context.Context
@@ -42,8 +64,13 @@ func NewApp() *App {
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
-func (a *App) startup(ctx context.Context) {
-	a.ctx = ctx
+func (b *App) startup(ctx context.Context) {
+	b.ctx = ctx
+}
+
+func (b *App) shutdown(ctx context.Context) {
+	b.ctx = ctx
+	b.Quit()
 }
 
 func (b *App) GetExecutable() string {
@@ -82,7 +109,7 @@ func (b *App) GetHomeDir() string {
 
 func (b *App) WriteFile(path string, data string) {
 	b.err = ""
-	err := os.WriteFile(path, []byte(data), 0666)
+	err := os.WriteFile(path, []byte(data), 0o666)
 	if err != nil {
 		b.err = err.Error()
 	}
@@ -114,7 +141,7 @@ func (b *App) SplitFile(path string) FileParts {
 
 func (b *App) MakeDir(path string) {
 	b.err = ""
-	err := os.MkdirAll(path, 0755)
+	err := os.MkdirAll(path, 0o755)
 	if err != nil {
 		b.err = err.Error()
 	}
@@ -179,6 +206,43 @@ func (b *App) AppendPath(dir string, name string) string {
 }
 
 func (b *App) Quit() {
+	//
+	// Get the size and position of the app and save to the config file.
+	//
+	hdir := b.GetHomeDir()
+	configpath := b.AppendPath(b.AppendPath(b.AppendPath(hdir, ".config"), "PersonKanban"), "config.json")
+	content := b.ReadFile(configpath)
+
+	// Now let's unmarshall the data into `payload`
+	var cstate Config
+	err := json.Unmarshal([]byte(content), &cstate)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+
+	//
+	// Get the new values for the program size and placement.
+	//
+	nwidth, nheight := wailsruntime.WindowGetSize(b.ctx)
+	cstate.Savedstate.Width = nwidth
+	cstate.Savedstate.Height = nheight
+	nx, ny := wailsruntime.WindowGetPosition(b.ctx)
+	cstate.Savedstate.X = nx
+	cstate.Savedstate.Y = ny
+
+	//
+	// Save the file  again.
+	//
+	jsonbyte, err2 := json.Marshal(cstate)
+	jsonString := string(jsonbyte)
+	if err2 != nil {
+		log.Fatal("Error in marshal json struct: ", err2)
+	}
+	b.WriteFile(configpath, jsonString)
+
+	//
+	// Quit the program.
+	//
 	wailsruntime.Quit(b.ctx)
 }
 

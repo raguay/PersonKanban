@@ -158,10 +158,11 @@ The following is a list of the features I plan to add in no particular order. If
 - [x] A quick entry ability to quickly add different items. - done
 - [x] Copying and pasting board or list setups to a new board or list.
 - [x] The ability to load themes from a GitHub repository and changing or creating themes.
-- [ ] Add drag and drop with the mouse.
+- [x] Saving of new window size, position, and last metaboard visited.
 - [x] Add keyboard hotkeys for editing an item. Currently you have to use the mouse and double click on things to add them. - done
-- [ ] Add more apps for items. Currently there is only a todo list app.
 - [x] Command bar to see commands and actioning them. - done It is called the QuickBar.
+- [ ] Add more apps for items. Currently there is only a todo list app.
+- [ ] Add drag and drop with the mouse.
 - [ ] The ability for the user to add new commands and themes. Downloading commands from GitHub as well.
 - [ ] The ability to change themes and create new themes.
 - [ ] Create a way to do things with Personal Kanban from the command line.
