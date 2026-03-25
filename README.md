@@ -3,11 +3,17 @@
 
 # PersonKanban
 
-A lightweight personal Kanban board for everyday use.
+A lightweight personal Kanban board for everyday use. It is built around the ideal that you want to only (or mostly) use the keyboard. While there are some controls that are clickable for using them (such as double clicking on a title of a list will edit that title. Or, double clicking on an item will open it for editing.), it was designed from the ground up to be a fully keyboard driven kanban board. The hotkey system is very similar to the modal editing found in vim/neovim. While the actual keys used are hard coded right now, I do have a future plan to make them modifiable. There are many things I have plans for that I am looking for time to implement.
+
+While I do call it a kanban board, I do know that it doesn't work by the actual definition of a kanban board. Therefore, please don't flame me that it isn't a kanban boaard. It is my interpretation of it and has worked quite well for me for several years now. If you don't like something, let me know in the discussion boards of this repo and I might work on it when I have time. Or, fork this repo, make the edits, and submit a pull request. I would love and accept help in making this program more usable.
+
+The program looks like this:
 
 ![Personal Kanban](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban.webp)
 
-You also can create, delete, and navigate around collections of boards call MetaBoards.
+Along the top of the programs is the list of boards. The highlighted tab shows is the currently open board in the rest of the screen. Each board has as many lists as you would like to have. Also, each list has as many items as you want to add to them.
+
+You can create, delete, and navigate around collections of boards call MetaBoards. The ideal is that each board collection, or metaboard, represents different projects or responsibilities.
 
 ![Personal Kanban MetaBoards](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-2.webp)
 
@@ -19,7 +25,9 @@ There is also a QuickBar to quickly add new items like boards, lists, and items.
 
 ![Personal Kanban QuickBar](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-4.webp)
 
-It is currently a working Beta project with many of the planned features in place. I am currently using it daily to track my projects and bugs. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
+The QuickBar can create a single or multiple objects like the currently highlighted object. For example, if you want to quickly add several lists to a board, you can separate each list name with `;;` (two semi-colons) as in: `Ideas;;Bugs;;Working;;Done`. When you press `Enter` the four lists will be created. If you are on an empty board, just press the `j` key like you were going to navigate down to one and then open the QuickBar to add the new lists. The quick bar also has the ability to store several prompts for it into a single letter name or easy recall in a different project.
+
+It is very stable project with many of the planned features in place. I am currently using it daily to track my programming projects, churches (I'm a missionary in Thailand), schedules, events, bugs, and anything you would make a todo list to track. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
 
 # Table of Contents
 
@@ -47,20 +55,12 @@ wails dev
 or you can use the Maskfile to run [Mask](https://github.com/jacobdeichert/mask) scripts:
 
 ```sh
-rm -R build
-mkdir build
-cp image/appicon.png build
-
 mask dev
 ```
 
 To run the developmental environment. To make a full binary build, you need to run:
 
 ```sh
-rm -R build
-mkdir build
-cp image/appicon.png build
-
 wails build
 ```
 
@@ -70,11 +70,13 @@ I recommend that you can use the Maskfile to run [Mask](https://github.com/jacob
 mask build
 ```
 
-Just remember, this is beta quality software at the moment. Use at your own risk. Also, the mask build currently creates a universal build on macOS. I haven't built and tried this software on any other platform. It should work as is on Linux, but I haven't really tried it yet.
+Just remember, this is not high quality commercial software that you would pay for at the moment (though it is my goal). It is a labor of love that I work on as I can. Use at your own risk. I can not be held responsible for any loss of files, disk damage, etc. As far as I know, Personal Kanban isn't able to cause these things to happen.
+
+The mask build currently creates a universal build on macOS. I haven't built and tried this software on any other platform. It should work as is on Linux, but I haven't really tried it yet. I just haven't had the time to do it. If you would like to contribute executeables for other systems, let me know and I can add them to the Releases.
 
 # Installing from Releases
 
-You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from a unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. It only save information to the harddrive in the user's home directory. It never deletes anything. If you have any issues or have a suggestion, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
+You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from an unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. It only saves information to the harddrive in the user's home directory. It never deletes anything. If you have any issues or have a suggestion, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
 
 # How to Use
 
@@ -144,7 +146,7 @@ These are the commands that can be used in the Command Bar:
 
 # Quick Bar Usage
 
-By pressing the space bar, an input dialog is shown where you can add boards, lists, or items based on the cursor. If the cursor isn't shown, then the new items are applied as new boards. If just a list has a cursor, then the new items are added as lists to the current board. If an item is highlighted by a cursor, then new items are added as items to the current list.
+By pressing the space bar, an input dialog is shown where you can add boards, lists, or items based on the cursor. If the cursor isn't shown (the cursor is the highlighting around a list or item), then the new items are applied as new boards. If just a list has a cursor, then the new items are added as lists to the current board. If an item is highlighted by a cursor, then new items are added as items to the current list.
 
 If more than one items are separated by ";;", then multiple items are created with the titles given. If items are being added, you can add descriptions by separating the title from the description with a "|".
 
@@ -163,10 +165,10 @@ The following is a list of the features I plan to add in no particular order. If
 - [x] Command bar to see commands and actioning them. - done It is called the QuickBar.
 - [ ] Add more apps for items. Currently there is only a todo list app.
 - [ ] Add drag and drop with the mouse.
-- [ ] The ability for the user to add new commands and themes. Downloading commands from GitHub as well.
+- [ ] The ability for the user to add new commands and themes. Downloading commands or themes from GitHub as well.
 - [ ] The ability to change themes and create new themes.
 - [ ] Create a way to do things with Personal Kanban from the command line.
-- [ ] Add documentation on how to use Personal Kanban.
+- [ ] Add to the documentation on how to use Personal Kanban.
 - [ ] Maybe a TUI
 
 ## My Different Open Source Projects
