@@ -110,7 +110,6 @@
     ? $Kanban.boards[boardcur].lists[listcur].styles.cursorColor
     : $Kanban.boards[boardcur].lists[listcur].styles.listbgcolor};"
   bind:this={listDiv}
-  onkeydown={() => {}}
   onclick={(e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -168,11 +167,11 @@
   .list {
     display: flex;
     flex-direction: column;
-    margin: 10px;
+    margin: 5px 10px 0px 0px;
     width: 250px;
     min-width: 250px;
-    padding: 0px 0px 5px 0px;
-    border: 5px solid transparent;
+    padding: 5px 5px 0px 5px;
+    border: 0px solid transparent;
     border-radius: 5px;
     max-height: -webkit-fill-available;
     height: -webkit-fit-content;

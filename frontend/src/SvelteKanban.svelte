@@ -1317,9 +1317,9 @@
     margin: 0px;
     padding: 0px;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     user-select: none;
-    overflow: hidden;
+    overflow: auto;
     background-color: rgba(0, 0, 0, 0);
     border-radius: 10px;
     border: solid 0px transparent;
@@ -1418,8 +1418,9 @@
     margin: 0px;
     overflow-x: auto;
     overflow-y: hidden;
-    border: 3px solid transparent;
+    border: 0px solid transparent;
     border-radius: 0px 10px 10px 10px;
+    padding: 10px 0px 15px 10px;
   }
 
   #ListsContainer::-webkit-scrollbar {
