@@ -5,7 +5,7 @@
 
 A lightweight personal Kanban board for everyday use. It is built around the ideal that you want to only (or mostly) use the keyboard. While there are some controls that are clickable for using them (such as double clicking on a title of a list will edit that title. Or, double clicking on an item will open it for editing.), it was designed from the ground up to be a fully keyboard driven kanban board. The hotkey system is very similar to the modal editing found in vim/neovim. While the actual keys used are hard coded right now, I do have a future plan to make them modifiable. There are many things I have plans for that I am looking for time to implement.
 
-While I do call it a kanban board, I do know that it doesn't work by the actual definition of a kanban board. Therefore, please don't flame me that it isn't a kanban boaard. It is my interpretation of it and has worked quite well for me for several years now. If you don't like something, let me know in the discussion boards of this repo and I might work on it when I have time. Or, fork this repo, make the edits, and submit a pull request. I would love and accept help in making this program more usable.
+While I do call it a kanban board, I know that it doesn't work by the strict definition of a kanban board. Therefore, please don't flame me that it isn't a kanban boaard. It is my interpretation of it and has worked quite well for me for several years now. If you don't like something, let me know in the discussion boards of this repo and I might work on it when I have time. Or, fork this repo, make the edits, and submit a pull request. I would love and accept help in making this program more usable.
 
 The program looks like this:
 
@@ -163,10 +163,9 @@ The following is a list of the features I plan to add in no particular order. If
 - [x] Saving of new window size, position, and last metaboard visited.
 - [x] Add keyboard hotkeys for editing an item. Currently you have to use the mouse and double click on things to add them. - done
 - [x] Command bar to see commands and actioning them. - done It is called the QuickBar.
-- [ ] Add more apps for items. Currently there is only a todo list app.
+- [ ] Add more apps for items. Currently there is only a todo list app. A file app would be nice.
 - [ ] Add drag and drop with the mouse.
 - [ ] The ability for the user to add new commands and themes. Downloading commands or themes from GitHub as well.
-- [ ] The ability to change themes and create new themes.
 - [ ] Create a way to do things with Personal Kanban from the command line.
 - [ ] Add to the documentation on how to use Personal Kanban.
 - [ ] Maybe a TUI
