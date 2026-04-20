@@ -44,7 +44,7 @@
   onMount(async () => {
     //
     //
-    // Load the metaboards.
+    // Load the metaboards and goto the last loaded board and the program location and dimensions.
     //
     await $metaboard.loadMetaBoards();
     await window.runtime.WindowSetPosition(
