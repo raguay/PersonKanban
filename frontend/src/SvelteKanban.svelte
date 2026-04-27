@@ -268,7 +268,8 @@
         tabDiv.parentNode.scrollLeft = elRight - elParentRight;
         if (tabDiv.nextElementSibling !== null) {
           //
-          // This is the last list. Make sure the new list button is shown.
+          // This is the last board. Make sure the new board button is shown.
+          // TODO: I should be able to do this pragrammably. But this currently works fine.
           //
           tabDiv.parentNode.scrollLeft += 75;
         }
