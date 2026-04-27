@@ -253,9 +253,13 @@
   });
 
   $effect(() => {
+    //
+    // This is for making sure the board's tab is viewable when there are more than
+    // will fit in the program.
+    //
     if (tabDiv !== null) {
       //
-      // There is a list selected. Make sure it's in view.
+      // There is a board selected. Make sure it's in view.
       //
       const elRight = tabDiv.offsetLeft + tabDiv.offsetWidth;
       const elLeft = tabDiv.offsetLeft;
