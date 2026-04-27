@@ -40,11 +40,12 @@
   let command = null;
   let direction = "";
   let quickBarOpen = $state(false);
+  let tabDiv = $state(null);
 
   onMount(async () => {
     //
     //
-    // Load the metaboards and goto the last loaded board and the program location and dimensions.
+    // Load the metaboards and goto the last loaded board and the program location and dimensions..
     //
     await $metaboard.loadMetaBoards();
     await window.runtime.WindowSetPosition(
@@ -249,6 +250,35 @@
     $registers.loadRegisters();
 
     return () => {};
+  });
+
+  $effect(() => {
+    if (tabDiv !== null) {
+      //
+      // There is a list selected. Make sure it's in view.
+      //
+      const elRight = tabDiv.offsetLeft + tabDiv.offsetWidth;
+      const elLeft = tabDiv.offsetLeft;
+
+      const elParentRight =
+        tabDiv.parentNode.offsetLeft + tabDiv.parentNode.offsetWidth;
+      const elParentLeft = tabDiv.parentNode.offsetLeft;
+      // check if right side of the element is not in view
+      if (elRight > elParentRight + tabDiv.parentNode.scrollLeft) {
+        tabDiv.parentNode.scrollLeft = elRight - elParentRight;
+        if (tabDiv.nextElementSibling !== null) {
+          //
+          // This is the last list. Make sure the new list button is shown.
+          //
+          tabDiv.parentNode.scrollLeft += 75;
+        }
+      } else if (elLeft < elParentLeft + tabDiv.parentNode.scrollLeft) {
+        //
+        // Left element is not in view.
+        //
+        tabDiv.parentNode.scrollLeft = elLeft - elParentLeft;
+      }
+    }
   });
 
   function showMetaboards() {
@@ -1164,88 +1194,92 @@
       .fontsize}px; font-family: {$Kanban.boards[$boardCursor].styles.font};"
   >
     <div id="tabs">
-      {#if $Kanban.boards.length > 0}
-        {#each $Kanban.boards as board, index}
-          {#if $boardCursor === index}
-            <div
-              class="tab"
-              style="background-color: {$Kanban.boards[$boardCursor].styles
-                .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
-                .selectTabTextColor}"
-              data-key={index}
-              ondblclick={() => {
-                editName(index);
-              }}
-            >
+      <div id="tabcontainer">
+        {#if $Kanban.boards.length > 0}
+          {#each $Kanban.boards as board, index}
+            {#if $boardCursor === index}
               <div
+                class="tab"
                 style="background-color: {$Kanban.boards[$boardCursor].styles
                   .selectTabColor}; color: {$Kanban.boards[$boardCursor].styles
                   .selectTabTextColor}"
-                class="tabName"
+                data-key={index}
+                ondblclick={() => {
+                  editName(index);
+                }}
+                bind:this={tabDiv}
               >
-                <EditField
-                  bind:name={board.name}
-                  bind:edit={editNameFlag}
-                  type={"p"}
+                <div
                   style="background-color: {$Kanban.boards[$boardCursor].styles
                     .selectTabColor}; color: {$Kanban.boards[$boardCursor]
                     .styles.selectTabTextColor}"
-                  oninput={async () => {
-                    editoff();
-                    await $Kanban.SaveKanbanBoards();
-                  }}
-                  onblur={async () => {
-                    editoff();
-                    await $Kanban.SaveKanbanBoards();
-                  }}
-                  onfocusout={() => {
-                    editoff();
-                  }}
-                />
+                  class="tabName"
+                >
+                  <EditField
+                    bind:name={board.name}
+                    bind:edit={editNameFlag}
+                    type={"p"}
+                    style="background-color: {$Kanban.boards[$boardCursor]
+                      .styles.selectTabColor}; color: {$Kanban.boards[
+                      $boardCursor
+                    ].styles.selectTabTextColor}"
+                    oninput={async () => {
+                      editoff();
+                      await $Kanban.SaveKanbanBoards();
+                    }}
+                    onblur={async () => {
+                      editoff();
+                      await $Kanban.SaveKanbanBoards();
+                    }}
+                    onfocusout={() => {
+                      editoff();
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          {:else}
-            <div
-              class="tab"
-              style="background-color: {$Kanban.boards[$boardCursor].styles
-                .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
-                .unselectTabTextColor}"
-              data-key={index}
-              onclick={() => {
-                setBoard(index);
-              }}
-            >
-              <span
-                class="tabName"
+            {:else}
+              <div
+                class="tab"
                 style="background-color: {$Kanban.boards[$boardCursor].styles
                   .unselectTabColor}; color: {$Kanban.boards[$boardCursor]
                   .styles.unselectTabTextColor}"
+                data-key={index}
+                onclick={() => {
+                  setBoard(index);
+                }}
               >
-                {board.name}
-              </span>
-            </div>
-          {/if}
-        {/each}
-      {/if}
-      <div
-        class="tab"
-        style="background-color: {$Kanban.boards[$boardCursor].styles
-          .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
-          .unselectTabTextColor}"
-        data-key={-1}
-        onclick={() => {
-          addNewBoard();
-        }}
-      >
-        <span
-          class="tabName"
+                <span
+                  class="tabName"
+                  style="background-color: {$Kanban.boards[$boardCursor].styles
+                    .unselectTabColor}; color: {$Kanban.boards[$boardCursor]
+                    .styles.unselectTabTextColor}"
+                >
+                  {board.name}
+                </span>
+              </div>
+            {/if}
+          {/each}
+        {/if}
+        <div
+          class="tab"
           style="background-color: {$Kanban.boards[$boardCursor].styles
-            .unselectTabColor};
-                   color: {$Kanban.boards[$boardCursor].styles
-            .unselectTabTextColor}; line-height: 20px;"
+            .unselectTabColor}; color: {$Kanban.boards[$boardCursor].styles
+            .unselectTabTextColor}"
+          data-key={-1}
+          onclick={() => {
+            addNewBoard();
+          }}
         >
-          +
-        </span>
+          <span
+            class="tabName"
+            style="background-color: {$Kanban.boards[$boardCursor].styles
+              .unselectTabColor};
+                   color: {$Kanban.boards[$boardCursor].styles
+              .unselectTabTextColor}; line-height: 20px;"
+          >
+            +
+          </span>
+        </div>
       </div>
       <div
         class="boardName"
@@ -1346,8 +1380,6 @@
     display: flex;
     flex-direction: row;
     margin: 0px 10px 0px 0px;
-    overflow-x: auto;
-    overflow-y: hidden;
     background-color: transparent;
   }
 
@@ -1383,6 +1415,14 @@
     padding: 0px;
     white-space: nowrap;
   }
+  #tabcontainer {
+    display: flex;
+    flex-direction: row;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
 
   .boardName {
     border: 10px solid black;
@@ -1394,6 +1434,7 @@
     user-select: none;
     margin-left: auto;
     margin-right: 0px;
+    min-width: fit-content;
   }
 
   #addList {
