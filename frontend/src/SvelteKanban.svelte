@@ -1420,6 +1420,7 @@
     padding: 0px;
     white-space: nowrap;
   }
+
   #tabcontainer {
     display: flex;
     flex-direction: row;
@@ -1440,6 +1441,7 @@
     margin-left: auto;
     margin-right: 0px;
     min-width: fit-content;
+    --wails-draggable: drag;
   }
 
   #addList {

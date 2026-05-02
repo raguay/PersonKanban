@@ -88,7 +88,15 @@
     // Return the function to close down the QuickBar.
     //
     return () => {
+      //
+      // Set the default keyboard state.
+      //
       $kbstate = 0;
+
+      //
+      // Make sure things update.
+      //
+      $Kanban = $Kanban;
     };
   });
 
