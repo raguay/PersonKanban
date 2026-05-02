@@ -1362,6 +1362,8 @@
     background-color: rgba(0, 0, 0, 0);
     border-radius: 10px;
     border: solid 0px transparent;
+    overflow: hidden;
+    overscroll-behavior: contain;
   }
 
   #MainBoard {
@@ -1379,6 +1381,7 @@
     min-height: 100vh;
     min-width: 100%;
     background-color: transparent;
+    overscroll-behavior: contain;
   }
 
   #tabs {
