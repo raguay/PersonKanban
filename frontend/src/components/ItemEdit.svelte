@@ -24,7 +24,7 @@
   let keystate = 0;
   let acc = "";
   let command = null;
-  let editDialogDiv = null;
+  let editDialogDiv = $state(null);
   let msgfocus = $state(() => {});
   let blurMsg = $state(() => {});
   let editTitle = $state(false);
@@ -33,7 +33,6 @@
   let itemCon = $state(null);
 
   onMount(async () => {
-    console.log("Mount: ", itemInfo);
     //
     // Set the itemEditkb handler.
     //
@@ -448,8 +447,10 @@
           <button
             onclick={() => {
               closeItemEdit();
-            }}>Save</button
+            }}
           >
+            Save
+          </button>
         </div>
         {#if itemInfo.notes.length !== 0}
           {#each itemInfo.notes as note}
@@ -556,7 +557,7 @@
   .buttonRow {
     display: flex;
     flex-direction: row;
-    margin: 0px 0px 10px 0px;
+    margin: 0px auto 10px auto;
   }
 
   .buttonRow button {

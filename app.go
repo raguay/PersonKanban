@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/fs"
 	"log"
 	"os"
@@ -15,7 +14,10 @@ import (
 	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+//
 // The data structures used in the program.
+//
+
 type FileParts struct {
 	Dir       string
 	Name      string
@@ -252,13 +254,12 @@ func (b *App) GetOSName() string {
 	switch os {
 	case "windows":
 		result = "windows"
-		break
 	case "darwin":
 		result = "macos"
 	case "linux":
 		result = "linux"
 	default:
-		result = fmt.Sprintf("%s", os)
+		result = os
 	}
 	return result
 }
@@ -269,7 +270,7 @@ func (b *App) GetGitHubThemes() []GitHubRepos {
 	topics, _, err := client.Search.Repositories(context.Background(), "in:topic personalkanban in:topic theme", nil)
 	if err == nil {
 		total := *topics.Total
-		result = make([]GitHubRepos, total, total)
+		result = make([]GitHubRepos, total)
 		for i := 0; i < total; i++ {
 			result[i].ID = *topics.Repositories[i].ID
 			result[i].Name = *topics.Repositories[i].Name

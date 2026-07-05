@@ -6,6 +6,7 @@
   import List from "./components/List.svelte";
   import Preferences from "./components/Preferences.svelte";
   import EditField from "./components/EditField.svelte";
+  import EditMeta from "./components/EditMeta.svelte";
   import { Kanban } from "./stores/Kanban.js";
   import { lastCommand } from "./stores/lastCommand.js";
   import { boardCursor } from "./stores/boardCursor.js";
@@ -41,6 +42,7 @@
   let direction = "";
   let quickBarOpen = $state(false);
   let tabDiv = $state(null);
+  let editMetaDescription = $state(null);
 
   onMount(async () => {
     //
@@ -663,6 +665,8 @@
               $itemCursor = -1;
             } else if ($itemCursor < 0) $listCursor = -1;
             clearState();
+            $commandBar.clearShowing();
+            editMetaDescription = false;
             break;
 
           case ":":
@@ -1292,6 +1296,9 @@
                color: {$metaboard.styles.textcolor}; 
                border: {$metaboard.styles.bordercolor} solid {$metaboard.styles
           .borderwidth};"
+        onclick={() => {
+          editMetaDescription = true;
+        }}
       >
         {#if $metaboard.loaded}
           {$metaboard.metaboards[$metaboard.getCursor()].name}
@@ -1345,6 +1352,14 @@
   <QuickBar bind:show={quickBarOpen} />
 {/if}
 
+{#if editMetaDescription}
+  <EditMeta
+    close={() => {
+      editMetaDescription = false;
+    }}
+  />
+{/if}
+
 <style>
   :global(h1) {
     font-size: 18px !important;
@@ -1382,6 +1397,21 @@
     min-width: 100%;
     background-color: transparent;
     overscroll-behavior: contain;
+  }
+
+  #editMDes {
+    position: absolute;
+    top: 100px;
+    left: 30%;
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    margin: auto;
+    padding: 10px;
+    border: 5px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
+    z-index: 200;
   }
 
   #tabs {
