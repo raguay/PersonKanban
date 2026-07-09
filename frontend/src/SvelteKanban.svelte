@@ -1399,21 +1399,6 @@
     overscroll-behavior: contain;
   }
 
-  #editMDes {
-    position: absolute;
-    top: 100px;
-    left: 30%;
-    display: flex;
-    flex-direction: column;
-    width: 40%;
-    margin: auto;
-    padding: 10px;
-    border: 5px;
-    border-radius: 10px;
-    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
-    z-index: 200;
-  }
-
   #tabs {
     display: flex;
     flex-direction: row;

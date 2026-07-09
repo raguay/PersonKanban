@@ -13,7 +13,7 @@ The program looks like this:
 
 Along the top of the programs is the list of boards and the current metaboard name to the far right. The highlighted tab shows is the currently open board in the rest of the screen. Each board has as many lists as you would like to have. Also, each list has as many items as you want to add to them.
 
-You can create, delete, and navigate around collections of boards call MetaBoards. The ideal is that each board collection, or metaboard, represents different projects or responsibilities.
+You can create, delete, and navigate around collections of boards call MetaBoards. The ideal is that each board collection, or metaboard, represents different projects or responsibilities. By clicking on the Metaboard name to the right of the list of boards, the preferences for that metaboard are made available to edit.
 
 ![Personal Kanban MetaBoards](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-2.webp)
 
@@ -25,9 +25,9 @@ There is also a QuickBar to quickly add new items like boards, lists, and items.
 
 ![Personal Kanban QuickBar](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban-4.webp)
 
-The QuickBar can create a single or multiple objects like the currently highlighted object. For example, if you want to quickly add several lists to a board, you can separate each list name with `;;` (two semi-colons) as in: `Ideas;;Bugs;;Working;;Done`. When you press `Enter` the four lists will be created. If you are on an empty board, just press the `j` key like you were going to navigate down to one and then open the QuickBar to add the new lists. The quick bar also has the ability to store several prompts for it into a single letter name or easy recall in a different project.
+The QuickBar can create a single or multiple objects like the currently highlighted object. For example, if you want to quickly add several lists to a board, you can separate each list name with `;;` (two semi-colons) as in: `Ideas;;Bugs;;Working;;Done`. When you press `Enter` the four lists will be created. If you are on an empty board, just press the `j` key like you were going to navigate down to one and then open the QuickBar to add the new lists. The quick bar also has the ability to store several prompts for it into a single letter name for easy recall in a different project.
 
-It is very stable project with many of the planned features in place. I am currently using it daily to track my programming projects, churches (I'm a missionary in Thailand), schedules, events, bugs, and anything you would make a todo list to track. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key.
+It is very stable project with many of the planned features in place. I am currently using it daily to track my programming projects, churches (I'm a missionary in Thailand), schedules, events, bugs, and anything you would make a todo list to track. It is currently a complete keyboard program without any drag & drop features. The keyboard hotkeys work similarly to NeoVim and Vim modal systems. But, in the Personal Kanban program, the cursor (highlighted lists or items and tabs for the boards) control the action of each key. When no cursor (highlighted area) is visible, then the keyboard actions are for boards. When one board is highlighted, but no lists are, then the commands will effect lists. If an item is selected, then the keyboard commands will effect that item. The hotkeys are explained in the [Hot Keys](#hot-keys) section.
 
 # Table of Contents
 
