@@ -76,7 +76,7 @@ The mask build currently creates a universal build on macOS. I haven't built and
 
 # Installing from Releases
 
-You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from an unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I so far haven't had any issues with this program. It only saves information to the harddrive in the user's home directory. It never deletes anything. If you have any issues or have a suggestion, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
+You can also download the latest release on the release page. I currently only have a macOS universal build. It will say that it is from an unknown developer. You just have to give it permission in order to use it. I write programs for my personal use and anyone that wants to use them. Since I'm not making money with it, I don't want to spend the $100/year to have Apple to qualify it for general distribution. As with any free program you download, use it at your own risk. I haven't had any issues with this program while using it everyday. It only saves information to the hard drive in the user's home directory. It never deletes anything. If you have any issues or have a suggestion, please leave a comment on the [discussion board](https://github.com/raguay/PersonKanban/discussions).
 
 # How to Use
 
