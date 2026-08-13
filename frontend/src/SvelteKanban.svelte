@@ -63,9 +63,15 @@
     //
     // Load the default board information from the harddrive.
     //
-    $boardCursor = 0;
-    $listCursor = -1;
-    $itemCursor = -1;
+    if (typeof $metaboard.savedstate.bc === "undefined") {
+      $boardCursor = 0;
+      $listCursor = -1;
+      $itemCursor = -1;
+    } else {
+      $boardCursor = $metaboard.savedstate.bc;
+      $listCursor = $metaboard.savedstate.lc;
+      $itemCursor = $metaboard.savedstate.ic;
+    }
     $editItem = false;
     await $Kanban.LoadCurrentKanbanBoards();
     $Kanban = $Kanban;

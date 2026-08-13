@@ -18,6 +18,9 @@ export const metaboard = writable({
     width: 400,
     height: 400,
     mboard: 0,
+    bc: 0,
+    lc: -1,
+    ic: -1,
   },
   getCursor: function () {
     return this.cursor;
