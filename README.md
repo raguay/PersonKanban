@@ -1,7 +1,7 @@
 ![PersonKanban](https://socialify.git.ci/raguay/PersonKanban/image?description=1&font=Source%20Code%20Pro&forks=1&issues=1&language=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark)
 [![Richard's GitHub stats](https://github-readme-stats.vercel.app/api?username=raguay)](https://github.com/anuraghazra/github-readme-stats)
 
-# PersonKanban
+# Personal Kanban
 
 A lightweight personal Kanban board for everyday use. It is built around the ideal that you want to only (or mostly) use the keyboard. While there are some controls that are clickable for using them (such as double clicking on a title of a list will edit that title. Or, double clicking on an item will open it for editing.), it was designed from the ground up to be a fully keyboard driven kanban board. The hotkey system is very similar to the modal editing found in vim/neovim. While the actual keys used are hard coded right now, I do have a future plan to make them modifiable. There are many things I have plans for that I am looking for time to implement.
 
@@ -11,7 +11,7 @@ The program looks like this:
 
 ![Personal Kanban](https://github.com/raguay/PersonKanban/blob/main/images/PersonalKanban.webp)
 
-Along the top of the programs is the list of boards and the current metaboard name to the far right. The highlighted tab shows is the currently open board in the rest of the screen. Each board has as many lists as you would like to have. Also, each list has as many items as you want to add to them.
+Along the top of the programs is the list of boards for the current metaboard and the current metaboard name to the far right. The highlighted tab shows is the currently open board in the rest of the screen. Each board has as many lists as you would like to have. Also, each list has as many items as you want to add to them. The metaboard, board, and list that was last open when exiting PersonalKanban will be opened with you relaunch the program.
 
 You can create, delete, and navigate around collections of boards call MetaBoards. The ideal is that each board collection, or metaboard, represents different projects or responsibilities. By clicking on the Metaboard name to the right of the list of boards, the preferences for that metaboard are made available to edit.
 

@@ -257,7 +257,11 @@
     //
     $registers.loadRegisters();
 
-    return () => {};
+    return () => {
+      //
+      // This is ran when closing the program.
+      //
+    };
   });
 
   $effect(() => {

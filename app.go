@@ -46,6 +46,9 @@ type State struct {
 	Width  int `json:"width"`
 	Height int `json:"height"`
 	Mboard int `json:"mboard"`
+	Bc     int `json:"bc"`
+	Lc     int `json:"lc"`
+	Ic     int `json:"ic"`
 }
 
 type Config struct {
@@ -193,7 +196,7 @@ func (b *App) CreateTempFile(contents string) string {
 	//
 	// Return the results.
 	//
-	return (fname)
+	return fname
 }
 
 func (b *App) Chmod(file string, nmode fs.FileMode) {
